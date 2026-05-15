@@ -1,0 +1,80 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { MODULES, type ModuleSlug } from '../lib/syllabus';
+import ConfidenceButtons from '../components/ConfidenceButtons.tsx';
+import TopicSidebar from '../components/TopicSidebar.astro';
+import PastQuestionsPanel from '../components/PastQuestionsPanel.astro';
+import { questionsForTopic } from '../lib/past-papers';
+
+interface Props {
+  module: ModuleSlug;
+  topicSlug: string;
+  topicTitle: string;
+  isSupplement?: boolean;
+}
+
+const { module, topicSlug, topicTitle, isSupplement = false } = Astro.props;
+const meta = MODULES[module];
+const topic = meta.topics.find((t) => t.slug === topicSlug);
+const topicId = `${module}/${topicSlug}`;
+---
+<BaseLayout title={topicTitle} currentModule={module} currentPaper={meta.paper}>
+  <div class="grid grid-cols-1 lg:grid-cols-[18rem_1fr] gap-8">
+    <TopicSidebar module={module} activeTopicSlug={topicSlug} />
+
+    <article class="min-w-0">
+      <nav class="text-sm text-ink-500 dark:text-ink-400 mb-2">
+        <a href={`/papers/${meta.paper}`} class="hover:underline">{meta.short}</a>
+        <span class="mx-2">/</span>
+        <a href={`/modules/${module}`} class="hover:underline">{meta.title}</a>
+      </nav>
+      <header class="mb-6">
+        <h1 class="text-3xl font-bold tracking-tight text-ink-900 dark:text-white">
+          {isSupplement && <span class="inline-block text-xs font-semibold uppercase tracking-wider bg-amber-200 text-amber-900 px-2 py-1 rounded mr-2 align-middle">Supplement</span>}
+          {topicTitle}
+        </h1>
+        {topic && (
+          <p class="text-ink-500 dark:text-ink-400 mt-1">Topic {topic.order} of {meta.topics.length}</p>
+        )}
+      </header>
+
+      <ConfidenceButtons client:load topicId={topicId} />
+
+      <div class="prose dark:prose-invert max-w-none mt-6">
+        <slot />
+      </div>
+
+      <hr class="my-8 border-ink-200 dark:border-ink-800" />
+
+      {questionsForTopic(module, topicSlug).length > 0 && (
+        <section class="no-print mb-8">
+          <h2 class="text-xl font-bold tracking-tight mb-3">Past Tripos questions on this topic</h2>
+          <PastQuestionsPanel module={module} topicSlug={topicSlug} limit={6} />
+        </section>
+      )}
+
+      <section class="grid grid-cols-1 md:grid-cols-2 gap-4 no-print">
+        <a href={`/flashcards/${module}`} class="rounded-lg border border-ink-200 dark:border-ink-800 p-4 hover:border-accent-500 transition">
+          <div class="text-sm font-semibold text-ink-500 dark:text-ink-400">Drill</div>
+          <div class="font-bold mt-1">Flashcards for {meta.short}</div>
+          <p class="text-sm text-ink-500 dark:text-ink-400 mt-1">Spaced-repetition deck</p>
+        </a>
+        <a href={`/quiz/${module}`} class="rounded-lg border border-ink-200 dark:border-ink-800 p-4 hover:border-accent-500 transition">
+          <div class="text-sm font-semibold text-ink-500 dark:text-ink-400">Self-test</div>
+          <div class="font-bold mt-1">Quiz: {meta.short}</div>
+          <p class="text-sm text-ink-500 dark:text-ink-400 mt-1">Mixed MCQ + short answer</p>
+        </a>
+        <a href={`/cheatsheets/${module}`} class="rounded-lg border border-ink-200 dark:border-ink-800 p-4 hover:border-accent-500 transition">
+          <div class="text-sm font-semibold text-ink-500 dark:text-ink-400">Last-minute</div>
+          <div class="font-bold mt-1">Cheat sheet</div>
+          <p class="text-sm text-ink-500 dark:text-ink-400 mt-1">One-page distillation</p>
+        </a>
+        <a href="/past-papers" class="rounded-lg border border-ink-200 dark:border-ink-800 p-4 hover:border-accent-500 transition">
+          <div class="text-sm font-semibold text-ink-500 dark:text-ink-400">Practice</div>
+          <div class="font-bold mt-1">Past Tripos papers</div>
+          <p class="text-sm text-ink-500 dark:text-ink-400 mt-1">Browse Cambridge archive</p>
+        </a>
+      </section>
+    </article>
+  </div>
+</BaseLayout>

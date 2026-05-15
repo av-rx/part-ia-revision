@@ -1,0 +1,40 @@
+---
+import { getCollection } from 'astro:content';
+import TopicLayout from '../../../layouts/TopicLayout.astro';
+import { MODULES, MODULE_ORDER, type ModuleSlug } from '../../../lib/syllabus';
+
+export async function getStaticPaths() {
+  const notes = await getCollection('notes');
+  const supplements = await getCollection('supplements');
+  const paths: Array<{ params: { module: string; topic: string }; props: { entry: any; isSupplement: boolean } }> = [];
+
+  for (const entry of notes) {
+    paths.push({
+      params: { module: entry.data.module, topic: entry.data.topicSlug },
+      props: { entry, isSupplement: false },
+    });
+  }
+  for (const entry of supplements) {
+    // entry.id is the path under src/content/supplements, possibly with .md/.mdx
+    const id = (entry as any).id ?? '';
+    const noExt = id.replace(/\.(md|mdx)$/, '');
+    const parts = noExt.split('/');
+    if (parts.length < 2) continue;
+    const module = parts[0];
+    const slug = parts.slice(1).join('-');
+    paths.push({ params: { module, topic: slug }, props: { entry, isSupplement: true } });
+  }
+  return paths;
+}
+
+interface Props { entry: any; isSupplement: boolean; }
+const { entry, isSupplement } = Astro.props;
+const { Content } = await entry.render();
+
+const moduleSlug = (entry.data.module ?? Astro.params.module) as ModuleSlug;
+const topicSlug = (entry.data.topicSlug ?? Astro.params.topic) as string;
+const topicTitle = entry.data.title as string;
+---
+<TopicLayout module={moduleSlug} topicSlug={topicSlug} topicTitle={topicTitle} isSupplement={isSupplement}>
+  <Content />
+</TopicLayout>

@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import Quiz from '../../components/Quiz.tsx';
+import { MODULES, type ModuleSlug } from '../../lib/syllabus';
+
+export async function getStaticPaths() {
+  const quizzes = await getCollection('quizzes');
+  return quizzes.map((q) => ({
+    params: { module: q.data.module },
+    props: { quiz: q.data },
+  }));
+}
+
+interface Props { quiz: any; }
+const { quiz } = Astro.props;
+const module = quiz.module as ModuleSlug;
+const meta = MODULES[module];
+---
+<BaseLayout title={`${meta?.title ?? quiz.title} quiz`} currentModule={module} currentPaper={meta?.paper}>
+  <nav class="text-sm text-ink-500 dark:text-ink-400 mb-2">
+    <a href="/quiz" class="hover:underline">Quizzes</a>
+    <span class="mx-2">/</span>
+    <a href={`/modules/${module}`} class="hover:underline">{meta?.title ?? quiz.title}</a>
+  </nav>
+  <header class="mb-6">
+    <h1 class="text-3xl font-bold tracking-tight">{quiz.title}</h1>
+    <p class="text-ink-500 dark:text-ink-400 mt-1">{quiz.questions.length} questions</p>
+  </header>
+  <Quiz client:load module={quiz.module} title={quiz.title} questions={quiz.questions} />
+</BaseLayout>

@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import CodingExercises from '../../components/CodingExercises.tsx';
+import { MODULES, type ModuleSlug } from '../../lib/syllabus';
+
+export async function getStaticPaths() {
+  const all = await getCollection('code-exercises');
+  return all.map((entry) => ({
+    params: { module: entry.data.module },
+    props: { data: entry.data },
+  }));
+}
+
+interface Props { data: any; }
+const { data } = Astro.props;
+const module = data.module as ModuleSlug;
+const meta = MODULES[module];
+const langLabel = data.language === 'ocaml' ? 'OCaml' : 'Java';
+---
+<BaseLayout title={`${meta?.title ?? data.title} coding exercises`} currentModule={module} currentPaper={meta?.paper}>
+  <nav class="text-sm text-ink-500 dark:text-ink-400 mb-4">
+    <a href="/coding" class="hover:underline">Coding</a>
+    <span class="mx-2">/</span>
+    <a href={`/modules/${module}`} class="hover:underline">{meta?.title ?? data.title}</a>
+  </nav>
+  <header class="mb-6">
+    <div class="flex items-center gap-3 flex-wrap">
+      <h1 class="text-3xl font-bold tracking-tight">{data.title}</h1>
+      <span class={`text-sm font-mono px-2 py-0.5 rounded ${data.language === 'ocaml' ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300' : 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300'}`}>
+        {langLabel}
+      </span>
+    </div>
+    <p class="text-ink-500 dark:text-ink-400 mt-1">{data.exercises.length} exercises · trace code, predict output, write solutions</p>
+  </header>
+  <CodingExercises
+    client:load
+    module={module}
+    title={data.title}
+    language={data.language}
+    exercises={data.exercises}
+  />
+</BaseLayout>

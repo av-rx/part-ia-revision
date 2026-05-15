@@ -1,0 +1,61 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { PAPERS, MODULES, PAPER_ORDER, type Paper } from '../../lib/syllabus';
+
+export function getStaticPaths() {
+  return PAPER_ORDER.map((p) => ({ params: { paper: p } }));
+}
+
+const { paper } = Astro.params;
+const meta = PAPERS[paper as Paper];
+---
+<BaseLayout title={meta.title} currentPaper={paper}>
+  <header class="mb-8">
+    <p class="text-sm uppercase tracking-wider text-accent-700 dark:text-accent-400">{meta.number}</p>
+    <h1 class="text-3xl font-bold tracking-tight text-ink-900 dark:text-white">{meta.title}</h1>
+    <p class="text-ink-500 dark:text-ink-400 mt-2">
+      {new Date(meta.date).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+      · {meta.startTime} for {meta.durationHours} hours
+      · {meta.venue}
+    </p>
+    <p class="mt-3 text-sm rounded-md bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-3 text-amber-900 dark:text-amber-200">
+      <strong>Rubric:</strong> {meta.rubric}
+    </p>
+  </header>
+
+  <ol class="space-y-4">
+    {meta.sections.map((sec) => {
+      const m = MODULES[sec.module];
+      return (
+        <li class="rounded-xl border border-ink-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-5">
+          <div class="flex items-baseline justify-between">
+            <h2 class="text-xl font-bold tracking-tight">
+              <span class="text-accent-600 mr-2">Section {sec.letter}</span>
+              {m.title}
+            </h2>
+            <span class="text-sm text-ink-500 dark:text-ink-400">{sec.attempt} of {sec.questions} {sec.questions === 1 ? 'question' : 'questions'}</span>
+          </div>
+          <p class="text-ink-500 dark:text-ink-400 mt-1">{m.blurb}</p>
+          <div class="flex flex-wrap gap-2 mt-3">
+            <a href={`/modules/${sec.module}`} class="text-sm px-3 py-1 rounded-md bg-accent-600 text-white hover:bg-accent-700 transition">Notes →</a>
+            <a href={`/cheatsheets/${sec.module}`} class="text-sm px-3 py-1 rounded-md border border-ink-200 dark:border-ink-700 hover:bg-ink-100 dark:hover:bg-ink-800 transition">Cheat sheet</a>
+            <a href={`/flashcards/${sec.module}`} class="text-sm px-3 py-1 rounded-md border border-ink-200 dark:border-ink-700 hover:bg-ink-100 dark:hover:bg-ink-800 transition">Flashcards</a>
+            <a href={`/quiz/${sec.module}`} class="text-sm px-3 py-1 rounded-md border border-ink-200 dark:border-ink-700 hover:bg-ink-100 dark:hover:bg-ink-800 transition">Quiz</a>
+          </div>
+          <details class="mt-4">
+            <summary class="cursor-pointer text-sm text-accent-700 dark:text-accent-400 hover:underline">All topics ({m.topics.length})</summary>
+            <ol class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-1 text-sm">
+              {m.topics.map((t) => (
+                <li>
+                  <a href={`/modules/${sec.module}/${t.slug}`} class="block px-2 py-1 rounded hover:bg-ink-100 dark:hover:bg-ink-800">
+                    <span class="text-ink-400 mr-1">{t.order}.</span>{t.title}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </details>
+        </li>
+      );
+    })}
+  </ol>
+</BaseLayout>

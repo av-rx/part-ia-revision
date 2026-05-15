@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { MODULES, MODULE_ORDER } from '../../lib/syllabus';
+
+const cs = await getCollection('cheatsheets');
+const present = new Set(cs.map((c) => c.data.module));
+---
+<BaseLayout title="Cheat sheets">
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold tracking-tight">Cheat sheets</h1>
+    <p class="text-ink-500 dark:text-ink-400 mt-2 max-w-2xl">
+      One-page distilled summaries per module. Optimised for printing on a single A4 sheet — use your browser's print → save as PDF.
+    </p>
+  </header>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+    {MODULE_ORDER.map((slug) => {
+      const m = MODULES[slug];
+      const has = present.has(slug);
+      return has ? (
+        <a href={`/cheatsheets/${slug}`} class="rounded-lg border border-ink-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-4 hover:border-accent-500 transition">
+          <h3 class="font-semibold text-ink-900 dark:text-white">{m.title}</h3>
+          <p class="text-sm text-ink-500 dark:text-ink-400 mt-1">{m.short}</p>
+        </a>
+      ) : (
+        <div class="rounded-lg border border-dashed border-ink-200 dark:border-ink-800 bg-ink-50/50 dark:bg-ink-950/30 p-4 opacity-70">
+          <h3 class="font-semibold text-ink-700 dark:text-ink-300">{m.title}</h3>
+          <p class="text-sm text-ink-400 mt-1">Sheet coming soon</p>
+        </div>
+      );
+    })}
+  </div>
+</BaseLayout>

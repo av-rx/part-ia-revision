@@ -1,0 +1,103 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { PAPERS, MODULES, MODULE_ORDER, PAPER_ORDER } from '../lib/syllabus';
+import { PAST_QUESTIONS, allYears, yearPaperUrl, type PastQuestion } from '../lib/past-papers';
+import PastPapersBrowser from '../components/PastPapersBrowser.tsx';
+
+const taggedYears = allYears();
+// Group questions by module for the per-module table.
+const questionsByModule = new Map<string, PastQuestion[]>();
+for (const q of PAST_QUESTIONS) {
+  const arr = questionsByModule.get(q.module) ?? [];
+  arr.push(q);
+  questionsByModule.set(q.module, arr);
+}
+
+// Whole-paper years (older years) without per-question tags
+const ALL_YEARS = ['2025', '2024', '2023', '2022', '2021', '2020'];
+---
+<BaseLayout title="Past Tripos papers">
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold tracking-tight">Past Tripos papers</h1>
+    <p class="text-ink-500 dark:text-ink-400 mt-2 max-w-2xl">
+      <strong>{PAST_QUESTIONS.length}</strong> Part IA questions tagged by module and topic across <strong>{taggedYears.length}</strong> years (2023–2025).
+      Click a question to open it directly. Older years' questions are linked at the bottom but not yet tagged.
+    </p>
+    <p class="mt-3">
+      <a href="https://www.cl.cam.ac.uk/teaching/exams/pastpapers/" target="_blank" rel="noopener" class="text-accent-700 dark:text-accent-400 hover:underline">
+        Open the official Cambridge archive →
+      </a>
+    </p>
+  </header>
+
+  <PastPapersBrowser client:load questions={PAST_QUESTIONS} modules={Object.fromEntries(MODULE_ORDER.map((s) => [s, { title: MODULES[s].title, short: MODULES[s].short, paper: MODULES[s].paper }]))} papers={PAPERS} />
+
+  <section class="mt-12">
+    <h2 class="text-xl font-bold mb-3">By module</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {MODULE_ORDER.map((slug) => {
+        const m = MODULES[slug];
+        const qs = questionsByModule.get(slug) ?? [];
+        return (
+          <div class="rounded-lg border border-ink-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-4">
+            <div class="flex items-baseline justify-between">
+              <a href={`/modules/${slug}`} class="font-semibold hover:text-accent-700">{m.title}</a>
+              <span class="text-xs text-ink-500 dark:text-ink-400">{qs.length} tagged Q{qs.length === 1 ? '' : 's'}</span>
+            </div>
+            <p class="text-xs text-ink-500 dark:text-ink-400 mt-1">{PAPERS[m.paper].number}</p>
+          </div>
+        );
+      })}
+    </div>
+  </section>
+
+  <section class="mt-12">
+    <h2 class="text-xl font-bold mb-3">Whole papers (all years)</h2>
+    <div class="overflow-x-auto rounded-lg border border-ink-200 dark:border-ink-800">
+      <table class="w-full text-sm">
+        <thead class="bg-ink-100 dark:bg-ink-900">
+          <tr>
+            <th class="text-left px-4 py-2">Year</th>
+            <th class="text-left px-4 py-2">Paper 1</th>
+            <th class="text-left px-4 py-2">Paper 2</th>
+            <th class="text-left px-4 py-2">Paper 3</th>
+            <th class="text-left px-4 py-2">Tagged?</th>
+          </tr>
+        </thead>
+        <tbody>
+          {ALL_YEARS.map((y) => (
+            <tr class="border-t border-ink-200 dark:border-ink-800">
+              <td class="px-4 py-2 font-mono">{y}</td>
+              {[1, 2, 3].map((p) => (
+                <td class="px-4 py-2">
+                  <a href={yearPaperUrl(parseInt(y), p as 1 | 2 | 3)} target="_blank" rel="noopener" class="text-accent-700 dark:text-accent-400 hover:underline">
+                    Paper {p}
+                  </a>
+                </td>
+              ))}
+              <td class="px-4 py-2 text-xs">
+                {taggedYears.includes(parseInt(y)) ? (
+                  <span class="text-emerald-700 dark:text-emerald-400">✓ tagged</span>
+                ) : (
+                  <span class="text-ink-400">links only</span>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="text-xs text-ink-500 dark:text-ink-400 mt-2">2020–2022 papers are still on the official archive; per-question tagging for those is on the to-do list.</p>
+  </section>
+
+  <section class="mt-12">
+    <h2 class="text-xl font-bold mb-3">Tips for using past papers</h2>
+    <ul class="space-y-2 text-sm text-ink-700 dark:text-ink-200 max-w-3xl">
+      <li>• <strong>Topic-tag the most recent 3 years</strong> — patterns repeat. Examiners cycle through the syllabus and certain themes (Master theorem, Bayes, Viterbi, Boolean simplification, Dijkstra) appear annually.</li>
+      <li>• <strong>Sit one full timed mock</strong> in the week before the exam for each of Papers 1, 2, 3. 36 minutes per question.</li>
+      <li>• <strong>For Section D (multi-question) sections</strong>, pick your two strongest questions early and budget time evenly.</li>
+      <li>• <strong>Show working</strong> — most marks are for method, not the final answer. Write clearly.</li>
+      <li>• <strong>State assumptions</strong> — examiners reward clarity; if a question is ambiguous, define your interpretation.</li>
+    </ul>
+  </section>
+</BaseLayout>

@@ -1,0 +1,155 @@
+{
+  "module": "foundations-of-computer-science",
+  "title": "OCaml Coding Exercises",
+  "language": "ocaml",
+  "exercises": [
+    {
+      "id": "focs-01-let",
+      "topic": "Introduction to Programming",
+      "title": "Let bindings and conditionals",
+      "kind": "trace",
+      "prompt": "In OCaml, let x = e1 in e2 binds the name x to the value of e1, then evaluates e2. What does the following expression evaluate to? (Give the integer result.)",
+      "codeSnippet": "let x = 5 in\nlet y = x * x in\nif y > 20 then y - x else y + x",
+      "answer": "20",
+      "hints": [
+        "Evaluate let bindings top-to-bottom: first x = 5, then y = 5 * 5 = 25.",
+        "Now check the condition: is 25 > 20? Yes, so we take the then branch: y - x = 25 - 5."
+      ],
+      "explanation": "x = 5, y = 25. The condition 25 > 20 is true, so we return y - x = 25 - 5 = 20."
+    },
+    {
+      "id": "focs-02-fact",
+      "topic": "Recursion and Efficiency",
+      "title": "Recursive and tail-recursive factorial",
+      "kind": "code",
+      "prompt": "Write two OCaml functions: (1) fact : int -> int using direct recursion, and (2) fact_tr : int -> int using tail recursion with an accumulator. Tail-recursive functions don't grow the call stack — OCaml optimises them.",
+      "codeSnippet": "(* Direct recursive factorial *)\nlet rec fact n = ???\n\n(* Tail-recursive factorial — add an inner helper with accumulator *)\nlet fact_tr n = ???\n\n(* Test *)\nlet () =\n  Printf.printf \"fact 6 = %d\\n\" (fact 6);\n  Printf.printf \"fact_tr 6 = %d\\n\" (fact_tr 6)",
+      "hints": [
+        "For fact: base case is fact 0 = 1. Recursive case: n * fact (n-1).",
+        "For fact_tr: define an inner let rec aux n acc = ... where acc accumulates the product.",
+        "Call aux n 1 to start the tail-recursive process with accumulator = 1."
+      ],
+      "explanation": "The tail-recursive version uses an accumulator so the recursive call is the very last operation — no pending multiplication after it returns. OCaml eliminates the stack frame for tail calls, preventing stack overflow on large inputs.",
+      "solutionCode": "let rec fact n =\n  if n = 0 then 1\n  else n * fact (n - 1)\n\nlet fact_tr n =\n  let rec aux n acc =\n    if n = 0 then acc\n    else aux (n - 1) (n * acc)\n  in\n  aux n 1\n\nlet () =\n  Printf.printf \"fact 6 = %d\\n\" (fact 6);    (* 720 *)\n  Printf.printf \"fact_tr 6 = %d\\n\" (fact_tr 6) (* 720 *)"
+    },
+    {
+      "id": "focs-03-list",
+      "topic": "Lists and Polymorphism",
+      "title": "Pattern matching on lists",
+      "kind": "trace",
+      "prompt": "OCaml lists use :: (cons) and [] (nil). Pattern matching with | [] -> ... | h :: t -> ... is the standard way to process them. What does this print?",
+      "codeSnippet": "let rec sum = function\n  | [] -> 0\n  | h :: t -> h + sum t\n\nlet rec length = function\n  | [] -> 0\n  | _ :: t -> 1 + length t\n\nlet lst = [2; 4; 6; 8]\nlet () = Printf.printf \"%d %d\\n\" (sum lst) (length lst)",
+      "answer": "20 4",
+      "hints": [
+        "sum adds all elements: 2 + 4 + 6 + 8.",
+        "length counts elements: there are 4 elements in [2; 4; 6; 8]."
+      ],
+      "explanation": "sum [2;4;6;8] = 2 + sum [4;6;8] = ... = 20. length [2;4;6;8] = 1 + length [4;6;8] = ... = 4. Output: \"20 4\"."
+    },
+    {
+      "id": "focs-04-hof",
+      "topic": "More Lists and Making Change",
+      "title": "Implement map and filter",
+      "kind": "code",
+      "prompt": "Implement my_map and my_filter from scratch (without List.map or List.filter). These are the two most fundamental higher-order list functions in OCaml. Then use them to: double all numbers in a list, and keep only even numbers.",
+      "codeSnippet": "(* my_map : ('a -> 'b) -> 'a list -> 'b list *)\nlet rec my_map f lst = ???\n\n(* my_filter : ('a -> bool) -> 'a list -> 'a list *)\nlet rec my_filter p lst = ???\n\nlet () =\n  let nums = [1; 2; 3; 4; 5; 6] in\n  let doubled = my_map (fun x -> x * 2) nums in\n  let evens = my_filter (fun x -> x mod 2 = 0) nums in\n  List.iter (fun x -> Printf.printf \"%d \" x) doubled;\n  print_newline ();\n  List.iter (fun x -> Printf.printf \"%d \" x) evens",
+      "hints": [
+        "my_map: base case is my_map f [] = []. Recursive: f h :: my_map f t.",
+        "my_filter: base case is []. Recursive: if p h then h :: my_filter p t else my_filter p t.",
+        "Note the polymorphic types: 'a -> 'b for map means input and output types can differ."
+      ],
+      "explanation": "These functions are fundamental to functional programming. map transforms every element; filter selects elements by a predicate. The key insight is that the function f (or predicate p) is a first-class value passed as an argument — this is what makes OCaml a higher-order language.",
+      "solutionCode": "let rec my_map f = function\n  | [] -> []\n  | h :: t -> f h :: my_map f t\n\nlet rec my_filter p = function\n  | [] -> []\n  | h :: t ->\n    if p h then h :: my_filter p t\n    else my_filter p t\n\nlet () =\n  let nums = [1; 2; 3; 4; 5; 6] in\n  let doubled = my_map (fun x -> x * 2) nums in\n  let evens = my_filter (fun x -> x mod 2 = 0) nums in\n  List.iter (fun x -> Printf.printf \"%d \" x) doubled;  (* 2 4 6 8 10 12 *)\n  print_newline ();\n  List.iter (fun x -> Printf.printf \"%d \" x) evens      (* 2 4 6 *)"
+    },
+    {
+      "id": "focs-05-msort",
+      "topic": "Sorting",
+      "title": "Merge sort in OCaml",
+      "kind": "code",
+      "prompt": "Implement merge sort in OCaml. You'll need: (1) split to divide a list into two halves, (2) merge to merge two sorted lists, (3) msort as the top-level divide-and-conquer. This directly maps to the FoCS lecture structure.",
+      "codeSnippet": "(* Split a list into two roughly equal halves *)\nlet rec split = function\n  | [] -> ([], [])\n  | [x] -> ([x], [])\n  | x :: y :: rest ->\n    let (a, b) = split rest in\n    (x :: a, y :: b)\n\n(* Merge two sorted lists into one sorted list *)\nlet rec merge xs ys = ???\n\n(* Merge sort *)\nlet rec msort lst = ???\n\nlet () =\n  let sorted = msort [5; 1; 3; 2; 4] in\n  List.iter (fun x -> Printf.printf \"%d \" x) sorted",
+      "hints": [
+        "merge: base cases are when either list is empty. Otherwise compare heads and cons the smaller one.",
+        "msort: base cases are [] and [x]. Otherwise split, recursively sort both halves, then merge.",
+        "merge ([], ys) = ys and merge (xs, []) = xs."
+      ],
+      "explanation": "Merge sort achieves O(n log n) by dividing the problem in half each time. The key insight is that merging two sorted lists takes O(n) — the hard work happens on the way back up the recursion tree, not on the way down.",
+      "solutionCode": "let rec split = function\n  | [] -> ([], [])\n  | [x] -> ([x], [])\n  | x :: y :: rest ->\n    let (a, b) = split rest in\n    (x :: a, y :: b)\n\nlet rec merge xs ys =\n  match (xs, ys) with\n  | ([], _) -> ys\n  | (_, []) -> xs\n  | (x :: xs', y :: ys') ->\n    if x <= y then x :: merge xs' ys\n    else y :: merge xs ys'\n\nlet rec msort = function\n  | [] -> []\n  | [x] -> [x]\n  | lst ->\n    let (a, b) = split lst in\n    merge (msort a) (msort b)\n\nlet () =\n  let sorted = msort [5; 1; 3; 2; 4] in\n  List.iter (fun x -> Printf.printf \"%d \" x) sorted  (* 1 2 3 4 5 *)"
+    },
+    {
+      "id": "focs-06-tree",
+      "topic": "Datatypes and Trees",
+      "title": "Binary search tree with variant types",
+      "kind": "code",
+      "prompt": "Define a polymorphic binary tree type and implement insert and member for a binary search tree (BST). This covers the key pattern of algebraic data types (variants) in OCaml, which are central to the FoCS course.",
+      "codeSnippet": "(* Define the tree type: either a Leaf or a Node holding a value and two subtrees *)\ntype 'a tree = ???\n\n(* insert x t: insert x into BST t (no duplicates) *)\nlet rec insert x t = ???\n\n(* member x t: is x in BST t? *)\nlet rec member x t = ???\n\nlet () =\n  let t = List.fold_right insert [5; 3; 7; 1; 4; 6; 8] Leaf in\n  Printf.printf \"member 4: %b\\n\" (member 4 t);\n  Printf.printf \"member 9: %b\\n\" (member 9 t)",
+      "hints": [
+        "type 'a tree = Leaf | Node of 'a tree * 'a * 'a tree",
+        "insert: if x < v go left (insert into left subtree), if x > v go right, if x = v return unchanged.",
+        "member: if x = v return true, if x < v search left, if x > v search right, Leaf means false."
+      ],
+      "explanation": "Variant types (also called sum types or algebraic data types) are one of OCaml's most powerful features. A tree is either empty (Leaf) or a node with a value and two children — this recursive definition maps perfectly to recursive functions. BST invariant: all values in left subtree < root < all values in right subtree.",
+      "solutionCode": "type 'a tree =\n  | Leaf\n  | Node of 'a tree * 'a * 'a tree\n\nlet rec insert x = function\n  | Leaf -> Node (Leaf, x, Leaf)\n  | Node (l, v, r) ->\n    if x < v then Node (insert x l, v, r)\n    else if x > v then Node (l, v, insert x r)\n    else Node (l, v, r)  (* duplicate: no change *)\n\nlet rec member x = function\n  | Leaf -> false\n  | Node (l, v, r) ->\n    if x = v then true\n    else if x < v then member x l\n    else member x r\n\nlet () =\n  let t = List.fold_right insert [5; 3; 7; 1; 4; 6; 8] Leaf in\n  Printf.printf \"member 4: %b\\n\" (member 4 t);  (* true *)\n  Printf.printf \"member 9: %b\\n\" (member 9 t)   (* false *)"
+    },
+    {
+      "id": "focs-07-assoc",
+      "topic": "Dictionaries and Functional Arrays",
+      "title": "Association list lookup",
+      "kind": "trace",
+      "prompt": "An association list (a-list) is a list of (key, value) pairs — the simplest dictionary structure in OCaml. What does this code print?",
+      "codeSnippet": "let dict = [(\"alice\", 90); (\"bob\", 75); (\"charlie\", 85); (\"bob\", 60)]\n\nlet result1 = List.assoc \"bob\" dict\nlet result2 = List.assoc_opt \"dave\" dict\n\nlet () =\n  Printf.printf \"%d\\n\" result1;\n  match result2 with\n  | Some v -> Printf.printf \"found: %d\\n\" v\n  | None   -> print_endline \"not found\"",
+      "answer": "75\nnot found",
+      "hints": [
+        "List.assoc key lst returns the value for the first matching key. Note 'bob' appears twice — which is found?",
+        "List.assoc_opt returns Some v or None (never raises Not_found).",
+        "Dave is not in the list, so assoc_opt returns None."
+      ],
+      "explanation": "List.assoc finds the first matching key — so \"bob\" maps to 75 (not 60, even though 60 appears later). List.assoc_opt is the safe version returning an option type, which is idiomatic OCaml for operations that may fail. Association lists are O(n) but simple; for O(log n) use the built-in Map functor."
+    },
+    {
+      "id": "focs-08-curry",
+      "topic": "Currying",
+      "title": "Currying, partial application, and function composition",
+      "kind": "code",
+      "prompt": "In OCaml every function takes exactly one argument — multi-argument functions are curried by default. Write: (1) add : int -> int -> int, show partial application, (2) compose : ('b -> 'c) -> ('a -> 'b) -> 'a -> 'c. These are core FoCS concepts.",
+      "codeSnippet": "(* add is automatically curried: add : int -> int -> int *)\nlet add x y = ???\n\n(* Partial application: add5 takes one int and adds 5 *)\nlet add5 = ???\n\n(* compose f g x = f (g x) *)\nlet compose f g x = ???\n\nlet () =\n  Printf.printf \"add5 10 = %d\\n\" (add5 10);\n  let double = fun x -> x * 2 in\n  let inc = fun x -> x + 1 in\n  let double_then_inc = compose inc double in\n  Printf.printf \"double_then_inc 7 = %d\\n\" (double_then_inc 7);\n  (* Use List.map with partial application *)\n  List.iter (fun x -> Printf.printf \"%d \" x) (List.map (add 10) [1;2;3])",
+      "hints": [
+        "let add x y = x + y — this is automatically curried because OCaml functions take one arg at a time.",
+        "let add5 = add 5 — partial application: supply the first argument, get back a function waiting for the second.",
+        "compose f g x = f (g x) — apply g first, then f to the result."
+      ],
+      "explanation": "Currying means every function f : A -> B -> C is really a function that takes A and returns a function B -> C. This enables partial application: add 5 specialises add to a function that adds 5 to whatever it receives. The type of compose is ('b -> 'c) -> ('a -> 'b) -> 'a -> 'c — it is itself a higher-order curried function.",
+      "solutionCode": "let add x y = x + y\n\nlet add5 = add 5\n\nlet compose f g x = f (g x)\n\nlet () =\n  Printf.printf \"add5 10 = %d\\n\" (add5 10);           (* 15 *)\n  let double = fun x -> x * 2 in\n  let inc = fun x -> x + 1 in\n  let double_then_inc = compose inc double in\n  Printf.printf \"double_then_inc 7 = %d\\n\" (double_then_inc 7);  (* 15 *)\n  List.iter (fun x -> Printf.printf \"%d \" x) (List.map (add 10) [1;2;3])  (* 11 12 13 *)"
+    },
+    {
+      "id": "focs-09-seq",
+      "topic": "Sequences and Lazy Lists",
+      "title": "Lazy sequences: head extraction",
+      "kind": "trace",
+      "prompt": "A lazy sequence (or stream) defers evaluation using a closure. The type below represents an infinite sequence. What does this program print?",
+      "codeSnippet": "type 'a seq = Cons of 'a * (unit -> 'a seq)\n\n(* Generate the infinite sequence n, n+1, n+2, ... *)\nlet rec from n = Cons (n, fun () -> from (n + 1))\n\nlet head (Cons (h, _)) = h\nlet tail (Cons (_, tf)) = tf ()\n\nlet () =\n  let s = from 3 in\n  let s2 = tail s in\n  let s3 = tail s2 in\n  Printf.printf \"%d %d %d\\n\" (head s) (head s2) (head s3)",
+      "answer": "3 4 5",
+      "hints": [
+        "from 3 creates Cons(3, fun () -> from 4). head extracts 3.",
+        "tail s calls the thunk: tf () = from 4 = Cons(4, fun () -> from 5). head extracts 4.",
+        "tail s2 calls from 5, head extracts 5."
+      ],
+      "explanation": "The key idea: the tail of a sequence is wrapped in fun () -> ... (a thunk). Calling tf () forces evaluation of the next element on demand. This allows infinite structures — the sequence from 3 never terminates, but we only ever evaluate as many elements as we ask for."
+    },
+    {
+      "id": "focs-10-refs",
+      "topic": "Procedural Programming",
+      "title": "Mutable state with refs and while loops",
+      "kind": "code",
+      "prompt": "OCaml supports imperative programming via ref cells. A ref r holds a mutable value; !r dereferences it; r := v updates it. Write an imperative (loop-based) factorial using ref, then compare it with the recursive version. This illustrates why functional style is often cleaner.",
+      "codeSnippet": "(* Imperative factorial using a while loop *)\nlet fact_imp n =\n  let result = ref 1 in\n  let i = ref 1 in\n  (* fill in the loop *)\n  ???;\n  !result\n\n(* Also write an imperative list sum *)\nlet sum_imp lst =\n  let total = ref 0 in\n  List.iter (fun x -> total := !total + x) lst;\n  !total\n\nlet () =\n  Printf.printf \"5! = %d\\n\" (fact_imp 5);\n  Printf.printf \"sum = %d\\n\" (sum_imp [1;2;3;4;5])",
+      "hints": [
+        "while !i <= n do ... done is the OCaml while loop syntax.",
+        "Inside the loop: result := !result * !i; i := !i + 1",
+        "!r reads the value of ref r. r := v sets it."
+      ],
+      "explanation": "Refs introduce mutable state. !r is read access; r := v is write access. The while loop body uses := to update both the accumulator and counter. Compare this to fact_tr — both avoid stack overflow, but the imperative style requires careful management of mutable state, while the tail-recursive style is pure and easier to reason about.",
+      "solutionCode": "let fact_imp n =\n  let result = ref 1 in\n  let i = ref 1 in\n  while !i <= n do\n    result := !result * !i;\n    i := !i + 1\n  done;\n  !result\n\nlet sum_imp lst =\n  let total = ref 0 in\n  List.iter (fun x -> total := !total + x) lst;\n  !total\n\nlet () =\n  Printf.printf \"5! = %d\\n\" (fact_imp 5);         (* 120 *)\n  Printf.printf \"sum = %d\\n\" (sum_imp [1;2;3;4;5]) (* 15 *)"
+    }
+  ]
+}

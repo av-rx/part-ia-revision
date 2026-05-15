@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { MODULES, MODULE_ORDER, type ModuleSlug } from '../../lib/syllabus';
+
+const exercises = await getCollection('code-exercises');
+const present = new Map(exercises.map((e) => [e.data.module, e.data]));
+---
+<BaseLayout title="Coding Exercises">
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold tracking-tight">Coding Exercises</h1>
+    <p class="text-ink-500 dark:text-ink-400 mt-2 max-w-2xl">
+      Practice OCaml (FoCS) and Java (OOP) with exercises matched to the Cambridge Part IA curriculum.
+      Trace code, predict output, and write solutions — all targeted at the exam.
+    </p>
+  </header>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+    {MODULE_ORDER.map((slug) => {
+      const m = MODULES[slug];
+      const data = present.get(slug);
+      if (!data) return null;
+      return (
+        <a href={`/coding/${slug}`} class="rounded-lg border border-ink-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-4 hover:border-accent-500 transition group">
+          <div class="flex items-start justify-between gap-2">
+            <h3 class="font-semibold text-ink-900 dark:text-white group-hover:text-accent-600 dark:group-hover:text-accent-400">{m.title}</h3>
+            <span class={`shrink-0 text-xs font-mono px-1.5 py-0.5 rounded ${data.language === 'ocaml' ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300' : 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300'}`}>
+              {data.language.toUpperCase()}
+            </span>
+          </div>
+          <p class="text-sm text-ink-500 dark:text-ink-400 mt-1">{data.exercises.length} exercises</p>
+        </a>
+      );
+    }).filter(Boolean)}
+  </div>
+</BaseLayout>

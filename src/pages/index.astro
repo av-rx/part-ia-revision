@@ -1,0 +1,74 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { PAPERS, PAPER_ORDER, MODULES, MODULE_ORDER, modulesForPaper } from '../lib/syllabus';
+import ExamCountdown from '../components/ExamCountdown.tsx';
+import RecentTopics from '../components/RecentTopics.tsx';
+import HeatmapMini from '../components/HeatmapMini.tsx';
+---
+<BaseLayout title="Part IA Revision" description="Cambridge Computer Science Part IA revision dashboard">
+
+  <section class="rounded-2xl bg-gradient-to-br from-accent-700 to-accent-500 text-white p-8 mb-10">
+    <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">Part IA, June 2026</h1>
+    <p class="mt-2 max-w-2xl text-accent-50">
+      Your full revision tool — all 14 modules, every topic, flashcards, quizzes, cheat sheets, past papers, and a progress tracker. Sourced from your Obsidian vault and supplemented where the syllabus needs it.
+    </p>
+  </section>
+
+  <ExamCountdown client:load />
+
+  <section class="mt-12">
+    <h2 class="text-2xl font-bold tracking-tight mb-4">Papers</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      {PAPER_ORDER.map((p) => {
+        const pm = PAPERS[p];
+        const mods = modulesForPaper(p);
+        return (
+          <a href={`/papers/${p}`} class="rounded-xl border border-ink-200 dark:border-ink-800 p-5 hover:border-accent-500 transition bg-white dark:bg-ink-900">
+            <div class="flex items-baseline justify-between">
+              <h3 class="font-bold text-lg text-ink-900 dark:text-white">{pm.number}</h3>
+              <span class="text-xs text-ink-500 dark:text-ink-400">{pm.date}</span>
+            </div>
+            <p class="text-sm text-ink-500 dark:text-ink-400 mt-1">{pm.startTime} · {pm.durationHours}h · {pm.venue}</p>
+            <div class="mt-3 flex flex-wrap gap-1.5">
+              {mods.map((m) => (
+                <span class="text-xs px-2 py-0.5 rounded-full bg-ink-100 dark:bg-ink-800 text-ink-700 dark:text-ink-200">{m.short}</span>
+              ))}
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+
+  <section class="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div>
+      <h2 class="text-2xl font-bold tracking-tight mb-4">Confidence at a glance</h2>
+      <HeatmapMini client:load />
+      <a href="/progress" class="text-sm text-accent-700 dark:text-accent-400 hover:underline mt-3 inline-block">Open full progress map →</a>
+    </div>
+    <div>
+      <h2 class="text-2xl font-bold tracking-tight mb-4">Recent topics</h2>
+      <RecentTopics client:load />
+    </div>
+  </section>
+
+  <section class="mt-12">
+    <h2 class="text-2xl font-bold tracking-tight mb-4">All modules</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      {MODULE_ORDER.map((slug) => {
+        const m = MODULES[slug];
+        return (
+          <a href={`/modules/${slug}`} class="rounded-lg border border-ink-200 dark:border-ink-800 p-4 hover:border-accent-500 transition bg-white dark:bg-ink-900">
+            <div class="flex items-center justify-between">
+              <h3 class="font-semibold text-ink-900 dark:text-white">{m.title}</h3>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-accent-50 dark:bg-accent-900/40 text-accent-800 dark:text-accent-200">{PAPERS[m.paper].number}</span>
+            </div>
+            <p class="text-sm text-ink-500 dark:text-ink-400 mt-1 leading-snug">{m.blurb}</p>
+            <p class="text-xs text-ink-400 dark:text-ink-500 mt-2">{m.topics.length} topics · {m.lecturer}</p>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+
+</BaseLayout>

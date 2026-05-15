@@ -1,0 +1,158 @@
+{
+  "module": "object-oriented-programming",
+  "title": "Java Coding Exercises",
+  "language": "java",
+  "exercises": [
+    {
+      "id": "oop-01-div",
+      "topic": "Introduction to Java",
+      "title": "Integer division and type casting",
+      "kind": "trace",
+      "prompt": "Java integer division truncates towards zero — there is no automatic promotion to double. Casting with (double) changes the type before division. What does this print (give all three lines)?",
+      "codeSnippet": "public class Main {\n    public static void main(String[] args) {\n        int a = 17;\n        int b = 5;\n        System.out.println(a / b);\n        System.out.println(a % b);\n        System.out.println((double) a / b);\n    }\n}",
+      "answer": "3\n2\n3.4",
+      "hints": [
+        "17 / 5 in Java truncates: 17 = 5*3 + 2, so the quotient is 3.",
+        "17 % 5 is the remainder: 2.",
+        "(double) a casts a to 3.4 before dividing, giving 3.4."
+      ],
+      "explanation": "Key Java gotcha: int / int discards the fractional part silently. 17 / 5 = 3 (not 3.4). The % operator gives the remainder. Casting one operand to double forces floating-point division: (double) 17 / 5 = 3.4. Remember this for any Cambridge question involving division."
+    },
+    {
+      "id": "oop-02-class",
+      "topic": "Class Design and Encapsulation",
+      "title": "Write a Counter class with encapsulation",
+      "kind": "code",
+      "prompt": "Write a Counter class demonstrating the three pillars of encapsulation: private fields (data hiding), public methods (interface), and a toString override. The field count should never be directly accessible from outside the class.",
+      "codeSnippet": "public class Counter {\n    // private field — not accessible outside this class\n    private int count;\n\n    public Counter() {\n        // initialise count to 0\n        ???\n    }\n\n    public void increment() { ??? }\n    public void decrement() { if (count > 0) ???; }  // don't go below 0\n    public int get() { ??? }\n\n    @Override\n    public String toString() { ??? }  // e.g. \"Counter(3)\"\n\n    public static void main(String[] args) {\n        Counter c = new Counter();\n        c.increment();\n        c.increment();\n        c.increment();\n        c.decrement();\n        System.out.println(c);       // Counter(2)\n        System.out.println(c.get()); // 2\n    }\n}",
+      "hints": [
+        "this.count = 0 in the constructor (or just count = 0 since there's no shadowing).",
+        "increment: count++; or count += 1;",
+        "toString: return \"Counter(\" + count + \")\";"
+      ],
+      "explanation": "Encapsulation: the private keyword hides count from external code — it can only be read via get() and modified via increment()/decrement(). This lets you enforce invariants (e.g. count >= 0). @Override tells the compiler you are intentionally overriding Object.toString() — the compiler will error if you misspell it.",
+      "solutionCode": "public class Counter {\n    private int count;\n\n    public Counter() {\n        this.count = 0;\n    }\n\n    public void increment() { count++; }\n    public void decrement() { if (count > 0) count--; }\n    public int get() { return count; }\n\n    @Override\n    public String toString() {\n        return \"Counter(\" + count + \")\";\n    }\n\n    public static void main(String[] args) {\n        Counter c = new Counter();\n        c.increment();\n        c.increment();\n        c.increment();\n        c.decrement();\n        System.out.println(c);        // Counter(2)\n        System.out.println(c.get());  // 2\n    }\n}"
+    },
+    {
+      "id": "oop-03-refs",
+      "topic": "Memory, Pointers, References",
+      "title": "Reference semantics and aliasing",
+      "kind": "trace",
+      "prompt": "In Java, variables of object/array types hold references (addresses), not copies. Assigning one reference to another makes both point to the same object. What does this print?",
+      "codeSnippet": "public class Main {\n    public static void main(String[] args) {\n        int[] a = {10, 20, 30};\n        int[] b = a;          // b is an alias — same array\n        b[1] = 99;\n        System.out.println(a[1]);  // line A\n\n        // Compare with primitive int:\n        int x = 5;\n        int y = x;  // y is a copy of the value\n        y = 100;\n        System.out.println(x);     // line B\n    }\n}",
+      "answer": "99\n5",
+      "hints": [
+        "b = a copies the reference, not the array. Both b and a point to the same memory.",
+        "Modifying b[1] changes the array that a also points to.",
+        "int y = x copies the primitive value 5 — changing y does not affect x."
+      ],
+      "explanation": "Reference semantics is one of the most important Java concepts. Object variables store memory addresses. int[] b = a makes b point to the same array as a — so b[1] = 99 is visible through a[1] as well. Primitive types (int, double, boolean) are value types: int y = x copies the value, so subsequent changes to y do not affect x."
+    },
+    {
+      "id": "oop-04-inherit",
+      "topic": "Inheritance",
+      "title": "Method overriding and dynamic dispatch",
+      "kind": "trace",
+      "prompt": "When a subclass overrides a method, Java always calls the actual runtime type's version (dynamic dispatch). The declared type of the variable does not matter — the object's real class does. What does this print?",
+      "codeSnippet": "class Shape {\n    public String describe() { return \"Shape\"; }\n}\n\nclass Circle extends Shape {\n    @Override\n    public String describe() { return \"Circle\"; }\n}\n\nclass Square extends Shape {\n    @Override\n    public String describe() { return \"Square\"; }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Shape s1 = new Circle();  // declared as Shape, runtime type Circle\n        Shape s2 = new Square();\n        Shape s3 = new Shape();\n\n        System.out.println(s1.describe());\n        System.out.println(s2.describe());\n        System.out.println(s3.describe());\n    }\n}",
+      "answer": "Circle\nSquare\nShape",
+      "hints": [
+        "s1 is declared as Shape but created as new Circle(). Which describe() is called?",
+        "Java looks at the runtime type (the actual object) when resolving method calls, not the declared type.",
+        "Dynamic dispatch: s1.describe() calls Circle.describe() because s1 IS a Circle at runtime."
+      ],
+      "explanation": "Dynamic dispatch (runtime polymorphism) is the core mechanism of OOP. Even though s1 is declared as Shape, new Circle() creates a Circle object. Java looks up the method at runtime based on the actual object type — so Circle.describe() is called. This is why you can write methods that accept Shape and work correctly with any subclass."
+    },
+    {
+      "id": "oop-05-interface",
+      "topic": "Polymorphism, Multiple Inheritance, Coupling",
+      "title": "Interfaces and polymorphic dispatch",
+      "kind": "code",
+      "prompt": "Define a Drawable interface and implement it in two classes. Then write a method that draws any collection of Drawables — this is the key use of interfaces: define a contract that any class can implement, enabling polymorphism without inheritance.",
+      "codeSnippet": "import java.util.List;\n\ninterface Drawable {\n    void draw();  // any Drawable must implement this\n}\n\nclass Circle implements Drawable {\n    private double radius;\n    Circle(double r) { this.radius = r; }\n\n    @Override\n    public void draw() {\n        // print e.g. \"Circle r=5.0\"\n        ???\n    }\n}\n\nclass Rectangle implements Drawable {\n    private double w, h;\n    Rectangle(double w, double h) { this.w = w; this.h = h; }\n\n    @Override\n    public void draw() {\n        // print e.g. \"Rectangle 3.0x4.0\"\n        ???\n    }\n}\n\npublic class Main {\n    // This method works for ANY Drawable — it doesn't know about Circle or Rectangle\n    static void drawAll(List<Drawable> shapes) {\n        for (Drawable d : shapes) d.draw();\n    }\n\n    public static void main(String[] args) {\n        List<Drawable> shapes = List.of(new Circle(5.0), new Rectangle(3.0, 4.0));\n        drawAll(shapes);\n    }\n}",
+      "hints": [
+        "System.out.println(\"Circle r=\" + radius); in Circle.draw()",
+        "System.out.println(\"Rectangle \" + w + \"x\" + h); in Rectangle.draw()",
+        "drawAll uses the Drawable interface — it calls d.draw() without knowing which class d is."
+      ],
+      "explanation": "Interfaces define a contract. Any class implementing Drawable must provide draw(). The drawAll method only knows about Drawable — it's decoupled from Circle and Rectangle. This is the open/closed principle: add new shapes without modifying drawAll. Contrast with inheritance: a class can implement multiple interfaces but only extend one class.",
+      "solutionCode": "import java.util.List;\n\ninterface Drawable {\n    void draw();\n}\n\nclass Circle implements Drawable {\n    private double radius;\n    Circle(double r) { this.radius = r; }\n\n    @Override\n    public void draw() {\n        System.out.println(\"Circle r=\" + radius);\n    }\n}\n\nclass Rectangle implements Drawable {\n    private double w, h;\n    Rectangle(double w, double h) { this.w = w; this.h = h; }\n\n    @Override\n    public void draw() {\n        System.out.println(\"Rectangle \" + w + \"x\" + h);\n    }\n}\n\npublic class Main {\n    static void drawAll(List<Drawable> shapes) {\n        for (Drawable d : shapes) d.draw();\n    }\n\n    public static void main(String[] args) {\n        List<Drawable> shapes = List.of(new Circle(5.0), new Rectangle(3.0, 4.0));\n        drawAll(shapes);  // Circle r=5.0 then Rectangle 3.0x4.0\n    }\n}"
+    },
+    {
+      "id": "oop-06-collections",
+      "topic": "Collections and Comparisons",
+      "title": "ArrayList sorting and Comparator",
+      "kind": "trace",
+      "prompt": "Collections.sort() sorts in natural order (lexicographic for strings). Comparator.reverseOrder() reverses it. ArrayList.get(i) is zero-indexed. What does this print?",
+      "codeSnippet": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<String> words = new ArrayList<>(Arrays.asList(\n            \"banana\", \"apple\", \"cherry\", \"date\"\n        ));\n\n        Collections.sort(words);\n        System.out.println(words.get(0) + \" \" + words.get(2));\n\n        words.sort(Comparator.reverseOrder());\n        System.out.println(words.get(0));\n\n        words.sort(Comparator.comparingInt(String::length));\n        System.out.println(words.get(0));\n    }\n}",
+      "answer": "apple cherry\ndate\ndate",
+      "hints": [
+        "Natural alphabetical order: apple < banana < cherry < date. get(0) = apple, get(2) = cherry.",
+        "Reverse order: date > cherry > banana > apple. get(0) = date.",
+        "Sorted by length: date(4), apple(5), banana(6), cherry(6). get(0) = date."
+      ],
+      "explanation": "Java's sort is stable and uses TimSort. Collections.sort(list) sorts ascending by natural order. list.sort(Comparator) sorts by a custom comparator. Comparator.comparingInt(f) creates a comparator based on an int-valued function. String::length is a method reference — equivalent to s -> s.length(). get(0) is the first (smallest after sort) element."
+    },
+    {
+      "id": "oop-07-generics",
+      "topic": "Generics",
+      "title": "Write a generic Pair<A, B> class",
+      "kind": "code",
+      "prompt": "Generics allow you to write type-safe containers and algorithms. Write a Pair<A, B> class that holds two values of potentially different types. This is a standard exam exercise for the Generics topic.",
+      "codeSnippet": "public class Pair<A, B> {\n    private final A first;\n    private final B second;\n\n    public Pair(A first, B second) {\n        ???\n    }\n\n    public A getFirst() { ??? }\n    public B getSecond() { ??? }\n\n    // Return a new Pair with the elements swapped\n    public Pair<B, A> swap() { ??? }\n\n    @Override\n    public String toString() {\n        return \"(\" + first + \", \" + second + \")\";\n    }\n\n    public static void main(String[] args) {\n        Pair<String, Integer> p = new Pair<>(\"hello\", 42);\n        System.out.println(p);              // (hello, 42)\n        System.out.println(p.swap());       // (42, hello)\n        System.out.println(p.getFirst());   // hello\n    }\n}",
+      "hints": [
+        "In the constructor: this.first = first; this.second = second;",
+        "getFirst() returns first; getSecond() returns second.",
+        "swap() returns new Pair<>(second, first) — note the type parameters flip: Pair<B, A>."
+      ],
+      "explanation": "Type parameters A and B are placeholders filled in at the call site: Pair<String, Integer> substitutes A=String, B=Integer. The compiler enforces this: p.getFirst() is known to return String without a cast. Generic classes avoid ClassCastException at runtime by catching type errors at compile time. final fields make Pair immutable — good practice for value objects.",
+      "solutionCode": "public class Pair<A, B> {\n    private final A first;\n    private final B second;\n\n    public Pair(A first, B second) {\n        this.first = first;\n        this.second = second;\n    }\n\n    public A getFirst() { return first; }\n    public B getSecond() { return second; }\n\n    public Pair<B, A> swap() {\n        return new Pair<>(second, first);\n    }\n\n    @Override\n    public String toString() {\n        return \"(\" + first + \", \" + second + \")\";\n    }\n\n    public static void main(String[] args) {\n        Pair<String, Integer> p = new Pair<>(\"hello\", 42);\n        System.out.println(p);             // (hello, 42)\n        System.out.println(p.swap());      // (42, hello)\n        System.out.println(p.getFirst());  // hello\n    }\n}"
+    },
+    {
+      "id": "oop-08-exceptions",
+      "topic": "Coupling, Errors and Exceptions",
+      "title": "Exception flow: try/catch/finally",
+      "kind": "trace",
+      "prompt": "Java exceptions propagate up the call stack until caught. The finally block always runs, even when an exception is thrown. What does this print, line by line?",
+      "codeSnippet": "public class Main {\n    public static void main(String[] args) {\n        try {\n            System.out.println(\"A\");\n            if (true) throw new RuntimeException(\"oops\");\n            System.out.println(\"B\");  // unreachable\n        } catch (IllegalArgumentException e) {\n            System.out.println(\"C\");  // wrong exception type\n        } catch (RuntimeException e) {\n            System.out.println(\"D: \" + e.getMessage());\n        } finally {\n            System.out.println(\"E\");\n        }\n        System.out.println(\"F\");\n    }\n}",
+      "answer": "A\nD: oops\nE\nF",
+      "hints": [
+        "\"A\" prints, then the exception is thrown. \"B\" is never reached.",
+        "The first catch block catches IllegalArgumentException. Is RuntimeException a subtype? It's the other way round — check the hierarchy.",
+        "The second catch matches RuntimeException exactly. \"D: oops\" prints.",
+        "finally always runs. Then execution continues normally — \"F\" prints."
+      ],
+      "explanation": "Exception hierarchy: RuntimeException extends Exception. IllegalArgumentException extends RuntimeException. The thrown exception IS a RuntimeException but IS NOT an IllegalArgumentException — so the first catch is skipped. Java checks catch blocks in order, matching the first compatible type. finally runs no matter what — even if an exception propagated out uncaught, finally would execute before propagation continued."
+    },
+    {
+      "id": "oop-09-factory",
+      "topic": "Design Patterns",
+      "title": "Factory Method pattern",
+      "kind": "code",
+      "prompt": "The Factory Method pattern delegates object creation to a factory — the client doesn't use new directly. This decouples the client from concrete classes. Implement a simple AnimalFactory that creates Dogs or Cats by name, using an Animal interface.",
+      "codeSnippet": "interface Animal {\n    String getName();\n    String speak();\n}\n\nclass Dog implements Animal {\n    public String getName() { return \"Dog\"; }\n    public String speak() { return \"Woof!\"; }\n}\n\nclass Cat implements Animal {\n    public String getName() { return \"Cat\"; }\n    public String speak() { return \"Meow!\"; }\n}\n\nclass AnimalFactory {\n    // Return a Dog for \"dog\", a Cat for \"cat\", throw IllegalArgumentException otherwise\n    public static Animal create(String type) {\n        ???\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        for (String type : new String[]{\"dog\", \"cat\", \"dog\"}) {\n            Animal a = AnimalFactory.create(type);\n            System.out.println(a.getName() + \": \" + a.speak());\n        }\n    }\n}",
+      "hints": [
+        "Use switch or if-else on type.toLowerCase().",
+        "Return new Dog() for \"dog\", new Cat() for \"cat\".",
+        "throw new IllegalArgumentException(\"Unknown: \" + type); for unrecognised types."
+      ],
+      "explanation": "The Factory Method pattern is on the OOP syllabus. Key benefit: the client code (main) asks for \"dog\" without knowing the Dog class exists — it only knows the Animal interface. To add Parrot, you extend AnimalFactory without touching Main. In Java 14+, switch expressions with -> make this cleaner, but if-else works fine too.",
+      "solutionCode": "interface Animal {\n    String getName();\n    String speak();\n}\n\nclass Dog implements Animal {\n    public String getName() { return \"Dog\"; }\n    public String speak() { return \"Woof!\"; }\n}\n\nclass Cat implements Animal {\n    public String getName() { return \"Cat\"; }\n    public String speak() { return \"Meow!\"; }\n}\n\nclass AnimalFactory {\n    public static Animal create(String type) {\n        switch (type.toLowerCase()) {\n            case \"dog\": return new Dog();\n            case \"cat\": return new Cat();\n            default: throw new IllegalArgumentException(\"Unknown: \" + type);\n        }\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        for (String type : new String[]{\"dog\", \"cat\", \"dog\"}) {\n            Animal a = AnimalFactory.create(type);\n            System.out.println(a.getName() + \": \" + a.speak());\n            // Dog: Woof!  /  Cat: Meow!  /  Dog: Woof!\n        }\n    }\n}"
+    },
+    {
+      "id": "oop-10-streams",
+      "topic": "Lambdas, Method References, Streams",
+      "title": "Stream pipelines with lambdas and method references",
+      "kind": "code",
+      "prompt": "Java 8+ streams allow functional-style data processing: filter selects elements, map transforms them, collect gathers them, forEach consumes them. Lambdas (n -> n.startsWith(\"A\")) and method references (String::toUpperCase) replace anonymous classes. Complete the pipeline.",
+      "codeSnippet": "import java.util.*;\nimport java.util.stream.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<String> names = Arrays.asList(\n            \"Alice\", \"Bob\", \"Andrew\", \"Charlie\", \"Anna\", \"Dave\"\n        );\n\n        // 1. Filter names starting with 'A', convert to uppercase, sort, print each\n        names.stream()\n            .filter(???)\n            .map(???)\n            .sorted()\n            .forEach(System.out::println);\n\n        // 2. Count names longer than 4 characters\n        long count = names.stream()\n            .filter(???)\n            .count();\n        System.out.println(\"Long names: \" + count);\n    }\n}",
+      "hints": [
+        "filter takes a Predicate: n -> n.startsWith(\"A\")",
+        "map takes a Function: String::toUpperCase (method reference) or n -> n.toUpperCase()",
+        "Second filter: n -> n.length() > 4. Names with >4 chars: Alice(5), Andrew(6), Charlie(7), Anna(4 — NO)."
+      ],
+      "explanation": "Streams are lazy: nothing happens until a terminal operation (forEach, count, collect). The pipeline reads left to right: get stream → filter → map → sort → consume. Method references (String::toUpperCase) are shorthand for lambdas (s -> s.toUpperCase()). Streams don't modify the original list — they produce new values. The sorted names starting with A are: ALICE, ANDREW, ANNA. Names longer than 4: Alice(5), Andrew(6), Charlie(7) = 3.",
+      "solutionCode": "import java.util.*;\nimport java.util.stream.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<String> names = Arrays.asList(\n            \"Alice\", \"Bob\", \"Andrew\", \"Charlie\", \"Anna\", \"Dave\"\n        );\n\n        // Filter, uppercase, sort, print\n        names.stream()\n            .filter(n -> n.startsWith(\"A\"))\n            .map(String::toUpperCase)\n            .sorted()\n            .forEach(System.out::println);\n        // prints: ALICE, ANDREW, ANNA\n\n        long count = names.stream()\n            .filter(n -> n.length() > 4)\n            .count();\n        System.out.println(\"Long names: \" + count);  // 3\n    }\n}"
+    }
+  ]
+}

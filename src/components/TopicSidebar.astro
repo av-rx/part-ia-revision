@@ -1,0 +1,46 @@
+---
+import { MODULES, type ModuleSlug } from '../lib/syllabus';
+
+interface Props {
+  module: ModuleSlug;
+  activeTopicSlug?: string;
+}
+
+const { module, activeTopicSlug } = Astro.props;
+const meta = MODULES[module];
+---
+<aside class="lg:sticky lg:top-20 lg:self-start no-print">
+  <div class="rounded-lg border border-ink-200 dark:border-ink-800 bg-white/60 dark:bg-ink-900/60 p-4">
+    <a href={`/modules/${module}`} class="block font-bold text-ink-900 dark:text-white hover:text-accent-600">{meta.title}</a>
+    <p class="text-xs text-ink-500 dark:text-ink-400 mt-0.5">{meta.lecturer} · {meta.hours}h · {meta.term}</p>
+    <ol class="mt-3 space-y-0.5 text-sm">
+      {meta.topics.map((t) => (
+        <li>
+          <a
+            href={`/modules/${module}/${t.slug}`}
+            class={`block px-2 py-1 rounded transition ${activeTopicSlug === t.slug ? 'bg-accent-100 dark:bg-accent-900/40 text-accent-900 dark:text-accent-200 font-semibold' : 'text-ink-700 dark:text-ink-300 hover:bg-ink-100 dark:hover:bg-ink-800'}`}
+          >
+            <span class="text-ink-400 dark:text-ink-500 mr-1">{t.order}.</span>{t.title}
+          </a>
+        </li>
+      ))}
+    </ol>
+    {meta.supplements && meta.supplements.length > 0 && (
+      <>
+        <p class="mt-4 text-xs uppercase tracking-wider text-ink-400 font-semibold">Supplements</p>
+        <ol class="mt-2 space-y-0.5 text-sm">
+          {meta.supplements.map((slug) => (
+            <li>
+              <a
+                href={`/modules/${module}/${slug}`}
+                class={`block px-2 py-1 rounded transition ${activeTopicSlug === slug ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 font-semibold' : 'text-ink-700 dark:text-ink-300 hover:bg-ink-100 dark:hover:bg-ink-800'}`}
+              >
+                <span class="text-amber-500 mr-1">+</span>{slug.replace(/-/g, ' ')}
+              </a>
+            </li>
+          ))}
+        </ol>
+      </>
+    )}
+  </div>
+</aside>

@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { MODULES, type ModuleSlug } from '../../lib/syllabus';
+
+const decks = await getCollection('flashcards');
+const modules = decks
+  .map((d) => ({ slug: d.data.module as ModuleSlug, title: d.data.title, count: d.data.cards.length }))
+  .sort((a, b) => a.title.localeCompare(b.title));
+---
+<BaseLayout title="Flashcards">
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold tracking-tight">Flashcards</h1>
+    <p class="text-ink-500 dark:text-ink-400 mt-2 max-w-2xl">
+      Spaced-repetition decks. Daily-due cards by default; switch to <em>cram</em> to ignore the schedule.
+      Keyboard shortcuts: <kbd>Space</kbd> show answer; <kbd>1</kbd> again, <kbd>2</kbd> hard, <kbd>3</kbd> good, <kbd>4</kbd> easy.
+    </p>
+  </header>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+    {modules.map((m) => {
+      const meta = MODULES[m.slug];
+      return (
+        <a href={`/flashcards/${m.slug}`} class="rounded-lg border border-ink-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-4 hover:border-accent-500 transition">
+          <h3 class="font-semibold text-ink-900 dark:text-white">{meta?.title ?? m.title}</h3>
+          <p class="text-sm text-ink-500 dark:text-ink-400 mt-1">{m.count} cards</p>
+        </a>
+      );
+    })}
+  </div>
+
+  <p class="mt-8 text-sm text-ink-500 dark:text-ink-400">
+    Decks for modules without existing flashcards (Algorithms, FoCS, Probability, Digital Electronics, NST Maths, Software & Security, Interaction Design, ML & RWD) will be added as they are authored. Use the
+    <a href="/cheatsheets" class="text-accent-700 dark:text-accent-400 hover:underline">cheat sheets</a> and
+    <a href="/quiz" class="text-accent-700 dark:text-accent-400 hover:underline">quizzes</a> for those for now.
+  </p>
+</BaseLayout>

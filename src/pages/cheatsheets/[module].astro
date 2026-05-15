@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { MODULES, type ModuleSlug } from '../../lib/syllabus';
+
+export async function getStaticPaths() {
+  const cs = await getCollection('cheatsheets');
+  return cs.map((c) => ({
+    params: { module: c.data.module },
+    props: { entry: c },
+  }));
+}
+
+interface Props { entry: any; }
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+const module = entry.data.module as ModuleSlug;
+const meta = MODULES[module];
+---
+<BaseLayout title={`${meta?.title ?? entry.data.title} cheat sheet`} currentModule={module} currentPaper={meta?.paper}>
+  <nav class="text-sm text-ink-500 dark:text-ink-400 mb-2 no-print">
+    <a href="/cheatsheets" class="hover:underline">Cheat sheets</a>
+    <span class="mx-2">/</span>
+    <a href={`/modules/${module}`} class="hover:underline">{meta?.title ?? entry.data.title}</a>
+  </nav>
+  <div class="flex items-baseline justify-between mb-2 no-print">
+    <h1 class="text-3xl font-bold tracking-tight">{entry.data.title}</h1>
+    <button onclick="window.print()" class="px-3 py-1.5 rounded-md text-sm border border-ink-200 dark:border-ink-700 hover:bg-ink-100 dark:hover:bg-ink-800">Print / save PDF</button>
+  </div>
+
+  <article class="cheatsheet prose dark:prose-invert max-w-none">
+    <Content />
+  </article>
+</BaseLayout>

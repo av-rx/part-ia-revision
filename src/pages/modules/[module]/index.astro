@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { MODULES, MODULE_ORDER, PAPERS, type ModuleSlug } from '../../../lib/syllabus';
+import PastQuestionsPanel from '../../../components/PastQuestionsPanel.astro';
+import { questionsForModule } from '../../../lib/past-papers';
+
+export function getStaticPaths() {
+  return MODULE_ORDER.map((slug) => ({ params: { module: slug } }));
+}
+
+const { module } = Astro.params;
+const meta = MODULES[module as ModuleSlug];
+const paper = PAPERS[meta.paper];
+const pastQuestions = questionsForModule(module as ModuleSlug);
+---
+<BaseLayout title={meta.title} currentModule={module} currentPaper={meta.paper}>
+  <header class="mb-8">
+    <a href={`/papers/${meta.paper}`} class="text-sm uppercase tracking-wider text-accent-700 dark:text-accent-400 hover:underline">{paper.number} · Section {paper.sections.find((s) => s.module === module)?.letter}</a>
+    <h1 class="text-3xl font-bold tracking-tight text-ink-900 dark:text-white mt-1">{meta.title}</h1>
+    <p class="text-ink-500 dark:text-ink-400 mt-1">{meta.lecturer} · {meta.hours} hours · {meta.term}</p>
+    <p class="text-ink-700 dark:text-ink-200 mt-3 max-w-3xl">{meta.blurb}</p>
+  </header>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8 no-print">
+    <a href={`/cheatsheets/${module}`} class="rounded-lg border border-ink-200 dark:border-ink-800 p-4 hover:border-accent-500 transition bg-white dark:bg-ink-900">
+      <div class="text-xs uppercase tracking-wider text-ink-500 dark:text-ink-400">Distilled</div>
+      <div class="font-bold mt-0.5">Cheat sheet</div>
+    </a>
+    <a href={`/flashcards/${module}`} class="rounded-lg border border-ink-200 dark:border-ink-800 p-4 hover:border-accent-500 transition bg-white dark:bg-ink-900">
+      <div class="text-xs uppercase tracking-wider text-ink-500 dark:text-ink-400">Drill</div>
+      <div class="font-bold mt-0.5">Flashcards</div>
+    </a>
+    <a href={`/quiz/${module}`} class="rounded-lg border border-ink-200 dark:border-ink-800 p-4 hover:border-accent-500 transition bg-white dark:bg-ink-900">
+      <div class="text-xs uppercase tracking-wider text-ink-500 dark:text-ink-400">Self-test</div>
+      <div class="font-bold mt-0.5">Quiz</div>
+    </a>
+  </div>
+
+  <h2 class="text-xl font-bold mb-3">Topics</h2>
+  <ol class="space-y-1">
+    {meta.topics.map((t) => (
+      <li>
+        <a href={`/modules/${module}/${t.slug}`} class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-ink-100 dark:hover:bg-ink-800 transition">
+          <span class="font-mono text-sm text-ink-400 w-6 text-right">{t.order}.</span>
+          <span class="font-medium text-ink-900 dark:text-white">{t.title}</span>
+        </a>
+      </li>
+    ))}
+  </ol>
+
+  {pastQuestions.length > 0 && (
+    <>
+      <h2 class="text-xl font-bold mt-10 mb-3 flex items-center gap-2">
+        <span>Past Tripos questions</span>
+        <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-accent-100 dark:bg-accent-900/40 text-accent-800 dark:text-accent-200">{pastQuestions.length}</span>
+      </h2>
+      <PastQuestionsPanel module={module as ModuleSlug} limit={10} />
+      {pastQuestions.length > 10 && (
+        <p class="mt-2 text-sm"><a href="/past-papers" class="text-accent-700 dark:text-accent-400 hover:underline">See all in archive →</a></p>
+      )}
+    </>
+  )}
+
+  {meta.supplements && meta.supplements.length > 0 && (
+    <>
+      <h2 class="text-xl font-bold mt-10 mb-3 flex items-center gap-2">
+        <span>Supplementary topics</span>
+        <span class="text-xs font-semibold uppercase tracking-wider bg-amber-200 text-amber-900 px-2 py-0.5 rounded">Not in your notes</span>
+      </h2>
+      <p class="text-sm text-ink-500 dark:text-ink-400 mb-3">Authored from the official syllabus and standard references to fill gaps.</p>
+      <ol class="space-y-1">
+        {meta.supplements.map((slug) => (
+          <li>
+            <a href={`/modules/${module}/${slug}`} class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-amber-50 dark:hover:bg-amber-950/30 transition">
+              <span class="text-amber-500">+</span>
+              <span class="font-medium text-ink-900 dark:text-white capitalize">{slug.replace(/-/g, ' ')}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </>
+  )}
+</BaseLayout>
