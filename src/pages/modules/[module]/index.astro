@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { MODULES, MODULE_ORDER, PAPERS, type ModuleSlug } from '../../../lib/syllabus';
-import PastQuestionsPanel from '../../../components/PastQuestionsPanel.astro';
+import PastQuestionsPanel from '../../../components/PastQuestionsPanel.tsx';
 import { questionsForModule } from '../../../lib/past-papers';
 
 export function getStaticPaths() {
@@ -54,7 +54,7 @@ const pastQuestions = questionsForModule(module as ModuleSlug);
         <span>Past Tripos questions</span>
         <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-accent-100 dark:bg-accent-900/40 text-accent-800 dark:text-accent-200">{pastQuestions.length}</span>
       </h2>
-      <PastQuestionsPanel module={module as ModuleSlug} limit={10} />
+      <PastQuestionsPanel client:load module={module as ModuleSlug} limit={10} />
       {pastQuestions.length > 10 && (
         <p class="mt-2 text-sm"><a href="/past-papers" class="text-accent-700 dark:text-accent-400 hover:underline">See all in archive →</a></p>
       )}

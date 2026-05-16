@@ -311,6 +311,10 @@ export function questionsForModule(module: ModuleSlug): PastQuestion[] {
   return byModuleTopic.get(`${module}/_module`) ?? [];
 }
 
+export function questionId(q: PastQuestion): string {
+  return `${q.year}-${q.paper}-${q.number}`;
+}
+
 export function allYears(): number[] {
   const s = new Set<number>();
   for (const q of PAST_QUESTIONS) s.add(q.year);

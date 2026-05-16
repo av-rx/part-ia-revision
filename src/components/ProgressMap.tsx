@@ -1,7 +1,8 @@
 /** @jsxImportSource preact */
 import { useEffect, useState } from 'preact/hooks';
 import { MODULE_ORDER, MODULES, PAPERS } from '../lib/syllabus';
-import { getAllConfidence, getQuizResults, type Confidence } from '../lib/progress-store';
+import { getAllConfidence, getQuizResults, getAllQuestionStatus, type Confidence, type QuestionStatus } from '../lib/progress-store';
+import { PAST_QUESTIONS, questionId } from '../lib/past-papers';
 
 const COLORS: Record<Confidence, string> = {
   unset: 'bg-ink-200 dark:bg-ink-800',
@@ -13,9 +14,11 @@ const COLORS: Record<Confidence, string> = {
 export default function ProgressMap() {
   const [conf, setConf] = useState<Record<string, Confidence>>({});
   const [results, setResults] = useState<ReturnType<typeof getQuizResults>>([]);
+  const [qStatuses, setQStatuses] = useState<Record<string, QuestionStatus>>({});
   useEffect(() => {
     setConf(getAllConfidence());
     setResults(getQuizResults());
+    setQStatuses(getAllQuestionStatus());
   }, []);
 
   const totals = MODULE_ORDER.map((slug) => {
@@ -107,6 +110,76 @@ export default function ProgressMap() {
           </ol>
         </div>
       )}
+
+      <PastPapersSection qStatuses={qStatuses} />
+    </div>
+  );
+}
+
+function PastPapersSection({ qStatuses }: { qStatuses: Record<string, QuestionStatus> }) {
+  const byModule = new Map<string, { tried: number; nailed: number; total: number }>();
+  let grandTried = 0, grandNailed = 0, grandTotal = 0;
+
+  for (const q of PAST_QUESTIONS) {
+    const s = qStatuses[questionId(q)] ?? null;
+    const entry = byModule.get(q.module) ?? { tried: 0, nailed: 0, total: 0 };
+    entry.total++;
+    if (s === 'tried') { entry.tried++; grandTried++; }
+    else if (s === 'nailed') { entry.nailed++; grandNailed++; }
+    byModule.set(q.module, entry);
+    grandTotal++;
+  }
+
+  const grandRemaining = grandTotal - grandTried - grandNailed;
+
+  return (
+    <div class="rounded-xl border border-ink-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-5">
+      <h2 class="font-bold text-lg mb-3">Past papers</h2>
+      <div class="flex h-3 overflow-hidden rounded-full bg-ink-200 dark:bg-ink-800 mb-3">
+        <div class="bg-emerald-500 transition-all" style={`width: ${(grandNailed / grandTotal) * 100}%`} />
+        <div class="bg-amber-400 transition-all" style={`width: ${(grandTried / grandTotal) * 100}%`} />
+      </div>
+      <div class="grid grid-cols-4 gap-2 text-sm mb-5">
+        <div><span class="font-bold text-emerald-600">{grandNailed}</span> nailed</div>
+        <div><span class="font-bold text-amber-500">{grandTried}</span> tried</div>
+        <div><span class="font-bold text-ink-500">{grandRemaining}</span> remaining</div>
+        <div><span class="font-bold text-ink-400">{grandTotal}</span> total</div>
+      </div>
+
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-ink-200 dark:border-ink-800">
+            <th class="text-left pb-2">Module</th>
+            <th class="text-right pb-2 w-16">Total</th>
+            <th class="text-right pb-2 w-16 text-amber-600">Tried</th>
+            <th class="text-right pb-2 w-16 text-emerald-600">Nailed</th>
+            <th class="pb-2 w-24"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {MODULE_ORDER.filter((slug) => byModule.has(slug)).map((slug) => {
+            const { tried, nailed, total } = byModule.get(slug)!;
+            return (
+              <tr class="border-b border-ink-100 dark:border-ink-800/50">
+                <td class="py-1.5">
+                  <a href={`/modules/${slug}`} class="font-medium text-ink-900 dark:text-white hover:text-accent-700">{MODULES[slug].short}</a>
+                </td>
+                <td class="text-right text-ink-500 dark:text-ink-400">{total}</td>
+                <td class="text-right text-amber-600">{tried || '—'}</td>
+                <td class="text-right text-emerald-600">{nailed || '—'}</td>
+                <td class="pl-3">
+                  <div class="h-2 rounded-full bg-ink-200 dark:bg-ink-800 overflow-hidden">
+                    <div class="h-full flex">
+                      <div class="bg-emerald-500" style={`width: ${(nailed / total) * 100}%`} />
+                      <div class="bg-amber-400" style={`width: ${(tried / total) * 100}%`} />
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 }
