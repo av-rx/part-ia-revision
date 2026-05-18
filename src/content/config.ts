@@ -98,4 +98,37 @@ const codeExercises = defineCollection({
   }),
 });
 
-export const collections = { notes, supplements, cheatsheets, flashcards, quizzes, 'code-exercises': codeExercises };
+const practiceQuestions = defineCollection({
+  type: 'data',
+  schema: z.object({
+    module: z.string(),
+    title: z.string(),
+    questions: z.array(
+      z.object({
+        id: z.string(),
+        topic: z.string(),
+        topicTitle: z.string(),
+        difficulty: z.number().int().min(1).max(5),
+        title: z.string(),
+        totalMarks: z.number(),
+        prompt: z.string(),
+        hint: z.string().optional(),
+        markscheme: z.array(
+          z.object({ text: z.string(), marks: z.number() })
+        ).optional(),
+        parts: z.array(
+          z.object({
+            label: z.string(),
+            marks: z.number(),
+            prompt: z.string(),
+            markscheme: z.array(
+              z.object({ text: z.string(), marks: z.number() })
+            ),
+          })
+        ).optional(),
+      })
+    ),
+  }),
+});
+
+export const collections = { notes, supplements, cheatsheets, flashcards, quizzes, 'code-exercises': codeExercises, 'practice-questions': practiceQuestions };

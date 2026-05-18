@@ -1,0 +1,1760 @@
+{
+  "module": "foundations-of-computer-science",
+  "title": "Foundations of Computer Science — Practice Questions",
+  "questions": [
+    {
+      "id": "fcs-intro-d1",
+      "topic": "introduction-to-programming",
+      "topicTitle": "Introduction to Programming",
+      "difficulty": 1,
+      "title": "OCaml let bindings and types",
+      "totalMarks": 3,
+      "prompt": "What are the types of the following OCaml expressions? For each, also state the value.<br>(i) <code>let x = 3 + 4</code><br>(ii) <code>let s = \"hello\" ^ \" world\"</code><br>(iii) <code>let b = (3 &lt; 4) &amp;&amp; (1 = 1)</code>",
+      "markscheme": [
+        { "text": "(i) type: int; value: 7", "marks": 1 },
+        { "text": "(ii) type: string; value: \"hello world\"", "marks": 1 },
+        { "text": "(iii) type: bool; value: true", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-intro-d2",
+      "topic": "introduction-to-programming",
+      "topicTitle": "Introduction to Programming",
+      "difficulty": 2,
+      "title": "Pattern matching and recursion",
+      "totalMarks": 4,
+      "prompt": "Explain the difference between <code>let</code> and <code>let rec</code> in OCaml. Write a recursive OCaml function <code>power : int -> int -> int</code> such that <code>power b n</code> returns b raised to the power n (for n ≥ 0), using pattern matching on n.",
+      "markscheme": [
+        { "text": "<code>let rec</code> allows the function to refer to itself recursively in its own definition; plain <code>let</code> does not bind the name in scope during definition", "marks": 1 },
+        { "text": "Correct base case: <code>power b 0 = 1</code>", "marks": 1 },
+        { "text": "Correct recursive case: <code>power b n = b * power b (n-1)</code>", "marks": 1 },
+        { "text": "Correct OCaml syntax with <code>let rec</code> and pattern matching (or if-then-else)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-intro-d3",
+      "topic": "introduction-to-programming",
+      "topicTitle": "Introduction to Programming",
+      "difficulty": 3,
+      "title": "Tracing function evaluation",
+      "totalMarks": 5,
+      "prompt": "Trace the evaluation of the following OCaml expression step by step, showing each reduction. What is the final value and type?<br><pre><code>let f x y = if x &gt; 0 then x + y else y - x\nlet result = f (f 2 3) (f (-1) 4)</code></pre>",
+      "hint": "Evaluate inner applications first. Remember f (-1) 4 means f with arguments -1 and 4.",
+      "markscheme": [
+        { "text": "<code>f 2 3</code>: x=2>0, so 2+3=5", "marks": 1 },
+        { "text": "<code>f (-1) 4</code>: x=(-1)≤0, so 4-(-1)=5", "marks": 1 },
+        { "text": "<code>f 5 5</code>: x=5>0, so 5+5=10", "marks": 1 },
+        { "text": "Final value: 10", "marks": 1 },
+        { "text": "Type: int", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-intro-d4",
+      "topic": "introduction-to-programming",
+      "topicTitle": "Introduction to Programming",
+      "difficulty": 4,
+      "title": "Higher-order functions and closures",
+      "totalMarks": 6,
+      "prompt": "(i) What is a higher-order function? Give two examples from OCaml's standard library.<br>(ii) Explain what a closure is. In the following OCaml code, what is the value of <code>add5 10</code>? Explain why <code>adder</code> works correctly even after <code>make_adder</code> has returned.<br><pre><code>let make_adder n = fun x -&gt; n + x\nlet add5 = make_adder 5</code></pre>",
+      "markscheme": [
+        { "text": "Higher-order function: takes a function as argument or returns a function. Examples: List.map, List.filter, List.fold_left, List.sort", "marks": 2 },
+        { "text": "Closure: a function together with the environment (bindings) it was created in. <code>add5 10</code> evaluates to 15", "marks": 2 },
+        { "text": "Works correctly because <code>add5</code> captures the value n=5 in its closure. When <code>add5</code> is called, n=5 is still accessible even though <code>make_adder</code>'s execution has finished", "marks": 2 }
+      ]
+    },
+    {
+      "id": "fcs-intro-d5a",
+      "topic": "introduction-to-programming",
+      "topicTitle": "Introduction to Programming",
+      "difficulty": 5,
+      "title": "OCaml programming: numerical algorithms",
+      "totalMarks": 13,
+      "prompt": "This question concerns numerical computation in OCaml.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Write an OCaml function <code>gcd : int -> int -> int</code> that computes the greatest common divisor of two positive integers using Euclid's algorithm. Trace your function on <code>gcd 48 18</code>.",
+          "markscheme": [
+            { "text": "Correct implementation: <code>let rec gcd a b = if b = 0 then a else gcd b (a mod b)</code>", "marks": 2 },
+            { "text": "Trace: gcd 48 18 → gcd 18 12 → gcd 12 6 → gcd 6 0 → 6", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Write an OCaml function <code>is_prime : int -> bool</code> that tests primality by trial division. Your function should be correct for all integers ≥ 2. What is the time complexity?",
+          "markscheme": [
+            { "text": "Correct logic: check divisibility by all integers from 2 to √n (or simply to n-1 for O(n))", "marks": 2 },
+            { "text": "Handles edge cases: n=2 returns true; uses a helper recursive function or loop", "marks": 1 },
+            { "text": "Time complexity: O(√n) with the √n optimisation (only test divisors up to √n since if n=a×b and a>√n then b<√n)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "OCaml uses call-by-value evaluation. Explain what this means. Write a function <code>square : int -> int</code> and trace how <code>square (3 + 4)</code> is evaluated under call-by-value.",
+          "markscheme": [
+            { "text": "Call-by-value: function arguments are fully evaluated to values before the function body is entered", "marks": 1 },
+            { "text": "<code>square (3+4)</code>: first evaluate 3+4=7; then call square 7; body is 7*7=49", "marks": 1 },
+            { "text": "Contrast with call-by-name (lazy): 3+4 would be substituted unevaluated and computed when needed", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "What is the type of the OCaml expression <code>fun f x -> f (f x)</code>? Explain how you derive this type.",
+          "markscheme": [
+            { "text": "Type: <code>('a -> 'a) -> 'a -> 'a</code>", "marks": 1 },
+            { "text": "Derivation: f is applied to x, so f : α→β and x : α for some α,β. Then f(f x): f applied again to result f x : β, so β = α. Therefore f : α→α and x : α", "marks": 1 },
+            { "text": "OCaml generalises α to 'a: the type is <code>('a -> 'a) -> 'a -> 'a</code> — applies f twice to its argument", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fcs-intro-d5b",
+      "topic": "introduction-to-programming",
+      "topicTitle": "Introduction to Programming",
+      "difficulty": 5,
+      "title": "Type inference and polymorphism",
+      "totalMarks": 12,
+      "prompt": "This question concerns OCaml types.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Give the most general type for each OCaml expression:<br>(i) <code>fun x -> x</code><br>(ii) <code>fun x y -> x</code><br>(iii) <code>fun f x y -> f y x</code><br>(iv) <code>fun (x, y) -> (y, x)</code>",
+          "markscheme": [
+            { "text": "(i) <code>'a -> 'a</code> (identity function)", "marks": 1 },
+            { "text": "(ii) <code>'a -> 'b -> 'a</code> (const function)", "marks": 1 },
+            { "text": "(iii) <code>('a -> 'b -> 'c) -> 'b -> 'a -> 'c</code> (flip)", "marks": 0.5 },
+            { "text": "(iv) <code>'a * 'b -> 'b * 'a</code> (swap pair)", "marks": 0.5 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Explain the difference between a type variable like <code>'a</code> and a concrete type like <code>int</code> in OCaml. What does it mean for a function to be polymorphic? Why can OCaml's <code>List.length</code> have type <code>'a list -> int</code>?",
+          "markscheme": [
+            { "text": "Type variable 'a: stands for any type; a placeholder that can be instantiated to any concrete type. Concrete type int: a specific set of values", "marks": 1 },
+            { "text": "Polymorphic function: works correctly for any instantiation of its type variables; a single implementation handles multiple types", "marks": 1 },
+            { "text": "List.length: counts elements regardless of their type; never inspects the elements — only the list structure matters. Type 'a list -> int reflects this: any element type accepted", "marks": 2 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Why does <code>let f = fun x -> x + 1 in f true</code> cause a type error in OCaml? What is the type of <code>f</code> here, and why can't it be applied to <code>true</code>?",
+          "markscheme": [
+            { "text": "The expression <code>x + 1</code> constrains x to be int (since + is int addition in OCaml)", "marks": 1 },
+            { "text": "So f : int -> int — a monomorphic (non-polymorphic) function", "marks": 1 },
+            { "text": "Applying f to true (type bool) is a type error: bool ≠ int. OCaml's type system prevents this at compile time", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 2,
+          "prompt": "What is the value restriction in OCaml? Give an example of code that violates it and explain why it is rejected.",
+          "markscheme": [
+            { "text": "Value restriction: a let-bound expression is given a polymorphic type only if it is a syntactic value (lambda, constructor, literal). Prevents unsound generalisation of mutable references", "marks": 1 },
+            { "text": "Example: <code>let r = ref []</code> — r might receive type <code>'a list ref</code> but would allow mixing types (push int then read as string). OCaml gives r a weakly polymorphic type <code>['_weak1] list ref</code>", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fcs-recur-d1",
+      "topic": "recursion-and-efficiency",
+      "topicTitle": "Recursion and Efficiency",
+      "difficulty": 1,
+      "title": "Big-O definitions",
+      "totalMarks": 3,
+      "prompt": "Define O(f(n)), Ω(f(n)), and Θ(f(n)) for algorithm complexity. Give an example function that is Θ(n²) but not Θ(n³).",
+      "markscheme": [
+        { "text": "O(f(n)): T(n) = O(f(n)) if ∃c>0, n₀ such that T(n) ≤ c·f(n) for all n≥n₀ (upper bound)", "marks": 1 },
+        { "text": "Ω(f(n)): T(n) ≥ c·f(n) for all large n (lower bound). Θ(f(n)): both O and Ω (tight bound)", "marks": 1 },
+        { "text": "Example: T(n) = 3n²+5n+1 is Θ(n²) — grows exactly like n². Not Θ(n³) since T(n)/n³ → 0", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-recur-d2",
+      "topic": "recursion-and-efficiency",
+      "topicTitle": "Recursion and Efficiency",
+      "difficulty": 2,
+      "title": "Tail recursion",
+      "totalMarks": 4,
+      "prompt": "Explain what tail recursion is and why it matters for efficiency. Rewrite the following factorial function as a tail-recursive version using an accumulator:<br><pre><code>let rec fact n =\n  if n = 0 then 1\n  else n * fact (n-1)</code></pre>",
+      "markscheme": [
+        { "text": "Tail recursion: the recursive call is the very last operation — no pending computation after it returns. Matters because OCaml (and most functional languages) can optimise tail calls to not consume stack space (tail call optimisation, TCO)", "marks": 2 },
+        { "text": "Tail-recursive version: <code>let fact n = let rec go acc n = if n = 0 then acc else go (acc * n) (n-1) in go 1 n</code>", "marks": 1 },
+        { "text": "Accumulator accumulates the result; recursive call is last operation; each call can reuse the same stack frame", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-recur-d3",
+      "topic": "recursion-and-efficiency",
+      "topicTitle": "Recursion and Efficiency",
+      "difficulty": 3,
+      "title": "Fibonacci: naive vs efficient",
+      "totalMarks": 5,
+      "prompt": "Consider two OCaml implementations of Fibonacci:<br><pre><code>let rec fib1 n =\n  if n &lt;= 1 then n\n  else fib1 (n-1) + fib1 (n-2)\n\nlet fib2 n =\n  let rec go a b n =\n    if n = 0 then a\n    else go b (a+b) (n-1)\n  in go 0 1 n</code></pre><br>Give the time complexity of each. Explain why <code>fib1</code> is exponential by describing the computation tree. What optimisation does <code>fib2</code> use?",
+      "hint": "Count how many times fib1 is called. Each call branches into two sub-calls.",
+      "markscheme": [
+        { "text": "fib1: exponential time Θ(φⁿ) where φ≈1.618 (golden ratio) — the recursion tree has roughly 2^(n/2) leaves; T(n)=T(n-1)+T(n-2)+O(1)", "marks": 2 },
+        { "text": "fib1 is inefficient because it recomputes sub-Fibonacci numbers many times (e.g. fib(n-2) is computed by both fib(n-1) and fib(n) separately)", "marks": 1 },
+        { "text": "fib2: O(n) time, O(1) space. Uses tail recursion with two accumulators tracking consecutive Fibonacci values (a, b) = (fib(k), fib(k+1))", "marks": 2 }
+      ]
+    },
+    {
+      "id": "fcs-recur-d4",
+      "topic": "recursion-and-efficiency",
+      "topicTitle": "Recursion and Efficiency",
+      "difficulty": 4,
+      "title": "Memoisation and dynamic programming in OCaml",
+      "totalMarks": 6,
+      "prompt": "(i) Explain memoisation. Write a memoised version of the naive Fibonacci using a hash table in OCaml (you may use <code>Hashtbl</code>).<br>(ii) What is the time and space complexity of the memoised version?<br>(iii) Identify any limitations of memoisation with OCaml's <code>Hashtbl</code> for this use case.",
+      "hint": "Check the memo table before recursing; store results after computing them.",
+      "markscheme": [
+        { "text": "Memoisation: cache results of expensive function calls and return the cached result when the same inputs occur again", "marks": 1 },
+        { "text": "Implementation: create a Hashtbl; at start of fib, check if n is in the table; if yes return it; otherwise compute, store in table, return", "marks": 2 },
+        { "text": "Time O(n): each subproblem computed exactly once; Space O(n): table stores all values fib(0)...fib(n)", "marks": 2 },
+        { "text": "Limitation: Hashtbl uses imperative style (side effects); not idiomatic functional programming. Also: hash collisions (minor); memory overhead per entry", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-recur-d5a",
+      "topic": "recursion-and-efficiency",
+      "topicTitle": "Recursion and Efficiency",
+      "difficulty": 5,
+      "title": "Recurrences and complexity analysis",
+      "totalMarks": 13,
+      "prompt": "This question concerns recursive algorithms and their complexity.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Write an OCaml function <code>bsearch : int array -> int -> int -> int -> int option</code> where <code>bsearch arr lo hi target</code> searches for <code>target</code> in the sorted subarray <code>arr[lo..hi]</code>. Return <code>Some i</code> if found at index i, <code>None</code> otherwise. Give its recurrence and solve it.",
+          "markscheme": [
+            { "text": "Correct binary search: mid = (lo+hi)/2; compare arr[mid] with target; recurse on left or right half. Base case: lo > hi → None", "marks": 1 },
+            { "text": "Correct OCaml code with array access <code>arr.(mid)</code> and returning Some/None", "marks": 1 },
+            { "text": "Recurrence: T(n) = T(n/2) + O(1); solves to T(n) = O(log n)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "The following OCaml function computes power using fast exponentiation:<br><pre><code>let rec fast_power b n =\n  if n = 0 then 1\n  else if n mod 2 = 0 then\n    let half = fast_power b (n/2) in half * half\n  else b * fast_power b (n-1)</code></pre><br>Give the time complexity. Is this tail recursive? Write an iterative (loop-free, tail-recursive) version.",
+          "markscheme": [
+            { "text": "T(n) = T(n/2) + O(1) for even n, T(n) = T(n-1) + O(1) for odd n (at most one extra step before halving). Total: O(log n)", "marks": 1 },
+            { "text": "Not tail recursive: <code>half * half</code> is a pending multiplication after the recursive call", "marks": 1 },
+            { "text": "Tail-recursive version with accumulator: <code>let fast_power b n = let rec go acc b n = if n=0 then acc else if n mod 2=0 then go acc (b*b) (n/2) else go (acc*b) b (n-1) in go 1 b n</code>", "marks": 2 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Describe how to solve recurrences using the substitution method. Use it to prove that T(n) = T(n/2) + c has solution T(n) = O(log n).",
+          "markscheme": [
+            { "text": "Substitution: guess a form for T(n), then prove it by induction. Guess T(n) ≤ d·log₂n for some constant d", "marks": 1 },
+            { "text": "Inductive step: T(n) = T(n/2) + c ≤ d·log₂(n/2) + c = d·(log₂n − 1) + c = d·log₂n + (c − d)", "marks": 1 },
+            { "text": "Choose d ≥ c so that c−d ≤ 0; then T(n) ≤ d·log₂n ✓. Base case T(1) = c ≤ d·log₂1 = 0: need to verify separately or adjust", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Define space complexity. What is the space complexity of: (i) the naive recursive Fibonacci <code>fib1</code>; (ii) the tail-recursive <code>fib2</code>; (iii) the memoised Fibonacci? Explain why tail recursion helps space efficiency.",
+          "markscheme": [
+            { "text": "Space complexity: maximum memory used during execution, including call stack. (i) fib1: O(n) stack depth (n recursive calls live simultaneously in the worst case)", "marks": 1 },
+            { "text": "(ii) fib2: O(1) — with TCO, each tail call reuses the stack frame; constant extra memory regardless of n", "marks": 1 },
+            { "text": "(iii) Memoised fib: O(n) for the table. Tail recursion avoids accumulating stack frames; the processor can jump directly to the next call without saving the current frame", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fcs-recur-d5b",
+      "topic": "recursion-and-efficiency",
+      "topicTitle": "Recursion and Efficiency",
+      "difficulty": 5,
+      "title": "Towers of Hanoi and divide-and-conquer",
+      "totalMarks": 12,
+      "prompt": "This question concerns the Towers of Hanoi puzzle.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Write an OCaml function <code>hanoi : int -> string -> string -> string -> unit</code> that prints the moves to solve Towers of Hanoi for n discs from peg 'from' to peg 'to' using peg 'via'. The output should be lines like \"Move disc from A to C\".",
+          "markscheme": [
+            { "text": "Correct base case: hanoi 0 _ _ _ = () (no moves needed for 0 discs)", "marks": 1 },
+            { "text": "Recursive case: move n-1 discs from → via, then move disc from → to, then move n-1 discs via → to", "marks": 1 },
+            { "text": "Correct OCaml syntax; print_endline or Printf.printf used for output", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Let T(n) be the number of moves to solve Hanoi with n discs. Write the recurrence and solve it exactly.",
+          "markscheme": [
+            { "text": "T(0) = 0; T(n) = 2T(n-1) + 1 (move n-1 discs twice, plus one move for the largest disc)", "marks": 1 },
+            { "text": "Unrolling: T(n) = 2T(n-1)+1 = 2(2T(n-2)+1)+1 = ... = 2^k·T(n-k) + 2^(k-1)+...+1", "marks": 1 },
+            { "text": "At k=n: T(n) = 2^n·T(0) + (2^n − 1) = 2^n − 1. Exact formula.", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Prove by induction that 2^n − 1 moves are both necessary and sufficient to solve Towers of Hanoi with n discs.",
+          "markscheme": [
+            { "text": "Sufficiency (the algorithm works): by induction. Base n=0: 0=2⁰−1=0 moves ✓. Step: algorithm makes 2T(n-1)+1 = 2(2^(n-1)−1)+1 = 2^n−1 moves by induction hypothesis", "marks": 1 },
+            { "text": "Necessity (can't do better): to move the bottom disc, all n-1 smaller discs must first be on the spare peg (requiring T(n-1) moves minimum), then the large disc moves (1 move), then the n-1 discs move to destination (T(n-1) more)", "marks": 2 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "The Hanoi function as written is not tail recursive. Is this a practical problem? Describe the maximum call stack depth for <code>hanoi n</code> and comment on whether tail recursion is achievable for inherently non-linear recursion.",
+          "markscheme": [
+            { "text": "Maximum call stack depth is O(n) — the recursion depth equals n (even though 2^n moves are made, each recursive call eventually terminates before the next at the same level)", "marks": 1 },
+            { "text": "Practically fine: n is typically small (e.g. n=64 discs is infeasible to execute anyway with 2^64 moves); stack depth O(n) is not exponential", "marks": 1 },
+            { "text": "Non-linear recursion (two recursive calls) cannot generally be tail-call optimised without using an explicit stack or continuation-passing style (CPS). Hanoi can be made iterative using a stack, but the resulting code is more complex", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fcs-lists-d1",
+      "topic": "lists-and-polymorphism",
+      "topicTitle": "Lists and Polymorphism",
+      "difficulty": 1,
+      "title": "OCaml list basics",
+      "totalMarks": 3,
+      "prompt": "In OCaml, what is the type of the empty list <code>[]</code>? What is the type of <code>[1; 2; 3]</code>? Write OCaml expressions for: (i) consing 5 onto the list [1;2;3]; (ii) the head and tail of [10;20;30].",
+      "markscheme": [
+        { "text": "<code>[]</code> has type <code>'a list</code>; <code>[1;2;3]</code> has type <code>int list</code>", "marks": 1 },
+        { "text": "(i) <code>5 :: [1;2;3]</code> gives <code>[5;1;2;3]</code>", "marks": 1 },
+        { "text": "(ii) head: pattern match <code>match [10;20;30] with x::_ -> x</code> gives 10; tail: <code>match [10;20;30] with _::xs -> xs</code> gives [20;30]", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-lists-d2",
+      "topic": "lists-and-polymorphism",
+      "topicTitle": "Lists and Polymorphism",
+      "difficulty": 2,
+      "title": "List recursion patterns",
+      "totalMarks": 4,
+      "prompt": "Write recursive OCaml functions for each of the following. Give the type signature for each.<br>(i) <code>length : 'a list -> int</code> — returns the number of elements.<br>(ii) <code>rev : 'a list -> 'a list</code> — reverses a list.<br>State the time complexity of each.",
+      "markscheme": [
+        { "text": "<code>let rec length = function [] -> 0 | _::xs -> 1 + length xs</code>; type <code>'a list -> int</code>; O(n)", "marks": 2 },
+        { "text": "<code>let rec rev = function [] -> [] | x::xs -> rev xs @ [x]</code>; type <code>'a list -> 'a list</code>; O(n²) due to @ being O(n) at each step", "marks": 1 },
+        { "text": "Efficient rev using accumulator: <code>let rev l = let rec go acc = function [] -> acc | x::xs -> go (x::acc) xs in go [] l</code>; O(n)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-lists-d3",
+      "topic": "lists-and-polymorphism",
+      "topicTitle": "Lists and Polymorphism",
+      "difficulty": 3,
+      "title": "Map, filter, and fold",
+      "totalMarks": 5,
+      "prompt": "Write OCaml implementations of <code>map</code>, <code>filter</code>, and <code>fold_right</code>. Then express <code>map f</code> and <code>filter p</code> in terms of <code>fold_right</code>.",
+      "hint": "fold_right f [a;b;c] z = f a (f b (f c z)). Think about what combining function to pass.",
+      "markscheme": [
+        { "text": "<code>let rec map f = function [] -> [] | x::xs -> f x :: map f xs</code>", "marks": 1 },
+        { "text": "<code>let rec filter p = function [] -> [] | x::xs -> if p x then x :: filter p xs else filter p xs</code>", "marks": 1 },
+        { "text": "<code>let rec fold_right f lst z = match lst with [] -> z | x::xs -> f x (fold_right f xs z)</code>", "marks": 1 },
+        { "text": "map via fold_right: <code>map f lst = fold_right (fun x acc -> f x :: acc) lst []</code>", "marks": 1 },
+        { "text": "filter via fold_right: <code>filter p lst = fold_right (fun x acc -> if p x then x::acc else acc) lst []</code>", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-lists-d4",
+      "topic": "lists-and-polymorphism",
+      "topicTitle": "Lists and Polymorphism",
+      "difficulty": 4,
+      "title": "Association lists and polymorphism",
+      "totalMarks": 6,
+      "prompt": "(i) Define an association list in OCaml. What is the type of an association list mapping strings to integers?<br>(ii) Write <code>assoc : 'a -> ('a * 'b) list -> 'b option</code> that looks up a key.<br>(iii) Write <code>update : 'a -> 'b -> ('a * 'b) list -> ('a * 'b) list</code> that inserts or updates a key-value pair.<br>(iv) What is the worst-case time complexity of lookup and why?",
+      "markscheme": [
+        { "text": "Association list: a list of (key, value) pairs. Type: <code>(string * int) list</code>", "marks": 1 },
+        { "text": "<code>let rec assoc k = function [] -> None | (k',v)::rest -> if k=k' then Some v else assoc k rest</code>", "marks": 2 },
+        { "text": "<code>let update k v lst = (k,v) :: List.filter (fun (k',_) -> k' <> k) lst</code> (or prepend and let assoc find the first occurrence)", "marks": 2 },
+        { "text": "Worst-case O(n) for lookup: must scan the entire list if the key is absent or at the end. Compare to O(log n) for balanced BST or O(1) amortised for hash table", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-lists-d5a",
+      "topic": "lists-and-polymorphism",
+      "topicTitle": "Lists and Polymorphism",
+      "difficulty": 5,
+      "title": "List processing: flattening and zipping",
+      "totalMarks": 12,
+      "prompt": "This question concerns list manipulation in OCaml.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Write <code>flatten : 'a list list -> 'a list</code> that concatenates a list of lists. Give two implementations: (i) simple recursion using @; (ii) using <code>fold_left</code> and <code>rev</code>. Compare their time complexities.",
+          "markscheme": [
+            { "text": "(i) <code>let rec flatten = function [] -> [] | xs::xss -> xs @ flatten xss</code>; O(n²) total where n = total elements (@ is O(|xs|) per call)", "marks": 1 },
+            { "text": "(ii) <code>let flatten xss = List.rev (List.fold_left (fun acc xs -> List.rev_append xs acc) [] xss)</code> or similar; O(n) total", "marks": 1 },
+            { "text": "Key difference: (i) repeatedly appends to growing list; (ii) fold_left + rev builds in reverse (cons) then reverses once — O(n) overall", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Write <code>zip : 'a list -> 'b list -> ('a * 'b) list</code> that pairs elements pairwise. What should it do if the lists have different lengths? Write a version that raises an exception if lengths differ.",
+          "markscheme": [
+            { "text": "<code>let rec zip l1 l2 = match l1, l2 with [], [] -> [] | x::xs, y::ys -> (x,y) :: zip xs ys | _ -> raise (Invalid_argument \"zip: lengths differ\")</code>", "marks": 2 },
+            { "text": "Type: <code>'a list -> 'b list -> ('a * 'b) list</code>; raises exception on mismatched lengths", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Write <code>unzip : ('a * 'b) list -> 'a list * 'b list</code>. Then prove that <code>unzip (zip l1 l2) = (l1, l2)</code> holds when l1 and l2 have equal length, by structural induction on l1.",
+          "markscheme": [
+            { "text": "<code>let rec unzip = function [] -> ([], []) | (a,b)::rest -> let (as_, bs) = unzip rest in (a::as_, b::bs)</code>", "marks": 1 },
+            { "text": "Base case: l1=[], l2=[]: unzip (zip [] []) = unzip [] = ([], []) = ([], []) ✓", "marks": 1 },
+            { "text": "Inductive step: assume unzip(zip xs ys) = (xs, ys). Then unzip(zip (x::xs) (y::ys)) = unzip((x,y)::zip xs ys) = (x :: fst(unzip(zip xs ys)), y :: snd(...)) = (x::xs, y::ys) by IH ✓", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Write <code>take : int -> 'a list -> 'a list</code> and <code>drop : int -> 'a list -> 'a list</code>. Use them to write a function that splits a list at position k. What happens if k exceeds the list length — define sensible behaviour.",
+          "markscheme": [
+            { "text": "<code>let rec take n = function [] -> [] | x::xs -> if n <= 0 then [] else x :: take (n-1) xs</code>; returns min(n, length) elements", "marks": 1 },
+            { "text": "<code>let rec drop n = function [] -> [] | _::xs as l -> if n <= 0 then l else drop (n-1) xs</code>; returns empty list if n > length", "marks": 1 },
+            { "text": "<code>let split_at k l = (take k l, drop k l)</code>; sensible behaviour: if k > length, returns (l, []); if k ≤ 0, returns ([], l)", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fcs-lists-d5b",
+      "topic": "lists-and-polymorphism",
+      "topicTitle": "Lists and Polymorphism",
+      "difficulty": 5,
+      "title": "Sorting and merging lists",
+      "totalMarks": 13,
+      "prompt": "This question concerns sorting algorithms implemented on OCaml lists.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 4,
+          "prompt": "Write a complete OCaml merge sort implementation for integer lists. Include a <code>split</code> helper and a <code>merge</code> helper. Give the type signature of <code>msort</code>.",
+          "markscheme": [
+            { "text": "Correct split: <code>let rec split = function [] -> ([],[]) | [x] -> ([x],[]) | x::y::rest -> let (a,b) = split rest in (x::a, y::b)</code>", "marks": 1 },
+            { "text": "Correct merge: <code>let rec merge l1 l2 = match l1,l2 with [],l|l,[] -> l | x::xs,y::ys -> if x<=y then x::merge xs l2 else y::merge l1 ys</code>", "marks": 1 },
+            { "text": "Correct msort: base cases [], [_]; recursive split, msort each, merge", "marks": 1 },
+            { "text": "Type: <code>int list -> int list</code> (or <code>'a list -> 'a list</code> with a comparison parameter)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Generalise your <code>msort</code> to take a comparison function as a parameter, giving type <code>('a -> 'a -> int) -> 'a list -> 'a list</code>. Show how you would use it to sort a list of strings in reverse alphabetical order.",
+          "markscheme": [
+            { "text": "Pass comparison function cmp to merge: <code>if cmp x y <= 0 then x :: merge cmp xs l2 ...</code>", "marks": 1 },
+            { "text": "Thread cmp through split/msort calls; type becomes <code>('a -> 'a -> int) -> 'a list -> 'a list</code>", "marks": 1 },
+            { "text": "Reverse alphabetical: <code>msort (fun a b -> compare b a) [\"banana\";\"apple\";\"cherry\"]</code> gives [\"cherry\";\"banana\";\"apple\"]", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Insertion sort on lists: write <code>insert : int -> int list -> int list</code> that inserts an element into a sorted list, and <code>isort : int list -> int list</code>. What is the time complexity of isort?",
+          "markscheme": [
+            { "text": "<code>let rec insert x = function [] -> [x] | y::ys -> if x<=y then x::y::ys else y::insert x ys</code>", "marks": 1 },
+            { "text": "<code>let rec isort = function [] -> [] | x::xs -> insert x (isort xs)</code>", "marks": 1 },
+            { "text": "Time complexity: O(n²) worst case — isort makes n recursive calls; each insert is O(n) worst case", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Explain why merge sort is preferred over insertion sort for large lists in a functional setting. Discuss the role of the @ operator's cost in this context.",
+          "markscheme": [
+            { "text": "Merge sort: O(n log n) vs insertion sort O(n²); for large n the difference is significant", "marks": 1 },
+            { "text": "@ (append) in OCaml is O(n) — it copies the left list. Using @ inside a loop causes hidden quadratic cost. Merge sort using cons (::) and careful accumulation avoids this", "marks": 1 },
+            { "text": "In a functional setting, lists are immutable so merge sort's split and merge must create new nodes — O(n log n) node allocations total; still better than O(n²) for isort", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fcs-morelists-d1",
+      "topic": "more-lists-and-making-change",
+      "topicTitle": "More Lists and Making Change",
+      "difficulty": 1,
+      "title": "List append and complexity",
+      "totalMarks": 3,
+      "prompt": "In OCaml, the append operator <code>@</code> concatenates two lists. What is the time complexity of <code>xs @ ys</code> in terms of the lengths of xs and ys? Explain why. Write the implementation of <code>@</code>.",
+      "markscheme": [
+        { "text": "O(|xs|) — must traverse and copy every element of xs to build the new list; ys is shared (no copy)", "marks": 1 },
+        { "text": "Implementation: <code>let rec (@) xs ys = match xs with [] -> ys | x::xs' -> x :: (xs' @ ys)</code>", "marks": 1 },
+        { "text": "Note: ys itself is not copied — OCaml lists are persistent (immutable), so the tail is shared", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-morelists-d2",
+      "topic": "more-lists-and-making-change",
+      "topicTitle": "More Lists and Making Change",
+      "difficulty": 2,
+      "title": "Making change: greedy vs exhaustive",
+      "totalMarks": 4,
+      "prompt": "Write an OCaml function <code>change : int list -> int -> int list list</code> that returns all ways to make change for amount <code>amt</code> using coins from the sorted list <code>coinlist</code> (coins may be reused). For example, <code>change [1;2;5] 4</code> should return all combinations summing to 4.",
+      "markscheme": [
+        { "text": "Base case: change _ 0 = [[]] (one way: empty set of coins)", "marks": 1 },
+        { "text": "Recursive cases: change [] amt = [] (no coins left but amt > 0: no solution); <br>For coin c :: rest: solutions using c = map (cons c) (change (c::rest) (amt-c)); solutions not using c = change rest amt", "marks": 2 },
+        { "text": "Combine both sets: change coinlist amt = ... map (fun sol -> c::sol) (change coinlist (amt-c)) @ change rest amt", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-morelists-d3",
+      "topic": "more-lists-and-making-change",
+      "topicTitle": "More Lists and Making Change",
+      "difficulty": 3,
+      "title": "Tracing making-change recursion",
+      "totalMarks": 5,
+      "prompt": "Trace the execution of <code>change [1;2] 3</code>, showing the complete recursion tree. How many solutions are returned? Explain why the order of coins in the list matters for avoiding duplicates vs allowing them.",
+      "hint": "When you try coin c, continue with c still available. When you skip c, remove it from the available list.",
+      "markscheme": [
+        { "text": "change [1;2] 3: branch 1 (use 1): change [1;2] 2 → branch 1.1 (use 1): change [1;2] 1 → change [1;2] 0 = [[]] → [1]; → [1;1]; → [1;1;1]: one solution [1;1;1]", "marks": 1 },
+        { "text": "branch 1.2 (skip 1, use 2): change [2] 2 → change [2] 0 = [[]] → [2]: so change [1;2] 2 via skip1 gives [2;1]... trace complete: solutions include [1;1;1], [1;2], [2;1] — wait, we pass c::rest when using c, so duplicates not generated if we always pass same or shorter list. Correct trace shows: [1;1;1], [1;2]", "marks": 2 },
+        { "text": "By passing c::coinlist when using c (allowing reuse) and rest when not using c (preventing reuse of skipped coin), we generate each multiset exactly once", "marks": 2 }
+      ]
+    },
+    {
+      "id": "fcs-morelists-d4",
+      "topic": "more-lists-and-making-change",
+      "topicTitle": "More Lists and Making Change",
+      "difficulty": 4,
+      "title": "Counting solutions and efficiency",
+      "totalMarks": 6,
+      "prompt": "(i) Modify <code>change</code> to return only the count of ways (not the actual lists), giving <code>count_change : int list -> int -> int</code>. This should be more memory-efficient.<br>(ii) The naive change function has exponential worst-case time. Describe how memoisation can reduce this. What is the memoised time complexity in terms of the amount A and number of coin types k?<br>(iii) Write the memoised version's recurrence.",
+      "markscheme": [
+        { "text": "count_change: replace [[]] with 1, [] with 0, and map/@ with +. <code>let rec count_change coins amt = match coins, amt with _, 0 -> 1 | [], _ -> 0 | c::rest, _ -> (if amt >= c then count_change (c::rest) (amt-c) else 0) + count_change rest amt</code>", "marks": 2 },
+        { "text": "Memoisation: the subproblems are (remaining coins suffix, remaining amount) — O(k × A) distinct pairs. With memo, each subproblem solved once", "marks": 2 },
+        { "text": "Memoised time complexity: O(k × A) subproblems × O(1) per subproblem = O(kA). Recurrence: CC(i, a) = CC(i, a−cᵢ) + CC(i+1, a) where i is coin index", "marks": 2 }
+      ]
+    },
+    {
+      "id": "fcs-morelists-d5a",
+      "topic": "more-lists-and-making-change",
+      "topicTitle": "More Lists and Making Change",
+      "difficulty": 5,
+      "title": "Generating combinations and permutations",
+      "totalMarks": 13,
+      "prompt": "This question concerns combinatorial generation in OCaml.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Write an OCaml function <code>combinations : int -> 'a list -> 'a list list</code> that generates all size-k subsets of a list. For example, <code>combinations 2 [1;2;3]</code> should return <code>[[1;2];[1;3];[2;3]]</code>.",
+          "markscheme": [
+            { "text": "Base cases: combinations 0 _ = [[]] (one empty combination); combinations _ [] = [] (can't choose from empty list)", "marks": 1 },
+            { "text": "Recursive case: for head x and tail xs — combinations including x: map (cons x) (combinations (k-1) xs); combinations excluding x: combinations k xs", "marks": 1 },
+            { "text": "Correct OCaml code; result concatenation with @", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Write <code>permutations : 'a list -> 'a list list</code> that generates all permutations. Use a helper <code>remove_each : 'a list -> ('a * 'a list) list</code> that returns each element paired with the list of remaining elements.",
+          "markscheme": [
+            { "text": "remove_each: <code>let rec remove_each = function [] -> [] | x::xs -> (x, xs) :: List.map (fun (y, ys) -> (y, x::ys)) (remove_each xs)</code>", "marks": 1 },
+            { "text": "permutations: <code>let rec permutations = function [] -> [[]] | l -> List.concat_map (fun (x, rest) -> List.map (fun p -> x::p) (permutations rest)) (remove_each l)</code>", "marks": 2 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "How many elements does <code>combinations k n_list</code> produce for a list of length n? How many does <code>permutations n_list</code> produce? What is the time complexity of each function for these outputs?",
+          "markscheme": [
+            { "text": "combinations: C(n,k) = n!/(k!(n-k)!) outputs; time O(C(n,k)×k) — each of the C(n,k) combinations has k elements to construct", "marks": 1 },
+            { "text": "permutations: n! outputs; time O(n!×n) — n! permutations each of length n", "marks": 1 },
+            { "text": "Both are inherently exponential in their output size; minimum time is Ω(output size). Combinatorial explosion makes these impractical for large n (e.g. 20! ≈ 2.4×10^18)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 4,
+          "prompt": "Apply the change-making approach to the following problem: given a list of integers, find all subsequences that sum to a target value T. Write the OCaml function and give its time complexity.",
+          "markscheme": [
+            { "text": "Analogous to change: at each element, either include it or exclude it. <code>let rec subsets_sum lst t = match lst, t with _, 0 -> [[]] | [], _ -> [] | x::xs, _ -> (if t >= x then List.map (fun s -> x::s) (subsets_sum xs (t-x)) else []) @ subsets_sum xs t</code>", "marks": 2 },
+            { "text": "This finds all subsequences (in original order) summing to t. Time: O(2^n × n) worst case — 2^n subsets, each potentially of length n", "marks": 1 },
+            { "text": "Memoisation helps only if many subproblems repeat; here each call has unique (suffix of list, remaining target) — O(n×T) memo states if we index by position rather than list", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fcs-morelists-d5b",
+      "topic": "more-lists-and-making-change",
+      "topicTitle": "More Lists and Making Change",
+      "difficulty": 5,
+      "title": "Tripos-style: list transformations and proofs",
+      "totalMarks": 12,
+      "prompt": "This question concerns functional list processing and program correctness.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Define <code>nats : int -> int list</code> such that <code>nats n</code> returns <code>[0; 1; ...; n-1]</code>. Write two versions: (i) a simple recursive version; (ii) a tail-recursive version. Prove they produce the same result.",
+          "markscheme": [
+            { "text": "(i) <code>let rec nats n = if n = 0 then [] else nats (n-1) @ [n-1]</code> — O(n²) due to @", "marks": 1 },
+            { "text": "(ii) <code>let nats n = let rec go acc i = if i < 0 then acc else go (i::acc) (i-1) in go [] (n-1)</code> — O(n)", "marks": 1 },
+            { "text": "Proof sketch: both produce [0;1;...;n-1] by induction; (ii)'s go acc i produces [i; i+1; ...; n-1] @ acc when called with go acc (n-1), specialised to acc=[] gives [0;...;n-1]", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Prove the following by structural induction on xs:<br><code>length (map f xs) = length xs</code>",
+          "markscheme": [
+            { "text": "Base case xs=[]: length (map f []) = length [] = 0 = length [] ✓", "marks": 1 },
+            { "text": "Inductive step: assume length (map f xs) = length xs. Show length (map f (x::xs)) = length (x::xs).", "marks": 1 },
+            { "text": "length (map f (x::xs)) = length (f x :: map f xs) = 1 + length (map f xs) = 1 + length xs [by IH] = length (x::xs) ✓", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "A student writes <code>let rev l = fold_right (fun x acc -> acc @ [x]) l []</code>. Is this correct? What is its time complexity? Write a better implementation using <code>fold_left</code>.",
+          "markscheme": [
+            { "text": "Correctness: yes, produces the reversed list. But inefficient: @ [x] at each step copies the accumulator — O(n²) total", "marks": 1 },
+            { "text": "Better: <code>let rev l = List.fold_left (fun acc x -> x :: acc) [] l</code> — cons is O(1), so O(n) total", "marks": 1 },
+            { "text": "Key insight: fold_left processes left to right and prepends each element, naturally building the reversed list at O(1) per step", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Explain the difference between <code>fold_left</code> and <code>fold_right</code> in terms of: (i) associativity, (ii) tail recursion, (iii) behaviour on infinite lists.",
+          "markscheme": [
+            { "text": "(i) fold_left: ((z⊕a)⊕b)⊕c — left-associative. fold_right: a⊕(b⊕(c⊕z)) — right-associative. For non-associative operators, they give different results", "marks": 1 },
+            { "text": "(ii) fold_left is tail-recursive (accumulator pattern); fold_right is not (pending ⊕ operations stack up). For large lists, fold_left is preferred", "marks": 1 },
+            { "text": "(iii) fold_right can work on infinite lists if the combining function is lazy and terminates early (e.g. finding first element satisfying a predicate). fold_left always processes the entire list first, so it diverges on infinite lists", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fcs-sort-d1",
+      "topic": "sorting",
+      "topicTitle": "Sorting",
+      "difficulty": 1,
+      "title": "OCaml sort function",
+      "totalMarks": 3,
+      "prompt": "What does <code>List.sort compare [3;1;4;1;5;9;2;6]</code> return in OCaml? What is the type of <code>List.sort</code>? What happens if you use <code>List.sort (fun a b -> compare b a)</code>?",
+      "markscheme": [
+        { "text": "<code>[1;1;2;3;4;5;6;9]</code> — sorted in ascending order", "marks": 1 },
+        { "text": "Type: <code>('a -> 'a -> int) -> 'a list -> 'a list</code>", "marks": 1 },
+        { "text": "<code>List.sort (fun a b -> compare b a) [3;1;4;1;5;9;2;6]</code> = <code>[9;6;5;4;3;2;1;1]</code> — descending order (reversed comparison)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-sort-d2",
+      "topic": "sorting",
+      "topicTitle": "Sorting",
+      "difficulty": 2,
+      "title": "Quicksort on lists",
+      "totalMarks": 4,
+      "prompt": "Write an OCaml quicksort function on lists using the first element as pivot. Your implementation should separate the list into elements less than, equal to, and greater than the pivot. State the worst-case time complexity and when it occurs for this functional implementation.",
+      "markscheme": [
+        { "text": "Correct implementation partitioning into smaller, equal, greater: <code>let rec qsort = function [] -> [] | x::xs -> let sm = List.filter ((>) x) xs and eq = x :: List.filter ((=) x) xs and lg = List.filter ((<) x) xs in qsort sm @ eq @ qsort lg</code>", "marks": 2 },
+        { "text": "Worst-case O(n²): occurs when list is already sorted (or reverse sorted) — each partition produces subproblems of size 0 and n-1", "marks": 1 },
+        { "text": "Average case O(n log n); List.filter is O(n) at each level; log n levels on average", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-sort-d3",
+      "topic": "sorting",
+      "topicTitle": "Sorting",
+      "difficulty": 3,
+      "title": "Insertion sort and invariant",
+      "totalMarks": 5,
+      "prompt": "Write an OCaml insertion sort. Then state a loop invariant for the algorithm and use it to argue correctness. Demonstrate on the input [5;3;8;1;4].",
+      "hint": "After processing the first k elements, those k elements are sorted among themselves.",
+      "markscheme": [
+        { "text": "Correct <code>insert</code> and <code>isort</code>: see standard implementation", "marks": 2 },
+        { "text": "Invariant: after inserting the first k elements, the result is a sorted permutation of those k elements", "marks": 1 },
+        { "text": "Trace: [] → [5] → [3;5] → [3;5;8] → [1;3;5;8] → [1;3;4;5;8]", "marks": 1 },
+        { "text": "Correctness: at each step, insert places the new element in the correct position in the already-sorted prefix; when all n elements are processed, the entire list is sorted", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-sort-d4",
+      "topic": "sorting",
+      "topicTitle": "Sorting",
+      "difficulty": 4,
+      "title": "Stable sorting and comparison functions",
+      "totalMarks": 6,
+      "prompt": "(i) Define a stable sort. Why does stability matter in practice?<br>(ii) OCaml's <code>List.sort</code> is not guaranteed stable; <code>List.stable_sort</code> is. How can you verify stability with an example?<br>(iii) Write a comparison function to sort a list of pairs <code>(int * string)</code> first by the integer (ascending), then by the string (alphabetically) as a tiebreaker.",
+      "markscheme": [
+        { "text": "Stable sort: equal elements appear in their original order in the output. Matters when records have multiple fields: sorting by secondary key then by primary key requires stability to preserve secondary order", "marks": 2 },
+        { "text": "Stability example: sort [(2,\"b\");(1,\"a\");(2,\"a\")] by fst. Stable result: [(1,\"a\");(2,\"b\");(2,\"a\")]; unstable could give [(1,\"a\");(2,\"a\");(2,\"b\")]", "marks": 2 },
+        { "text": "Comparison function: <code>let cmp (i1,s1) (i2,s2) = let c = compare i1 i2 in if c <> 0 then c else compare s1 s2</code>", "marks": 2 }
+      ]
+    },
+    {
+      "id": "fcs-sort-d5a",
+      "topic": "sorting",
+      "topicTitle": "Sorting",
+      "difficulty": 5,
+      "title": "Merge sort: implementation and analysis",
+      "totalMarks": 13,
+      "prompt": "This question concerns merge sort in OCaml.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 4,
+          "prompt": "Write a complete, polymorphic OCaml merge sort <code>msort : ('a -> 'a -> int) -> 'a list -> 'a list</code>. Your implementation must handle all edge cases correctly. Show it working on <code>msort compare [\"cherry\";\"apple\";\"banana\";\"date\"]</code>.",
+          "markscheme": [
+            { "text": "Correct split into two roughly equal halves (using alternation or take/drop)", "marks": 1 },
+            { "text": "Correct polymorphic merge using cmp function", "marks": 1 },
+            { "text": "Correct msort with base cases [] and [_]; recursive split, msort, merge", "marks": 1 },
+            { "text": "Trace: split → [\"cherry\";\"banana\"] and [\"apple\";\"date\"]; recursively sort → [\"banana\";\"cherry\"] and [\"apple\";\"date\"]; merge → [\"apple\";\"banana\";\"cherry\";\"date\"]", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Prove by induction that <code>msort cmp l</code> is a permutation of <code>l</code> for any list <code>l</code>.",
+          "markscheme": [
+            { "text": "Base: msort [] = [] (trivially a permutation); msort [x] = [x] (trivially a permutation)", "marks": 1 },
+            { "text": "Inductive step: split l into l1, l2. By IH, msort l1 is a permutation of l1 and msort l2 is a permutation of l2.", "marks": 1 },
+            { "text": "merge preserves all elements (can prove by induction that merge l1 l2 is a permutation of l1 @ l2). Since l1 @ l2 is a permutation of l (split preserves all elements), msort l is a permutation of l ✓", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Derive the time recurrence for msort and solve it. How does the use of @ in OCaml affect the analysis?",
+          "markscheme": [
+            { "text": "T(n) = 2T(n/2) + M(n) where M(n) is the cost of merge. Merge using cons is O(n): each step cons one element → T(n) = 2T(n/2)+O(n) → T(n)=O(n log n)", "marks": 2 },
+            { "text": "Using @ inside merge would be O(n) per step but copying left list — still O(n) per merge level, same asymptotic. However naive merge with @ at each cons step would be O(n²); the standard implementation uses cons which is O(1) per step", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Consider sorting a list that is 'almost sorted' — k elements out of place. Compare insertion sort and merge sort for this case. Which is better?",
+          "markscheme": [
+            { "text": "Insertion sort: for nearly-sorted input, each element travels only a short distance → O(nk) comparisons in the best case (k inversions). If k is small (e.g. O(1)), insertion sort is O(n)", "marks": 1 },
+            { "text": "Merge sort: always O(n log n) regardless of input order — no adaptive behaviour", "marks": 1 },
+            { "text": "For nearly-sorted lists with few inversions, insertion sort can be significantly faster in practice. This is why Timsort (Python/Java sort) uses insertion sort for small runs and merge sort for combining them", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fcs-sort-d5b",
+      "topic": "sorting",
+      "topicTitle": "Sorting",
+      "difficulty": 5,
+      "title": "Sorting networks and lower bounds",
+      "totalMarks": 11,
+      "prompt": "This question concerns the theory of sorting.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Explain the information-theoretic lower bound for comparison-based sorting. How does it give Ω(n log n)?",
+          "markscheme": [
+            { "text": "The output of a sort is one of n! permutations; a comparison-based sort must determine which permutation. Each binary comparison provides at most 1 bit of information", "marks": 1 },
+            { "text": "Need at least log₂(n!) bits → at least ⌈log₂(n!)⌉ comparisons. By Stirling: log₂(n!) ≈ n·log₂n − n·log₂e = Ω(n log n)", "marks": 1 },
+            { "text": "Formally: the decision tree must have ≥ n! leaves; a binary tree of height h has ≤ 2^h leaves; so h ≥ log₂(n!)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "What is a sorting network? Describe how a comparison-swap network works. Give the example of a sorting network for n=3 inputs using 3 comparators. Does your network sort all 3! = 6 permutations correctly?",
+          "markscheme": [
+            { "text": "Sorting network: a fixed sequence of compare-and-swap operations on indexed positions; the network is the same regardless of input values (oblivious algorithm)", "marks": 1 },
+            { "text": "Comparator (i,j): if a[i] > a[j], swap them; ensures a[i] ≤ a[j] afterwards", "marks": 1 },
+            { "text": "Network for n=3: (1,2), (1,3), (2,3) — compare positions in order. Verify on e.g. [3;1;2]: (1,2)→[1;3;2]; (1,3)→[1;3;2]; (2,3)→[1;2;3] ✓", "marks": 1 },
+            { "text": "By the zero-one principle: a sorting network is correct for all inputs iff it correctly sorts all 0-1 input sequences. For n=3: 2^3=8 cases to check; network above correctly sorts all of them", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 4,
+          "prompt": "OCaml functions are pure (no side effects). Explain what this means and how it affects reasoning about sorting algorithms. Give one advantage and one limitation of purely functional sorting compared to in-place imperative sorting.",
+          "markscheme": [
+            { "text": "Pure: a function always returns the same output for the same input; no observable side effects (no mutation of shared state, no I/O). Enables equational reasoning", "marks": 1 },
+            { "text": "Advantage: easy to reason about (referential transparency), safe to parallelise, no aliasing issues — can prove sort correct by induction without worrying about mutation", "marks": 1 },
+            { "text": "Limitation: cannot sort in-place; every cons/@ creates new heap allocation. Memory-intensive for large arrays; cache performance worse than in-place imperative sort", "marks": 1 },
+            { "text": "Implication: OCaml's Array module provides in-place sorting with mutable arrays when performance is critical; list sorting is preferred for typical functional programming patterns", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fcs-trees-d1",
+      "topic": "datatypes-and-trees",
+      "topicTitle": "Datatypes and Trees",
+      "difficulty": 1,
+      "title": "OCaml algebraic datatypes",
+      "totalMarks": 3,
+      "prompt": "Define an OCaml algebraic datatype <code>tree</code> for a binary tree containing integer values at leaves. Then define <code>depth : tree -> int</code> that returns the depth (maximum number of edges from root to any leaf). What is the type of <code>depth</code>?",
+      "markscheme": [
+        { "text": "<code>type tree = Leaf of int | Node of tree * tree</code>", "marks": 1 },
+        { "text": "<code>let rec depth = function Leaf _ -> 0 | Node (l, r) -> 1 + max (depth l) (depth r)</code>", "marks": 1 },
+        { "text": "Type: <code>tree -> int</code>", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-trees-d2",
+      "topic": "datatypes-and-trees",
+      "topicTitle": "Datatypes and Trees",
+      "difficulty": 2,
+      "title": "Binary search trees in OCaml",
+      "totalMarks": 4,
+      "prompt": "Define an OCaml type <code>'a bst</code> for a binary search tree with values of type 'a at nodes (not leaves). Write <code>member : 'a -> 'a bst -> bool</code> and <code>insert : 'a -> 'a bst -> 'a bst</code>.",
+      "markscheme": [
+        { "text": "<code>type 'a bst = Empty | Node of 'a bst * 'a * 'a bst</code>", "marks": 1 },
+        { "text": "<code>let rec member x = function Empty -> false | Node (l, v, r) -> if x = v then true else if x < v then member x l else member x r</code>", "marks": 1 },
+        { "text": "<code>let rec insert x = function Empty -> Node (Empty, x, Empty) | Node (l, v, r) as t -> if x = v then t else if x < v then Node (insert x l, v, r) else Node (l, v, insert x r)</code>", "marks": 2 }
+      ]
+    },
+    {
+      "id": "fcs-trees-d3",
+      "topic": "datatypes-and-trees",
+      "topicTitle": "Datatypes and Trees",
+      "difficulty": 3,
+      "title": "Tree traversals",
+      "totalMarks": 5,
+      "prompt": "For a binary tree with integer values at nodes (type <code>'a bst</code> from above), write three traversal functions:<br>(i) <code>inorder : 'a bst -> 'a list</code> — left, root, right<br>(ii) <code>preorder : 'a bst -> 'a list</code> — root, left, right<br>(iii) <code>postorder : 'a bst -> 'a list</code><br>For a BST, what does inorder traversal return?",
+      "markscheme": [
+        { "text": "<code>let rec inorder = function Empty -> [] | Node(l,v,r) -> inorder l @ [v] @ inorder r</code>", "marks": 1 },
+        { "text": "<code>let rec preorder = function Empty -> [] | Node(l,v,r) -> [v] @ preorder l @ preorder r</code>", "marks": 1 },
+        { "text": "<code>let rec postorder = function Empty -> [] | Node(l,v,r) -> postorder l @ postorder r @ [v]</code>", "marks": 1 },
+        { "text": "Inorder on a BST returns the keys in sorted (ascending) order — a key property of BSTs", "marks": 1 },
+        { "text": "All three: O(n²) due to @ operator; efficient versions use accumulator parameter to achieve O(n)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-trees-d4",
+      "topic": "datatypes-and-trees",
+      "topicTitle": "Datatypes and Trees",
+      "difficulty": 4,
+      "title": "Expression trees",
+      "totalMarks": 6,
+      "prompt": "Define an OCaml algebraic type <code>expr</code> for arithmetic expressions with addition, multiplication, and integer literals. Write:<br>(i) <code>eval : expr -> int</code> that evaluates an expression<br>(ii) <code>to_string : expr -> string</code> that converts to a human-readable string with minimal parentheses (use precedence rules)<br>(iii) Show <code>to_string (Add (Mul (Lit 2, Lit 3), Lit 4))</code> gives <code>\"2*3+4\"</code>",
+      "markscheme": [
+        { "text": "<code>type expr = Lit of int | Add of expr * expr | Mul of expr * expr</code>", "marks": 1 },
+        { "text": "<code>let rec eval = function Lit n -> n | Add(e1,e2) -> eval e1 + eval e2 | Mul(e1,e2) -> eval e1 * eval e2</code>", "marks": 1 },
+        { "text": "to_string: for Add, no outer parens; for Mul, add parens around Add sub-expressions: <code>let rec to_string = function Lit n -> string_of_int n | Add(e1,e2) -> to_string e1 ^ \"+\" ^ to_string e2 | Mul(e1,e2) -> paren e1 ^ \"*\" ^ paren e2</code> where paren adds parens around Add nodes", "marks": 3 },
+        { "text": "Add(Mul(Lit 2, Lit 3), Lit 4): Mul(2,3)→\"2*3\"; Add(\"2*3\", \"4\")→\"2*3+4\" ✓", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-trees-d5a",
+      "topic": "datatypes-and-trees",
+      "topicTitle": "Datatypes and Trees",
+      "difficulty": 5,
+      "title": "Tree-based data structure operations",
+      "totalMarks": 13,
+      "prompt": "This question concerns binary trees in OCaml.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "A complete binary tree of depth d has all leaves at depth d. How many nodes does it have? Write an OCaml function <code>complete_tree : int -> int -> 'a bst</code> where <code>complete_tree d v</code> builds a complete BST of depth d with all values equal to v. What is the structure for d=2?",
+          "markscheme": [
+            { "text": "Complete tree of depth d: 2^(d+1) − 1 nodes (1 root + 2 subtrees of depth d-1)", "marks": 1 },
+            { "text": "<code>let rec complete_tree d v = if d = 0 then Empty else Node(complete_tree (d-1) v, v, complete_tree (d-1) v)</code>", "marks": 1 },
+            { "text": "d=2: Node(Node(Empty,v,Empty), v, Node(Empty,v,Empty)) — 3 nodes at depth 0,1,1", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Write an OCaml function <code>tree_map : ('a -> 'b) -> 'a bst -> 'b bst</code> and <code>tree_fold : ('b -> 'a -> 'b -> 'b) -> 'b -> 'a bst -> 'b</code> where <code>tree_fold f z t</code> folds f over the tree structure. Use tree_fold to implement <code>tree_sum : int bst -> int</code> and <code>tree_size : 'a bst -> int</code>.",
+          "markscheme": [
+            { "text": "<code>let rec tree_map f = function Empty -> Empty | Node(l,v,r) -> Node(tree_map f l, f v, tree_map f r)</code>", "marks": 1 },
+            { "text": "<code>let rec tree_fold f z = function Empty -> z | Node(l,v,r) -> f (tree_fold f z l) v (tree_fold f z r)</code>", "marks": 1 },
+            { "text": "<code>let tree_sum = tree_fold (fun l v r -> l + v + r) 0</code>", "marks": 1 },
+            { "text": "<code>let tree_size = tree_fold (fun l _ r -> l + 1 + r) 0</code>", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Prove by structural induction that <code>tree_size (tree_map f t) = tree_size t</code> for all trees t and functions f.",
+          "markscheme": [
+            { "text": "Base: t=Empty: tree_size(tree_map f Empty) = tree_size Empty = 0 ✓", "marks": 1 },
+            { "text": "Inductive step: assume holds for l and r. tree_size(tree_map f (Node(l,v,r))) = tree_size(Node(tree_map f l, f v, tree_map f r))", "marks": 1 },
+            { "text": "= tree_size(tree_map f l) + 1 + tree_size(tree_map f r) = tree_size l + 1 + tree_size r [by IH] = tree_size(Node(l,v,r)) ✓", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Write <code>flatten : 'a bst -> 'a list</code> (inorder traversal). Using an accumulator, write an O(n) version. Prove it correct.",
+          "markscheme": [
+            { "text": "<code>let flatten t = let rec go acc = function Empty -> acc | Node(l,v,r) -> go (v :: go acc r) l in go [] t</code>", "marks": 1 },
+            { "text": "O(n): each node visited once, each cons is O(1), no @", "marks": 1 },
+            { "text": "Correctness: go acc t = inorder t @ acc (prove by induction). Base: go acc Empty = acc = [] @ acc ✓. Step: go acc (Node(l,v,r)) = go (v :: go acc r) l = inorder l @ [v] @ inorder r @ acc = inorder(Node(l,v,r)) @ acc ✓", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fcs-trees-d5b",
+      "topic": "datatypes-and-trees",
+      "topicTitle": "Datatypes and Trees",
+      "difficulty": 5,
+      "title": "Balanced trees and rotation",
+      "totalMarks": 12,
+      "prompt": "This question concerns maintaining balance in binary search trees.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 2,
+          "prompt": "What is the problem with inserting elements 1, 2, 3, 4, 5 in order into a standard BST? Draw the resulting tree and state its height.",
+          "markscheme": [
+            { "text": "Resulting tree is a right-degenerate chain: 1→2→3→4→5 (each element inserted as right child of previous)", "marks": 1 },
+            { "text": "Height = n−1 = 4; search/insert becomes O(n) rather than O(log n)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Describe a right rotation operation on a BST node. In OCaml, if the tree has type <code>'a bst = Empty | Node of 'a bst * 'a * 'a bst</code>, write a function <code>rotate_right : 'a bst -> 'a bst</code> that performs a right rotation at the root.",
+          "markscheme": [
+            { "text": "Right rotation: if root is Node(Node(ll, lv, lr), v, r), rotate to Node(ll, lv, Node(lr, v, r)). The left child becomes the new root", "marks": 2 },
+            { "text": "<code>let rotate_right = function Node(Node(ll,lv,lr), v, r) -> Node(ll, lv, Node(lr,v,r)) | t -> t</code>", "marks": 1 },
+            { "text": "Preserves BST property: all keys in ll < lv < (keys in lr and v and r)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Define the height-balance condition for AVL trees in terms of the heights of subtrees. Write a function <code>height : 'a bst -> int</code> and <code>is_avl : 'a bst -> bool</code> that checks the AVL property recursively.",
+          "markscheme": [
+            { "text": "<code>let rec height = function Empty -> -1 | Node(l,_,r) -> 1 + max (height l) (height r)</code>", "marks": 1 },
+            { "text": "AVL: for every node, |height(left) − height(right)| ≤ 1 AND both subtrees are AVL trees", "marks": 1 },
+            { "text": "<code>let rec is_avl = function Empty -> true | Node(l,_,r) -> abs (height l - height r) <= 1 && is_avl l && is_avl r</code>", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "After inserting a node into an AVL tree, at most one rotation (single or double) is needed to restore balance. Explain the LL case: when does it occur and what single rotation fixes it? Apply this to re-balance a tree where after inserting 1 into the right-spine tree 3→2→_ we have Node(Node(Empty,1,Empty),2,Node(Empty,3,Empty)) — wait, describe the LL case with a concrete example.",
+          "markscheme": [
+            { "text": "LL case: unbalanced node z has a left child y which has a left child x (new node inserted in x's subtree). Balance factor of z = +2 (left-heavy), y = +1 or 0", "marks": 1 },
+            { "text": "Fix: single right rotation at z. y becomes new root; z becomes y's right child; y's right subtree becomes z's left child", "marks": 1 },
+            { "text": "Example: insert 1,2,3 in order gives degenerate right tree. Insert 1,3,2: after inserting 2 into tree rooted at 1 with right child 3, node 1 has balance factor −2 (right-heavy left child = RR case actually). For LL: insert 3,2,1 in order → 3's left subtree has height 1 (2→1), right empty, height difference = 2. Right-rotate at 3: 2 becomes root, 1 is left child, 3 is right child. Height now 1.", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fcs-dict-d1",
+      "topic": "dictionaries-and-functional-arrays",
+      "topicTitle": "Dictionaries and Functional Arrays",
+      "difficulty": 1,
+      "title": "Dictionary abstract data type",
+      "totalMarks": 3,
+      "prompt": "Define the dictionary (map) abstract data type. List the operations it must support. Give two concrete implementations and state the time complexity of lookup for each.",
+      "markscheme": [
+        { "text": "Dictionary: maps keys to values. Operations: empty, lookup (or find), insert (or update), optionally delete, member", "marks": 1 },
+        { "text": "Implementation 1: association list — lookup O(n), insert O(1) prepend", "marks": 1 },
+        { "text": "Implementation 2: balanced BST (e.g. functional AVL or red-black tree) — lookup O(log n), insert O(log n)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-dict-d2",
+      "topic": "dictionaries-and-functional-arrays",
+      "topicTitle": "Dictionaries and Functional Arrays",
+      "difficulty": 2,
+      "title": "Functional arrays",
+      "totalMarks": 4,
+      "prompt": "Explain the concept of a functional array (also called an extensible or persistent array) — one that supports O(log n) lookup and update without mutation. Describe how a complete binary tree can be used to implement a functional array of size 2^k.",
+      "markscheme": [
+        { "text": "Functional array: an array where update returns a new array sharing most structure with the old one (persistent/immutable). No mutation — the old version is unchanged", "marks": 1 },
+        { "text": "Complete binary tree of depth k has 2^k leaves; index i encoded in binary selects a path to the leaf (0=left, 1=right)", "marks": 1 },
+        { "text": "Lookup: traverse path from root to leaf using binary representation of index — O(log n) where n=2^k", "marks": 1 },
+        { "text": "Update: create a new root-to-leaf path (O(log n) new nodes) while sharing unchanged subtrees — structural sharing keeps memory overhead to O(log n) per update", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-dict-d3",
+      "topic": "dictionaries-and-functional-arrays",
+      "topicTitle": "Dictionaries and Functional Arrays",
+      "difficulty": 3,
+      "title": "Implementing a dictionary as a BST in OCaml",
+      "totalMarks": 5,
+      "prompt": "Implement a functional dictionary in OCaml using a binary search tree. Provide: (i) type definition; (ii) <code>empty</code>; (iii) <code>lookup : 'k -> ('k, 'v) dict -> 'v option</code>; (iv) <code>insert : 'k -> 'v -> ('k, 'v) dict -> ('k, 'v) dict</code>. Show <code>lookup \"b\" (insert \"b\" 2 (insert \"a\" 1 empty))</code>.",
+      "hint": "The BST is ordered by key. New nodes are inserted like a standard BST insert.",
+      "markscheme": [
+        { "text": "<code>type ('k,'v) dict = Empty | Node of ('k,'v) dict * 'k * 'v * ('k,'v) dict</code>", "marks": 1 },
+        { "text": "<code>let empty = Empty</code> and <code>let rec lookup k = function Empty -> None | Node(l,k',v,r) -> if k=k' then Some v else if k < k' then lookup k l else lookup k r</code>", "marks": 2 },
+        { "text": "<code>let rec insert k v = function Empty -> Node(Empty,k,v,Empty) | Node(l,k',v',r) -> if k=k' then Node(l,k,v,r) else if k<k' then Node(insert k v l,k',v',r) else Node(l,k',v',insert k v r)</code>", "marks": 1 },
+        { "text": "lookup \"b\" (insert \"b\" 2 (insert \"a\" 1 empty)) = Some 2", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-dict-d4",
+      "topic": "dictionaries-and-functional-arrays",
+      "topicTitle": "Dictionaries and Functional Arrays",
+      "difficulty": 4,
+      "title": "Patricia tries and efficient string dictionaries",
+      "totalMarks": 6,
+      "prompt": "(i) Describe a trie (prefix tree) as a dictionary for string keys. What is the time complexity of lookup and insert?<br>(ii) Define an OCaml type for a trie over a binary alphabet {0,1}. Write lookup and insert functions.<br>(iii) Compare tries and BSTs for string-key dictionaries: when is each preferable?",
+      "markscheme": [
+        { "text": "Trie: tree where each path from root spells a key. Lookup/insert: O(L) where L = key length — independent of n (number of keys)", "marks": 1 },
+        { "text": "Binary trie type: <code>type 'v trie = Leaf of 'v option | Node of 'v trie * 'v trie</code> (left = bit 0, right = bit 1)", "marks": 1 },
+        { "text": "Lookup: traverse bit by bit; O(L). Insert: create new path for key; O(L)", "marks": 2 },
+        { "text": "Trie preferred: many keys with common prefixes (e.g. IP routing, spell checking); O(L) lookup independent of n. BST preferred: keys have good comparison ordering; simpler implementation; no need to decompose keys into bits", "marks": 2 }
+      ]
+    },
+    {
+      "id": "fcs-dict-d5a",
+      "topic": "dictionaries-and-functional-arrays",
+      "topicTitle": "Dictionaries and Functional Arrays",
+      "difficulty": 5,
+      "title": "Functional array operations and complexity",
+      "totalMarks": 13,
+      "prompt": "This question concerns functional (persistent) arrays.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Define an OCaml type <code>'a farray</code> for a functional array using a complete binary tree. Write <code>lookup : int -> 'a farray -> 'a</code> and <code>update : int -> 'a -> 'a farray -> 'a farray</code> for an array of size 2^k.",
+          "markscheme": [
+            { "text": "<code>type 'a farray = Leaf of 'a | Node of 'a farray * 'a farray</code>", "marks": 1 },
+            { "text": "Lookup: use binary representation of index to navigate. <code>let rec lookup i = function Leaf v -> v | Node(l,r) -> if i mod 2 = 0 then lookup (i/2) l else lookup (i/2) r</code> (or similar using bit shifting)", "marks": 1 },
+            { "text": "Update: rebuild path, share rest. <code>let rec update i v = function Leaf _ -> Leaf v | Node(l,r) -> if i mod 2 = 0 then Node(update (i/2) v l, r) else Node(l, update (i/2) v r)</code>", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "What is the time and space complexity of lookup and update on a functional array of size n? Compare with a mutable OCaml array (<code>int array</code>).",
+          "markscheme": [
+            { "text": "Functional array: lookup O(log n), update O(log n) time; update allocates O(log n) new nodes (path from root to modified leaf)", "marks": 1 },
+            { "text": "Mutable array: lookup O(1), update O(1) time; O(1) space for update (in-place)", "marks": 1 },
+            { "text": "Trade-off: functional array is slower but persistent (old versions preserved). Mutable array destroys old version on update — not safe in a purely functional setting. Functional preferred when multiple versions needed (e.g. backtracking algorithms)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 4,
+          "prompt": "Describe how a functional array can be used to implement a purely functional priority queue. What operations does it support and what are their complexities?",
+          "markscheme": [
+            { "text": "Represent a binary heap in a functional array (index 0 = root; children of i are 2i+1 and 2i+2)", "marks": 1 },
+            { "text": "insert: add at next position, sift up — O(log n) updates to functional array = O(log² n) total", "marks": 1 },
+            { "text": "extractMin: root is minimum; replace root with last element, sift down — O(log² n)", "marks": 1 },
+            { "text": "Alternatively: use a persistent balanced BST (e.g. functional red-black tree) for O(log n) insert and extractMin — often more practical in OCaml", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Explain the concept of structural sharing in functional data structures. How does OCaml's garbage collector handle the old versions of a functional array after multiple updates?",
+          "markscheme": [
+            { "text": "Structural sharing: when creating a new version via update, unchanged subtrees are shared (same pointer) rather than copied — only the modified path (O(log n) nodes) is new", "marks": 1 },
+            { "text": "Garbage collection: old versions of the functional array keep references to their nodes. Nodes shared between versions are kept alive as long as any version references them", "marks": 1 },
+            { "text": "If old versions are no longer referenced (go out of scope), the GC reclaims them. Non-shared nodes (only in old version) are freed; shared nodes remain. This amortises the memory cost across all versions", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fcs-dict-d5b",
+      "topic": "dictionaries-and-functional-arrays",
+      "topicTitle": "Dictionaries and Functional Arrays",
+      "difficulty": 5,
+      "title": "Tripos-style: dictionary and search",
+      "totalMarks": 12,
+      "prompt": "This question concerns efficient data structures for searching.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Implement a frequency counter using a dictionary: given a list of strings, return a dictionary mapping each word to its count. Write <code>word_count : string list -> (string, int) dict</code> using your functional BST dictionary.",
+          "markscheme": [
+            { "text": "Iterate through list, for each word look up current count (default 0), increment, insert back", "marks": 1 },
+            { "text": "<code>let word_count ws = List.fold_left (fun d w -> let c = match lookup w d with None -> 0 | Some n -> n in insert w (c+1) d) empty ws</code>", "marks": 1 },
+            { "text": "O(n log n) total: n words, each lookup/insert O(log n) in balanced BST", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Write <code>to_sorted_list : ('k, 'v) dict -> ('k * 'v) list</code> that converts the dictionary to a sorted list of key-value pairs. What does this suggest about the relationship between BST-based dictionaries and sorting?",
+          "markscheme": [
+            { "text": "<code>let rec to_sorted_list = function Empty -> [] | Node(l,k,v,r) -> to_sorted_list l @ [(k,v)] @ to_sorted_list r</code> (inorder traversal)", "marks": 1 },
+            { "text": "This is O(n log n) for n insertions + O(n) traversal: building a BST and extracting inorder is equivalent to comparison sorting", "marks": 1 },
+            { "text": "BST-based dictionary insertion + inorder traversal = comparison-based sort; cannot beat O(n log n) for the overall operation (matches the comparison lower bound)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Describe how to implement a 'merge' operation for two BST-based dictionaries: <code>merge : ('v -> 'v -> 'v) -> ('k,'v) dict -> ('k,'v) dict -> ('k,'v) dict</code> where the combining function handles key collisions. What is the time complexity?",
+          "markscheme": [
+            { "text": "Simple approach: extract sorted lists from both trees (inorder), merge sorted lists with combining function for duplicates, rebuild tree from sorted list — O(m+n) for merge, O(m+n) for rebuild", "marks": 2 },
+            { "text": "Total O(m+n) where m,n are sizes of the two dictionaries. Alternatively, fold one dict into the other: O(m log(m+n)) — slower but simpler to implement", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "What is an immutable map vs mutable map in OCaml? Give the module types of <code>Map.S</code> (functional) and compare to using a <code>Hashtbl</code> (mutable). When would you choose each?",
+          "markscheme": [
+            { "text": "Map.S (functional): based on balanced BST; all operations return new maps; thread-safe; enables persistence and easy undo/redo; O(log n) operations", "marks": 1 },
+            { "text": "Hashtbl (mutable): hash table; O(1) amortised operations; not persistent; requires care in concurrent settings; better raw performance for simple use cases", "marks": 1 },
+            { "text": "Choose Map when: persistence needed, purity preferred, keys need total ordering. Choose Hashtbl when: maximum throughput, single-version mutable state acceptable, keys hash well", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fcs-curry-d1",
+      "topic": "currying",
+      "topicTitle": "Currying",
+      "difficulty": 1,
+      "title": "Curried vs uncurried functions",
+      "totalMarks": 3,
+      "prompt": "In OCaml, what does it mean for a function to be curried? What is the type of <code>fun x y -> x + y</code>? Write the equivalent uncurried version that takes a pair.",
+      "markscheme": [
+        { "text": "Curried: a multi-argument function is represented as a chain of single-argument functions; partial application is natural", "marks": 1 },
+        { "text": "Type of <code>fun x y -> x + y</code>: <code>int -> int -> int</code> (equivalent to <code>int -> (int -> int)</code>)", "marks": 1 },
+        { "text": "Uncurried: <code>fun (x, y) -> x + y</code> with type <code>int * int -> int</code>", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-curry-d2",
+      "topic": "currying",
+      "topicTitle": "Currying",
+      "difficulty": 2,
+      "title": "Partial application",
+      "totalMarks": 4,
+      "prompt": "Explain partial application with an example. Show how currying enables elegant code by partially applying each of the following: (i) <code>List.map</code> to create a function that doubles all elements; (ii) <code>List.filter</code> to create a function that keeps only positive integers.",
+      "markscheme": [
+        { "text": "Partial application: applying a curried function to fewer arguments than it expects, producing a new function waiting for the remaining arguments", "marks": 1 },
+        { "text": "(i) <code>let double_all = List.map (fun x -> 2 * x)</code>; type <code>int list -> int list</code>; <code>double_all [1;2;3]</code> = <code>[2;4;6]</code>", "marks": 1 },
+        { "text": "(ii) <code>let keep_positive = List.filter (fun x -> x > 0)</code>; type <code>int list -> int list</code>; <code>keep_positive [-1;2;-3;4]</code> = <code>[2;4]</code>", "marks": 1 },
+        { "text": "Currying makes this natural: no need for a wrapper lambda; the partially applied function is a first-class value", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-curry-d3",
+      "topic": "currying",
+      "topicTitle": "Currying",
+      "difficulty": 3,
+      "title": "Function combinators",
+      "totalMarks": 5,
+      "prompt": "Define the following function combinators in OCaml and give their types:<br>(i) <code>compose : ('b -> 'c) -> ('a -> 'b) -> 'a -> 'c</code> — function composition<br>(ii) <code>flip : ('a -> 'b -> 'c) -> 'b -> 'a -> 'c</code> — flip arguments<br>(iii) <code>curry : ('a * 'b -> 'c) -> 'a -> 'b -> 'c</code> and <code>uncurry : ('a -> 'b -> 'c) -> 'a * 'b -> 'c</code><br>Show that <code>compose not (fun x -> x > 0) (-3)</code> = true.",
+      "markscheme": [
+        { "text": "(i) <code>let compose f g x = f (g x)</code>; type <code>('b->'c) -> ('a->'b) -> 'a -> 'c</code>", "marks": 1 },
+        { "text": "(ii) <code>let flip f x y = f y x</code>; type <code>('a->'b->'c) -> 'b -> 'a -> 'c</code>", "marks": 1 },
+        { "text": "(iii) <code>let curry f x y = f (x,y)</code> and <code>let uncurry f (x,y) = f x y</code>", "marks": 2 },
+        { "text": "compose not (fun x->x>0) (-3): first apply (fun x->x>0) to -3 → false; then not false → true ✓", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-curry-d4",
+      "topic": "currying",
+      "topicTitle": "Currying",
+      "difficulty": 4,
+      "title": "Continuation-passing style",
+      "totalMarks": 6,
+      "prompt": "(i) Explain continuation-passing style (CPS). What problem does it solve?<br>(ii) Convert the following function to CPS:<br><pre><code>let rec sum_list = function\n  [] -> 0\n  | x::xs -> x + sum_list xs</code></pre><br>(iii) What is the advantage of CPS transformation for recursive functions?",
+      "markscheme": [
+        { "text": "CPS: instead of returning a result, each function takes an extra 'continuation' argument k and calls k with the result instead of returning it. Solves: makes tail recursion explicit; models control flow first-class", "marks": 2 },
+        { "text": "CPS version: <code>let rec sum_cps lst k = match lst with [] -> k 0 | x::xs -> sum_cps xs (fun result -> k (x + result))</code>", "marks": 2 },
+        { "text": "Advantage: every call is a tail call in CPS form → can be compiled to constant stack space; also enables early exit (call a 'fail' continuation) and backtracking", "marks": 2 }
+      ]
+    },
+    {
+      "id": "fcs-curry-d5a",
+      "topic": "currying",
+      "topicTitle": "Currying",
+      "difficulty": 5,
+      "title": "Higher-order programming patterns",
+      "totalMarks": 12,
+      "prompt": "This question concerns higher-order functions and their applications.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Write a function <code>pipeline : ('a -> 'b) list -> 'a -> 'b option</code> that applies a list of functions in sequence, short-circuiting (returning None) if any function in the pipeline fails (use an option-returning convention). You may assume each function in the list has type <code>'a -> 'a option</code>.",
+          "markscheme": [
+            { "text": "Type adjustment: functions have type <code>'a -> 'a option</code>. <code>let pipeline fns x = List.fold_left (fun acc f -> match acc with None -> None | Some v -> f v) (Some x) fns</code>", "marks": 2 },
+            { "text": "This is the 'bind' operation for the option monad: applies each stage, propagating None on failure", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "What is a functor (in the ML/OCaml module sense, not category theory)? Describe how OCaml's module system uses functors to create parameterised data structures. Give a brief example.",
+          "markscheme": [
+            { "text": "OCaml functor: a module-level function that takes a module as input and produces a module. Enables parameterising data structures by their element type or comparison function", "marks": 1 },
+            { "text": "Example: <code>module type ORD = sig type t val compare : t -> t -> int end</code>; <code>module MakeSet (Ord: ORD) = struct type t = ... let insert ... end</code>", "marks": 1 },
+            { "text": "<code>module IntSet = MakeSet(Int)</code> creates a set of ints; <code>module StringSet = MakeSet(String)</code> creates a set of strings — same implementation, different element types", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "OCaml's <code>List.fold_left</code> and <code>List.fold_right</code> are both generalisations of list recursion. Show that <code>List.length</code>, <code>List.rev</code>, <code>List.map</code>, and <code>List.filter</code> can all be expressed as fold operations.",
+          "markscheme": [
+            { "text": "length: <code>fold_left (fun acc _ -> acc+1) 0</code>; rev: <code>fold_left (fun acc x -> x::acc) []</code>", "marks": 1 },
+            { "text": "map f: <code>fold_right (fun x acc -> f x :: acc) [] </code>... <code>fold_right (fun x acc -> (f x)::acc) lst []</code>", "marks": 1 },
+            { "text": "filter p: <code>fold_right (fun x acc -> if p x then x::acc else acc) lst []</code>. All demonstrate that fold is a universal list combinator", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Explain the Y combinator conceptually. Why can't you directly write the Y combinator in OCaml's type system without extensions? What does this reveal about OCaml's type system?",
+          "markscheme": [
+            { "text": "Y combinator: Y f = f (Y f); allows defining recursion without named recursive functions. Y f is a fixpoint of f: Y f = f (Y f)", "marks": 1 },
+            { "text": "OCaml's type system is strongly normalising: the naive Y = fun f -> (fun x -> f (x x)) (fun x -> f (x x)) has the term x x, requiring x : 'a -> 'b and x : 'a simultaneously — a recursive type. OCaml rejects this", "marks": 1 },
+            { "text": "This reveals OCaml's parametric polymorphism is predicative (type variables don't range over polymorphic types); recursive types require explicit <code>type 'a t = ...</code>. With <code>type 'a self = Self of ('a self -> 'a)</code>, Y can be defined but is non-standard", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fcs-curry-d5b",
+      "topic": "currying",
+      "topicTitle": "Currying",
+      "difficulty": 5,
+      "title": "Tripos: higher-order functions on trees",
+      "totalMarks": 13,
+      "prompt": "This question concerns currying and higher-order functions applied to trees.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Define <code>tree_filter : ('a -> bool) -> 'a bst -> 'a list</code> that returns all elements satisfying a predicate, in sorted order. Use partial application to create <code>tree_positives : int bst -> int list</code>.",
+          "markscheme": [
+            { "text": "<code>let tree_filter p t = List.filter p (inorder t)</code> (inorder gives sorted list, then filter)", "marks": 1 },
+            { "text": "Or directly: <code>let rec tree_filter p = function Empty -> [] | Node(l,v,r) -> tree_filter p l @ (if p v then [v] else []) @ tree_filter p r</code>", "marks": 1 },
+            { "text": "<code>let tree_positives = tree_filter (fun x -> x > 0)</code> — partial application of tree_filter", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Write a function <code>tree_zip_with : ('a -> 'b -> 'c) -> 'a bst -> 'b bst -> 'c bst option</code> that combines two structurally identical trees using a combining function, returning None if the shapes differ.",
+          "markscheme": [
+            { "text": "Base case: both Empty → Some Empty", "marks": 1 },
+            { "text": "Mismatch case: one Empty one Node → None", "marks": 1 },
+            { "text": "Recursive case: Node(l1,v1,r1) and Node(l2,v2,r2): combine subtrees, return None if either subtree fails. <code>match tree_zip_with f l1 l2, tree_zip_with f r1 r2 with Some l, Some r -> Some (Node(l, f v1 v2, r)) | _ -> None</code>", "marks": 2 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Show that <code>tree_map f</code> is equivalent to <code>tree_zip_with (fun _ y -> y) (complete_tree d ())</code> for a specific choice of input. What does this reveal about the relationship between map and zip_with?",
+          "markscheme": [
+            { "text": "tree_map f t ≈ tree_zip_with (fun _ y -> f y) t t — applying f to each pair (v,v) discarding left, equivalent to mapping f over values", "marks": 1 },
+            { "text": "More precisely: tree_map f t = match tree_zip_with (fun _ y -> y) (tree_map f t) t... This is a bit circular. Better: map is zip_with applied to one tree and a mapped version of itself — reveals map as a degenerate case of zip where one 'array' is the function-applied version", "marks": 1 },
+            { "text": "General principle: many array/tree operations (map, scan, zip) are instances of a general 'traversal' combining structure and function — this is captured by the Traversable typeclass in Haskell / traverse in OCaml", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Write the type of a 'tree homomorphism' — a function that maps one tree structure to another. Argue that any function defined by structural recursion on trees is a tree homomorphism when it maps into a tree or fold reduces to another tree.",
+          "markscheme": [
+            { "text": "Tree homomorphism: h : 'a bst -> 'b bst such that h(Empty) = Empty and h(Node(l,v,r)) = Node(h l, f v, h r) for some function f. This is precisely tree_map f", "marks": 1 },
+            { "text": "Structural recursion: any function defined by cases on Empty and Node that returns the same structure type is a homomorphism if it preserves the tree structure (maps Empty to Empty and Node to Node)", "marks": 1 },
+            { "text": "Functions that change the structure (filter, flatten) are not homomorphisms on trees; they map trees to lists or different trees. This distinction is important for reasoning about which transformations preserve invariants", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fcs-lazy-d1",
+      "topic": "sequences-and-lazy-lists",
+      "topicTitle": "Sequences and Lazy Lists",
+      "difficulty": 1,
+      "title": "Lazy evaluation basics",
+      "totalMarks": 3,
+      "prompt": "Explain the difference between eager (strict) and lazy evaluation. Give one advantage of lazy evaluation. In OCaml, how is a lazy value created and forced?",
+      "markscheme": [
+        { "text": "Eager: expressions evaluated immediately when bound. Lazy: expressions evaluated only when their value is needed (deferred)", "marks": 1 },
+        { "text": "Advantage: can work with infinite data structures; avoids computing values that are never used (saves time/memory)", "marks": 1 },
+        { "text": "OCaml: <code>lazy expr</code> creates a lazy value (type <code>'a Lazy.t</code>); <code>Lazy.force lv</code> or <code>let lazy v = lv</code> forces evaluation. Result is memoised — computed only once", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-lazy-d2",
+      "topic": "sequences-and-lazy-lists",
+      "topicTitle": "Sequences and Lazy Lists",
+      "difficulty": 2,
+      "title": "Streams in OCaml",
+      "totalMarks": 4,
+      "prompt": "Define an OCaml type for a lazy stream (infinite list). Write <code>stream_from : int -> int stream</code> that creates the stream of all integers starting from n. Write <code>stream_take : int -> 'a stream -> 'a list</code> that extracts the first n elements.",
+      "markscheme": [
+        { "text": "<code>type 'a stream = Cons of 'a * 'a stream Lazy.t</code>", "marks": 1 },
+        { "text": "<code>let rec stream_from n = Cons (n, lazy (stream_from (n+1)))</code>", "marks": 1 },
+        { "text": "<code>let rec stream_take n (Cons (h, t)) = if n = 0 then [] else h :: stream_take (n-1) (Lazy.force t)</code>", "marks": 1 },
+        { "text": "<code>stream_take 5 (stream_from 1)</code> = <code>[1;2;3;4;5]</code>", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-lazy-d3",
+      "topic": "sequences-and-lazy-lists",
+      "topicTitle": "Sequences and Lazy Lists",
+      "difficulty": 3,
+      "title": "Stream operations",
+      "totalMarks": 5,
+      "prompt": "Using your stream type, write:<br>(i) <code>stream_map : ('a -> 'b) -> 'a stream -> 'b stream</code><br>(ii) <code>stream_filter : ('a -> bool) -> 'a stream -> 'a stream</code><br>(iii) The Sieve of Eratosthenes using streams: write <code>primes : int stream</code>.",
+      "hint": "For the sieve: start with integers from 2. At each step, take the head (a prime) and filter out all its multiples from the tail.",
+      "markscheme": [
+        { "text": "<code>let rec stream_map f (Cons(h,t)) = Cons(f h, lazy (stream_map f (Lazy.force t)))</code>", "marks": 1 },
+        { "text": "<code>let rec stream_filter p (Cons(h,t)) = if p h then Cons(h, lazy (stream_filter p (Lazy.force t))) else stream_filter p (Lazy.force t)</code>", "marks": 1 },
+        { "text": "<code>let rec sieve (Cons(p,t)) = Cons(p, lazy (sieve (stream_filter (fun n -> n mod p <> 0) (Lazy.force t))))</code>", "marks": 2 },
+        { "text": "<code>let primes = sieve (stream_from 2)</code>; <code>stream_take 5 primes = [2;3;5;7;11]</code>", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-lazy-d4",
+      "topic": "sequences-and-lazy-lists",
+      "topicTitle": "Sequences and Lazy Lists",
+      "difficulty": 4,
+      "title": "Memoisation in lazy streams",
+      "totalMarks": 6,
+      "prompt": "(i) Explain how OCaml's <code>Lazy.t</code> provides automatic memoisation. Why is this important for streams?<br>(ii) Consider defining the Fibonacci stream: <code>let rec fibs = Cons(0, lazy (Cons(1, lazy (stream_zip_add fibs (stream_tail fibs)))))</code>. Explain how this works and why lazy memoisation is essential here.<br>(iii) Write <code>stream_zip_add : int stream -> int stream -> int stream</code>.",
+      "markscheme": [
+        { "text": "Lazy.force memoises: the first call evaluates and stores the result; subsequent calls return the cached value without re-evaluation. For streams, this ensures each element is computed at most once", "marks": 2 },
+        { "text": "fibs: stream starting with 0, 1, then elementwise sum of fibs and (tail of fibs) = 0+1=1, 1+1=2, 1+2=3, 2+3=5,... Without memoisation, each force would re-evaluate the entire stream, causing exponential blowup", "marks": 2 },
+        { "text": "<code>let rec stream_zip_add (Cons(a,ta)) (Cons(b,tb)) = Cons(a+b, lazy (stream_zip_add (Lazy.force ta) (Lazy.force tb)))</code>", "marks": 2 }
+      ]
+    },
+    {
+      "id": "fcs-lazy-d5a",
+      "topic": "sequences-and-lazy-lists",
+      "topicTitle": "Sequences and Lazy Lists",
+      "difficulty": 5,
+      "title": "Infinite streams and coinduction",
+      "totalMarks": 13,
+      "prompt": "This question concerns infinite data structures in OCaml.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Write <code>stream_interleave : 'a stream -> 'a stream -> 'a stream</code> that alternates elements from two streams. Use it to create the stream of all integers: ..., -2, -1, 0, 1, 2, ... interleaving non-negative and negatives.",
+          "markscheme": [
+            { "text": "<code>let rec stream_interleave (Cons(h,t)) s2 = Cons(h, lazy (stream_interleave s2 (Lazy.force t)))</code>", "marks": 1 },
+            { "text": "All integers: interleave (stream_from 0) (stream_map (fun x -> -(x+1)) (stream_from 0)) gives 0,-1,1,-2,2,-3,...", "marks": 1 },
+            { "text": "This demonstrates that ℤ is countably infinite — can be enumerated by this stream", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Describe the concept of coinduction vs induction. How does it apply to reasoning about infinite streams? State the coinduction principle for streams.",
+          "markscheme": [
+            { "text": "Induction: prove a property for all finite structures by reasoning from base cases up. Coinduction: prove two infinite processes produce the same output by showing they are 'bisimilar'", "marks": 1 },
+            { "text": "For streams: two streams s and t are equal if their heads are equal and their tails are equal (as streams). This is coinductive equality — defined by observation, not construction", "marks": 1 },
+            { "text": "Coinduction principle: to show s = t, define a relation R on streams; show R is a bisimulation (pairs in R have equal heads and tails in R); show (s,t) ∈ R", "marks": 1 },
+            { "text": "Example: prove stream_map id s = s coinductively. R = {(stream_map id s, s)}; head: id(head s) = head s ✓; tail: (stream_map id (tail s), tail s) ∈ R ✓. So they are equal.", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Write <code>stream_drop_while : ('a -> bool) -> 'a stream -> 'a stream</code>. Use it to implement a stream that generates only prime numbers using trial division on a stream of naturals.",
+          "markscheme": [
+            { "text": "<code>let rec stream_drop_while p (Cons(h,t) as s) = if p h then stream_drop_while p (Lazy.force t) else s</code>", "marks": 1 },
+            { "text": "Naive primes by trial division: <code>let is_prime n = n >= 2 && not (List.exists (fun d -> n mod d = 0) (List.init (n-2) (fun i -> i+2)))</code>; then stream_filter is_prime (stream_from 2)", "marks": 1 },
+            { "text": "Note: this is O(n×√n) per prime; sieve approach is much more efficient for generating many primes", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "OCaml's streams with <code>Lazy.t</code> are call-by-need (lazy memoised). Describe call-by-name (non-memoised laziness). Give an example showing when they give different performance.",
+          "markscheme": [
+            { "text": "Call-by-name: delay expression as <code>unit -> 'a</code> (thunk); each <code>force</code> (apply to ()) re-evaluates. No caching.", "marks": 1 },
+            { "text": "Call-by-need (Lazy.t): evaluate once on first force, cache result; subsequent forces return cached value", "marks": 1 },
+            { "text": "Performance difference: Fibonacci stream with call-by-name would recompute each element exponentially many times; with call-by-need, each element is computed exactly once. Stream operations that share nodes benefit hugely from memoisation", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fcs-lazy-d5b",
+      "topic": "sequences-and-lazy-lists",
+      "topicTitle": "Sequences and Lazy Lists",
+      "difficulty": 5,
+      "title": "Lazy evaluation: Cambridge Tripos style",
+      "totalMarks": 12,
+      "prompt": "This question concerns lazy evaluation in OCaml.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "The following OCaml code uses lazy evaluation. What does it print? Trace the evaluation step by step.<br><pre><code>let x = lazy (print_string \"A\"; 1)\nlet y = lazy (print_string \"B\"; Lazy.force x + 1)\nlet () =\n  let _ = Lazy.force y in\n  let _ = Lazy.force y in\n  let _ = Lazy.force x in\n  ()</code></pre>",
+          "markscheme": [
+            { "text": "First force y: evaluates y's thunk → prints \"B\", then forces x → prints \"A\", computes 1+1=2. y is now memoised to 2, x to 1", "marks": 1 },
+            { "text": "Second force y: y already memoised → no print, returns 2", "marks": 1 },
+            { "text": "Force x: x already memoised → no print, returns 1. Total printed: \"BA\" (only once each)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Write <code>stream_scan : ('b -> 'a -> 'b) -> 'b -> 'a stream -> 'b stream</code> — the stream analogue of fold_left that yields all intermediate accumulator values. Demonstrate by computing the running sum of the stream of natural numbers.",
+          "markscheme": [
+            { "text": "<code>let rec stream_scan f acc (Cons(h,t)) = Cons(acc, lazy (stream_scan f (f acc h) (Lazy.force t)))</code>", "marks": 2 },
+            { "text": "Running sum of naturals: stream_scan (+) 0 (stream_from 1) gives Cons(0, Cons(1, Cons(3, Cons(6, ...)))) — triangular numbers", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Explain what happens when you try to define <code>let rec ones = Cons(1, lazy ones)</code> versus <code>let rec ones = Cons(1, lazy (ones))</code> in OCaml. Why does OCaml reject (or accept) each version?",
+          "markscheme": [
+            { "text": "<code>let rec ones = Cons(1, lazy ones)</code>: OCaml rejects — <code>ones</code> is not a syntactic value on the right-hand side (it's a recursive reference that isn't obviously a function or lazy); OCaml's value restriction prevents recursive let bindings that aren't functions or lazy expressions from being accepted without explicit lazy", "marks": 1 },
+            { "text": "<code>let rec ones = Cons(1, lazy (ones))</code>: In practice, both are similar. The key is that the recursive reference must be wrapped in <code>lazy</code> to defer evaluation. OCaml accepts <code>let rec ones : int stream = Cons(1, lazy ones)</code> when the type annotation guides the compiler", "marks": 1 },
+            { "text": "Without lazy, the recursive reference is evaluated immediately → infinite loop. With lazy, evaluation is deferred until Lazy.force is called", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Describe the amortised complexity of stream operations. Consider <code>stream_filter p s</code> where p is rarely true. What is the amortised cost per element of <code>stream_take n (stream_filter p s)</code> if the density of elements satisfying p is 1/k?",
+          "markscheme": [
+            { "text": "Each element of the filtered stream requires examining on average k elements of the original stream before finding one satisfying p", "marks": 1 },
+            { "text": "Amortised cost per output element: O(k) original elements examined; total cost of stream_take n = O(nk)", "marks": 1 },
+            { "text": "With lazy memoisation: each original element examined at most once, so total computation is O(nk) — no redundancy. Without memoisation, elements could be re-examined multiple times if the stream is shared", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fcs-queues-d1",
+      "topic": "queues-and-search-strategies",
+      "topicTitle": "Queues and Search Strategies",
+      "difficulty": 1,
+      "title": "Queue vs stack",
+      "totalMarks": 3,
+      "prompt": "Define a queue and a stack. What ordering do they impose on element removal? Give the names of the fundamental operations for each. How do they differ in search algorithms?",
+      "markscheme": [
+        { "text": "Queue: FIFO (first in, first out); operations enqueue (add to back) and dequeue (remove from front)", "marks": 1 },
+        { "text": "Stack: LIFO (last in, first out); operations push (add to top) and pop (remove from top)", "marks": 1 },
+        { "text": "In graph search: queue → breadth-first search (explores level by level); stack → depth-first search (explores as deep as possible first)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-queues-d2",
+      "topic": "queues-and-search-strategies",
+      "topicTitle": "Queues and Search Strategies",
+      "difficulty": 2,
+      "title": "Functional queue implementation",
+      "totalMarks": 4,
+      "prompt": "A functional queue can be implemented using two lists: a front list and a rear list. Elements are enqueued to the rear; dequeued from the front. When the front is empty, reverse the rear. Implement this in OCaml and give the amortised time complexity of enqueue and dequeue.",
+      "markscheme": [
+        { "text": "Type: <code>type 'a queue = { front: 'a list; rear: 'a list }</code>; <code>let empty = { front=[]; rear=[] }</code>", "marks": 1 },
+        { "text": "<code>let enqueue x q = { q with rear = x :: q.rear }</code>", "marks": 1 },
+        { "text": "<code>let dequeue q = match q.front with x::xs -> Some (x, {q with front=xs}) | [] -> match List.rev q.rear with [] -> None | x::xs -> Some (x, {front=xs; rear=[]})</code>", "marks": 1 },
+        { "text": "Amortised O(1) for both: each element is reversed at most once; total work for n operations is O(n) → O(1) amortised", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-queues-d3",
+      "topic": "queues-and-search-strategies",
+      "topicTitle": "Queues and Search Strategies",
+      "difficulty": 3,
+      "title": "BFS and DFS on trees",
+      "totalMarks": 5,
+      "prompt": "Implement BFS and DFS on a binary tree in OCaml, each returning a list of node values in visit order. Use your functional queue for BFS and a list as a stack for DFS.<br>Apply both to the tree Node(Node(Empty,1,Empty), 2, Node(Node(Empty,3,Empty), 4, Empty)).",
+      "hint": "BFS: enqueue root, then repeatedly dequeue a node and enqueue its children. DFS: use the front of a list as a stack.",
+      "markscheme": [
+        { "text": "DFS: <code>let rec dfs = function [] -> [] | Empty::rest -> dfs rest | Node(l,v,r)::rest -> v :: dfs (l::r::rest)</code>; result on example: [2;1;4;3]", "marks": 2 },
+        { "text": "BFS using queue: enqueue root; dequeue each node, enqueue its children; collect values. Result on example: [2;1;4;3] for DFS but [2;1;4;3]... BFS gives [2;1;4;3]... let me reconsider. BFS visits level by level: root=2; then children 1,4; then children of 4: 3. So BFS: [2;1;4;3]", "marks": 2 },
+        { "text": "DFS (preorder): [2;1;4;3]; BFS: [2;1;4;3] — same order coincidentally for this tree. For an unbalanced tree they'd differ", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-queues-d4",
+      "topic": "queues-and-search-strategies",
+      "topicTitle": "Queues and Search Strategies",
+      "difficulty": 4,
+      "title": "Best-first search and priority queues",
+      "totalMarks": 6,
+      "prompt": "(i) Describe best-first search. How does it differ from BFS and DFS?<br>(ii) What data structure does best-first search use? Why?<br>(iii) Implement a simple best-first search on a weighted graph represented as an adjacency list in OCaml (you may use a simple list-based priority queue for clarity). State the time complexity.",
+      "markscheme": [
+        { "text": "Best-first search: at each step, expand the node with the lowest estimated cost to goal (heuristic). Unlike BFS (uniform cost per step) and DFS (arbitrary order), best-first uses a problem-specific priority", "marks": 2 },
+        { "text": "Uses a priority queue (min-heap): always expands the minimum-cost node next. O(log n) insert/extract", "marks": 1 },
+        { "text": "Simple list-based priority queue: sorted insertion O(n); extract-min O(1). Overall best-first: O(n²) with simple PQ vs O((n+m) log n) with heap", "marks": 1 },
+        { "text": "Implementation: maintain a list of (cost, node) pairs sorted by cost; at each step extract minimum, add unvisited neighbours with cumulative cost; mark visited nodes", "marks": 2 }
+      ]
+    },
+    {
+      "id": "fcs-queues-d5a",
+      "topic": "queues-and-search-strategies",
+      "topicTitle": "Queues and Search Strategies",
+      "difficulty": 5,
+      "title": "Search strategies: BFS, DFS, iterative deepening",
+      "totalMarks": 12,
+      "prompt": "This question concerns search strategies in OCaml.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "A state space tree has branching factor b and depth d. Compare BFS and DFS on: (i) time complexity; (ii) space complexity; (iii) completeness (will it find a solution if one exists?).",
+          "markscheme": [
+            { "text": "BFS: time O(b^d), space O(b^d) — must store all nodes at current level; complete (finds shallowest solution)", "marks": 1 },
+            { "text": "DFS: time O(b^d), space O(bd) — only stores current path; complete for finite trees, may diverge on infinite depth", "marks": 1 },
+            { "text": "Iterative deepening DFS (IDDFS): time O(b^d) (same as BFS asymptotically), space O(bd) (like DFS), complete (like BFS) — best of both worlds for large state spaces", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Implement iterative deepening DFS in OCaml for a tree with type <code>'a tree = Leaf of 'a | Branch of 'a tree list</code>. The search should find the first node satisfying predicate p.",
+          "markscheme": [
+            { "text": "DFS with depth limit: <code>let rec dfs_limited p limit = function Leaf v -> if p v then Some v else None | Branch _ when limit=0 -> None | Branch cs -> List.find_opt (fun x -> x <> None) (List.map (dfs_limited p (limit-1)) cs) |> Option.join</code>", "marks": 2 },
+            { "text": "IDDFS: try depth limits 0,1,2,...: <code>let iddfs p tree = let rec try_depth d = match dfs_limited p d tree with Some _ as r -> r | None -> try_depth (d+1) in try_depth 0</code>", "marks": 1 },
+            { "text": "Note: this diverges if no solution exists in an infinite tree; need a max_depth parameter in practice", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "In the context of OCaml, explain how the choice of data structure for the 'frontier' (nodes yet to explore) determines the search strategy. Give the frontier structure for BFS, DFS, and best-first search.",
+          "markscheme": [
+            { "text": "The search algorithm is the same; only the frontier data structure changes: add newly discovered nodes to frontier; remove next node to expand from frontier", "marks": 1 },
+            { "text": "BFS: frontier is a queue (FIFO) — new nodes added to back, explored from front → level-order exploration", "marks": 1 },
+            { "text": "DFS: frontier is a stack (LIFO) — new nodes pushed, popped from same end → depth-first. Best-first: frontier is a priority queue ordered by cost/heuristic", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 2,
+          "prompt": "OCaml's lazy streams can be used to implement a 'lazy BFS' that generates the search tree on demand. What is the advantage of this over an eager BFS?",
+          "markscheme": [
+            { "text": "Lazy BFS generates only as many nodes as needed; if the answer is found early, the rest of the tree is never evaluated. Avoids allocating O(b^d) nodes upfront", "marks": 1 },
+            { "text": "Enables composability: the stream of search results can be combined with other stream operations (e.g. take the first 3 solutions, or find the first solution satisfying additional conditions) without changing the search code", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fcs-queues-d5b",
+      "topic": "queues-and-search-strategies",
+      "topicTitle": "Queues and Search Strategies",
+      "difficulty": 5,
+      "title": "A* and heuristic search",
+      "totalMarks": 13,
+      "prompt": "This question concerns informed search strategies.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Describe the A* search algorithm. What is the evaluation function f(n) = g(n) + h(n)? State the admissibility condition for a heuristic and explain why it guarantees finding the optimal solution.",
+          "markscheme": [
+            { "text": "A*: best-first search using f(n)=g(n)+h(n). g(n)=cost from start to n; h(n)=estimated cost from n to goal", "marks": 1 },
+            { "text": "Admissibility: h(n) ≤ h*(n) for all n, where h*(n) is the true optimal cost to goal. h never overestimates", "marks": 1 },
+            { "text": "Guarantee: with admissible h, A* expands nodes in non-decreasing f order; when goal is first expanded, its g value is optimal (any cheaper path would have been expanded first)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "For the 8-puzzle problem, describe: (i) the state space; (ii) two admissible heuristics; (iii) which heuristic dominates the other.",
+          "markscheme": [
+            { "text": "State space: arrangement of 8 tiles + blank on a 3×3 grid; 9!/2 = 181,440 reachable states; edges are blank moves (up/down/left/right)", "marks": 1 },
+            { "text": "Heuristic 1: misplaced tiles (number of tiles not in goal position). Admissible: each misplaced tile needs ≥1 move", "marks": 1 },
+            { "text": "Heuristic 2: Manhattan distance (sum of |row_current − row_goal| + |col_current − col_goal| for each tile). Dominates h1 since Manhattan ≥ misplaced always; A* with Manhattan expands fewer nodes", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 4,
+          "prompt": "Implement a general A* search function in OCaml:<br><code>astar : ('s -> bool) -> ('s -> float) -> ('s -> ('s * float) list) -> 's -> 's option</code><br>where arguments are: goal test, heuristic, expand (returns neighbours with costs), initial state. Use a priority queue frontier.",
+          "markscheme": [
+            { "text": "Correct open list (priority queue) initialised with (f=h(start), g=0, state=start)", "marks": 1 },
+            { "text": "Main loop: extract minimum-f node; if goal, return Some state; else expand neighbours; for each neighbour compute new g and f; add to open list if not already visited or if new g is better", "marks": 2 },
+            { "text": "Closed set to avoid re-expanding visited states. Return None if open list becomes empty (no path)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Compare A* with Dijkstra's algorithm. Show that Dijkstra's algorithm is a special case of A* with a particular heuristic.",
+          "markscheme": [
+            { "text": "Dijkstra: find shortest path in weighted graph; expands by g(n) alone. A*: adds heuristic h(n) to guide search toward goal", "marks": 1 },
+            { "text": "A* with h(n)=0 for all n: f(n)=g(n) — expands in order of actual cost from source. This is exactly Dijkstra's algorithm", "marks": 1 },
+            { "text": "h(n)=0 is admissible (never overestimates). A* is a generalisation that can be more efficient when a good heuristic is available. Dijkstra explores all directions equally; A* focuses search toward the goal", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fcs-proc-d1",
+      "topic": "procedural-programming",
+      "topicTitle": "Procedural Programming",
+      "difficulty": 1,
+      "title": "Mutable state in OCaml",
+      "totalMarks": 3,
+      "prompt": "OCaml supports mutable state via references. What is a reference? Give the types of <code>ref</code>, <code>!</code>, and <code>:=</code>. Write a counter that can be incremented and read.",
+      "markscheme": [
+        { "text": "Reference: a mutable cell containing a value. <code>ref : 'a -> 'a ref</code>; <code>(!) : 'a ref -> 'a</code>; <code>(:=) : 'a ref -> 'a -> unit</code>", "marks": 1 },
+        { "text": "Counter: <code>let count = ref 0</code>; increment: <code>count := !count + 1</code>; read: <code>!count</code>", "marks": 1 },
+        { "text": "The <code>!</code> operator dereferences (reads the current value); <code>:=</code> assigns a new value. Not to be confused with boolean not or field access", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-proc-d2",
+      "topic": "procedural-programming",
+      "topicTitle": "Procedural Programming",
+      "difficulty": 2,
+      "title": "Loops in OCaml",
+      "totalMarks": 4,
+      "prompt": "OCaml provides <code>for</code> and <code>while</code> loops. Write the following using loops (not recursion): (i) sum the integers from 1 to n; (ii) compute n! imperatively. State when you would prefer loops over recursion in OCaml.",
+      "markscheme": [
+        { "text": "(i) <code>let sum_to n = let s = ref 0 in for i = 1 to n do s := !s + i done; !s</code>", "marks": 1 },
+        { "text": "(ii) <code>let fact n = let r = ref 1 in for i = 2 to n do r := !r * i done; !r</code>", "marks": 1 },
+        { "text": "Prefer loops: when algorithm is naturally iterative (e.g. scanning an array); when stack overflow is a concern for large n with non-tail recursion; when interfacing with imperative data structures", "marks": 2 }
+      ]
+    },
+    {
+      "id": "fcs-proc-d3",
+      "topic": "procedural-programming",
+      "topicTitle": "Procedural Programming",
+      "difficulty": 3,
+      "title": "Mutable arrays and in-place algorithms",
+      "totalMarks": 5,
+      "prompt": "In OCaml, arrays are mutable. Write an in-place insertion sort using OCaml arrays. State the type of your function. Compare its memory usage to the functional list-based insertion sort.",
+      "hint": "Array element access: arr.(i); assignment: arr.(i) <- v.",
+      "markscheme": [
+        { "text": "Type: <code>int array -> unit</code> (sorts in-place, returns unit)", "marks": 1 },
+        { "text": "Correct outer loop: for j = 1 to n-1; inner: extract arr.(j), shift elements right while they're larger, insert", "marks": 3 },
+        { "text": "Memory: O(1) extra space (in-place). Functional list isort: O(n) extra space (creates new list nodes). Array version preferred for large data sets where memory is tight", "marks": 1 }
+      ]
+    },
+    {
+      "id": "fcs-proc-d4",
+      "topic": "procedural-programming",
+      "topicTitle": "Procedural Programming",
+      "difficulty": 4,
+      "title": "Exceptions and error handling",
+      "totalMarks": 6,
+      "prompt": "(i) Explain OCaml's exception mechanism. How do you define, raise, and catch an exception?<br>(ii) Compare exceptions to the option type for error handling — when would you use each?<br>(iii) Implement a safe integer division function using both approaches (exception-based and option-based) and discuss the trade-offs.",
+      "markscheme": [
+        { "text": "Define: <code>exception MyError of string</code>. Raise: <code>raise (MyError \"message\")</code>. Catch: <code>try ... with MyError msg -> ...</code>", "marks": 2 },
+        { "text": "Option type: explicit error handling in types; forces caller to handle None; type-safe; no overhead for success path. Exceptions: errors are implicit in types; can propagate automatically; lightweight for exceptional cases; can lead to uncaught exceptions", "marks": 2 },
+        { "text": "Exception version: <code>let div x y = if y=0 then raise Division_by_zero else x/y</code>. Option version: <code>let safe_div x y = if y=0 then None else Some (x/y)</code>. Option is preferred in functional style; exceptions for truly unexpected errors", "marks": 2 }
+      ]
+    },
+    {
+      "id": "fcs-proc-d5a",
+      "topic": "procedural-programming",
+      "topicTitle": "Procedural Programming",
+      "difficulty": 5,
+      "title": "Imperative vs functional: benchmarking and semantics",
+      "totalMarks": 12,
+      "prompt": "This question concerns the relationship between imperative and functional programming in OCaml.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Implement matrix multiplication in OCaml using mutable arrays. Give the time complexity. Compare memory usage to a purely functional implementation.",
+          "markscheme": [
+            { "text": "Triple nested loop: create n×n result array; for each (i,j), compute sum k of A[i][k]*B[k][j]. <code>let matmul a b n = let c = Array.make_matrix n n 0 in for i=0 to n-1 do for j=0 to n-1 do for k=0 to n-1 do c.(i).(j) <- c.(i).(j) + a.(i).(k) * b.(k).(j) done done done; c</code>", "marks": 2 },
+            { "text": "Time O(n³), space O(n²) for result. Functional: same complexity but creates n² new values; imperative in-place updates are cache-friendlier", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "What is referential transparency? Give an example showing that OCaml references break it. Why does this matter for equational reasoning?",
+          "markscheme": [
+            { "text": "Referential transparency: replacing any expression with its value doesn't change program behaviour. Pure functional expressions are referentially transparent", "marks": 1 },
+            { "text": "Counterexample: <code>let x = ref 0 in let f () = (incr x; !x) in f () + f ()</code> ≠ <code>2 * f ()</code> because f has a side effect. The two calls return different values", "marks": 1 },
+            { "text": "Equational reasoning fails: can't substitute equal things for equal things freely. Testing becomes harder (order-dependent). Concurrent access introduces races", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Describe the concept of a closure with mutable state (a 'stateful closure'). Write an OCaml function <code>make_counter : unit -> (unit -> int)</code> that returns a new counter each time it's called, with independent state.",
+          "markscheme": [
+            { "text": "<code>let make_counter () = let n = ref 0 in fun () -> incr n; !n</code>", "marks": 1 },
+            { "text": "Each call to make_counter creates a fresh ref n; the returned closure captures this specific ref. Different counters have independent state", "marks": 1 },
+            { "text": "<code>let c1 = make_counter () and c2 = make_counter () in c1(); c1(); c2()</code> gives 1, 2, 1 — they are independent", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Explain the difference between shallow and deep copy for OCaml data structures. When is each needed? Give an example using arrays.",
+          "markscheme": [
+            { "text": "Shallow copy: copies the top-level structure; nested mutable references are shared. Deep copy: recursively copies all mutable sub-structures", "marks": 1 },
+            { "text": "OCaml <code>Array.copy a</code>: shallow copy — new array, but if elements are mutable (e.g. <code>int ref array</code>), the refs inside are shared", "marks": 1 },
+            { "text": "Deep copy needed when: you want full independence between original and copy (modifying one's nested structure should not affect the other). Example: <code>let deep_copy a = Array.init (Array.length a) (fun i -> ref !(a.(i)))</code> for int ref array", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fcs-proc-d5b",
+      "topic": "procedural-programming",
+      "topicTitle": "Procedural Programming",
+      "difficulty": 5,
+      "title": "Tripos-style: imperative programming and correctness",
+      "totalMarks": 13,
+      "prompt": "This question concerns imperative programming in OCaml.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Write an imperative OCaml function <code>array_max : int array -> int</code> that returns the maximum element. State a loop invariant and use it to argue correctness.",
+          "markscheme": [
+            { "text": "<code>let array_max a = if Array.length a = 0 then raise (Invalid_argument \"empty\") else let m = ref a.(0) in for i=1 to Array.length a - 1 do if a.(i) > !m then m := a.(i) done; !m</code>", "marks": 1 },
+            { "text": "Loop invariant: after iteration i, <code>!m = max(a[0], ..., a[i])</code>", "marks": 1 },
+            { "text": "Correctness: invariant holds initially (i=0: m=a[0]). Maintained: if a[i+1] > m, update m; otherwise m remains the max. At termination (i=n-1): m = max of all elements", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Implement binary search on a sorted integer array in OCaml imperatively (using a while loop and references). Prove correctness using a loop invariant.",
+          "markscheme": [
+            { "text": "Correct imperative binary search: lo, hi references; while lo ≤ hi, compute mid, compare a[mid] with target, update lo or hi or return", "marks": 2 },
+            { "text": "Loop invariant: if target is in the array, it is in a[lo..hi]", "marks": 1 },
+            { "text": "Correctness: invariant holds initially (full array). Each step halves the search space while maintaining invariant. Termination: lo > hi → target not in array", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "The following OCaml code has a bug. Identify and fix it.<br><pre><code>let bubble_sort a =\n  let n = Array.length a in\n  for i = 0 to n-1 do\n    for j = 0 to n-1 do\n      if a.(j) &gt; a.(j+1) then begin\n        let tmp = a.(j) in\n        a.(j) &lt;- a.(j+1);\n        a.(j+1) &lt;- tmp\n      end\n    done\n  done</code></pre>",
+          "markscheme": [
+            { "text": "Bug: inner loop goes to n-1 but accesses a.(j+1) = a.(n) which is out of bounds", "marks": 1 },
+            { "text": "Fix: change inner loop to <code>for j = 0 to n-2 do</code>", "marks": 1 },
+            { "text": "Additional improvement: outer loop should only go to n-2; or stop early if no swap was made in a pass (optimised bubble sort)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "In OCaml, <code>Array.sort</code> sorts an array in-place. Its specification says it is 'not guaranteed stable'. Write a test that demonstrates the difference between a stable and unstable sort on an array of pairs, and explain what you observe.",
+          "markscheme": [
+            { "text": "Test: <code>let a = [|(2,'b'); (1,'a'); (2,'a')|] in Array.sort (fun (i,_) (j,_) -> compare i j) a</code>. Stable sort would give [|(1,'a');(2,'b');(2,'a')|] (preserving input order for equal keys). Unstable might give [|(1,'a');(2,'a');(2,'b')|]", "marks": 1 },
+            { "text": "OCaml's Array.sort may rearrange the two (2,_) elements in either order. The test reveals this by checking whether 'b' or 'a' comes first among the 2s", "marks": 1 },
+            { "text": "For guaranteed stability: use Array.stable_sort, which guarantees preserving relative order of equal elements; slightly higher constant factor but same O(n log n) complexity", "marks": 1 }
+          ]
+        }
+      ]
+    }
+  ]
+}

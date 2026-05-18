@@ -1,0 +1,646 @@
+{
+  "module": "algorithms-2",
+  "title": "Algorithms II — Practice Questions",
+  "questions": [
+    {
+      "id": "a2-graph1-d1",
+      "topic": "graphs-and-path-finding-algorithms",
+      "topicTitle": "Graphs and Pathfinding Algorithms",
+      "difficulty": 1,
+      "title": "BFS and DFS properties",
+      "totalMarks": 4,
+      "prompt": "State two key properties of Breadth-First Search (BFS) and two of Depth-First Search (DFS). For each algorithm, give its time complexity on a graph G = (V, E) represented as an adjacency list.",
+      "markscheme": [
+        { "text": "BFS: explores vertices in non-decreasing order of distance from source; produces a BFS tree where shortest paths (by edge count) to all reachable vertices are encoded", "marks": 1 },
+        { "text": "DFS: explores as far as possible before backtracking; classifies edges as tree/back/forward/cross; completes a connected component before moving on", "marks": 1 },
+        { "text": "Both run in O(V + E) on an adjacency list (each vertex and edge visited once)", "marks": 2 }
+      ]
+    },
+    {
+      "id": "a2-graph1-d2",
+      "topic": "graphs-and-path-finding-algorithms",
+      "topicTitle": "Graphs and Pathfinding Algorithms",
+      "difficulty": 2,
+      "title": "Dijkstra's algorithm correctness",
+      "totalMarks": 4,
+      "prompt": "Explain why Dijkstra's single-source shortest-path algorithm requires all edge weights to be non-negative. Give a small counterexample showing it can fail with a negative edge.",
+      "markscheme": [
+        { "text": "Dijkstra's greedy invariant: once a vertex u is extracted from the priority queue with distance d[u], that distance is assumed final. A negative edge from a later-processed vertex could provide a shorter path to u, violating this assumption", "marks": 2 },
+        { "text": "Counterexample: graph with edges A→B weight 2, A→C weight 3, C→B weight −2. Dijkstra extracts B first (dist=2), marks it settled; but path A→C→B has weight 1 — shorter, but missed", "marks": 2 }
+      ]
+    },
+    {
+      "id": "a2-graph1-d3",
+      "topic": "graphs-and-path-finding-algorithms",
+      "topicTitle": "Graphs and Pathfinding Algorithms",
+      "difficulty": 3,
+      "title": "Running Dijkstra's algorithm",
+      "totalMarks": 5,
+      "prompt": "Run Dijkstra's algorithm on the following graph from source A. Record the distance estimate and predecessor for each vertex at each step.<br>Edges (directed, with weights): A→B:4, A→C:2, B→C:1, B→D:5, C→B:1, C→D:8, C→E:10, D→E:2, E→D:6. All weights are positive.",
+      "hint": "At each step, extract the unvisited vertex with minimum tentative distance and relax its outgoing edges.",
+      "markscheme": [
+        { "text": "Initial: dist[A]=0, all others ∞. Extract A: relax B→4, C→2", "marks": 1 },
+        { "text": "Extract C (dist=2): relax B→min(4,3)=3, D→10, E→12", "marks": 1 },
+        { "text": "Extract B (dist=3): relax D→min(10,8)=8", "marks": 1 },
+        { "text": "Extract D (dist=8): relax E→min(12,10)=10", "marks": 1 },
+        { "text": "Extract E (dist=10). Final distances: A=0, B=3, C=2, D=8, E=10", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a2-graph1-d4",
+      "topic": "graphs-and-path-finding-algorithms",
+      "topicTitle": "Graphs and Pathfinding Algorithms",
+      "difficulty": 4,
+      "title": "Bellman-Ford and negative cycles",
+      "totalMarks": 6,
+      "prompt": "(i) Describe the Bellman-Ford algorithm and give its time complexity.<br>(ii) Explain how Bellman-Ford detects negative-weight cycles.<br>(iii) Give a directed graph with 4 nodes that contains a negative cycle, and show what Bellman-Ford reports.",
+      "hint": "After V−1 relaxations, if any edge can still be relaxed, a negative cycle exists.",
+      "markscheme": [
+        { "text": "Bellman-Ford: initialise dist[s]=0, rest ∞. Repeat V−1 times: for all edges (u,v,w), if dist[u]+w < dist[v], update dist[v]. Time: O(VE)", "marks": 2 },
+        { "text": "Negative cycle detection: perform one additional (V-th) round of relaxations; if any dist[v] decreases, a negative cycle is reachable from s", "marks": 2 },
+        { "text": "Example: nodes A,B,C,D. Edges A→B:1, B→C:−3, C→D:2, D→B:1. Cycle B→C→D→B has weight −3+2+1=0? No, try B→C:−3, C→B:1 → cycle weight −2. Bellman-Ford: after 3 rounds, dist[C] keeps decreasing → negative cycle detected on round 4", "marks": 2 }
+      ]
+    },
+    {
+      "id": "a2-graph1-d5a",
+      "topic": "graphs-and-path-finding-algorithms",
+      "topicTitle": "Graphs and Pathfinding Algorithms",
+      "difficulty": 5,
+      "title": "Shortest paths: algorithm selection and analysis",
+      "totalMarks": 13,
+      "prompt": "This question concerns shortest-path algorithms.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "For each of the following scenarios, state which shortest-path algorithm you would use and justify your choice:<br>(i) Dense graph, non-negative weights, single source.<br>(ii) Sparse graph, non-negative weights, single source.<br>(iii) Graph may contain negative edges (but no negative cycles), single source.<br>(iv) All-pairs shortest paths, dense graph.",
+          "markscheme": [
+            { "text": "(i) Dijkstra with adjacency matrix + simple array priority queue: O(V²), suitable for dense graphs", "marks": 1 },
+            { "text": "(ii) Dijkstra with binary heap/Fibonacci heap + adjacency list: O((V+E)log V) or O(E + V log V)", "marks": 1 },
+            { "text": "(iii) Bellman-Ford: O(VE); handles negative edges, detects negative cycles", "marks": 0.5 },
+            { "text": "(iv) Floyd-Warshall: O(V³) DP; works well for dense graphs; or run Dijkstra V times for sparse graphs", "marks": 0.5 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Describe the Floyd-Warshall algorithm for all-pairs shortest paths. Write the recurrence relation and give the time and space complexity.",
+          "markscheme": [
+            { "text": "DP state: dist[i][j][k] = shortest path from i to j using only vertices {1,...,k} as intermediates", "marks": 1 },
+            { "text": "Recurrence: dist[i][j][k] = min(dist[i][j][k−1], dist[i][k][k−1] + dist[k][j][k−1])", "marks": 1 },
+            { "text": "Base case: dist[i][j][0] = w(i,j) if edge exists, 0 if i=j, ∞ otherwise. Final answer in dist[i][j][V]", "marks": 1 },
+            { "text": "Time O(V³), space O(V²) (only need two layers at a time, or optimise to O(V²) by updating in-place)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Prove that BFS finds shortest paths (by number of edges) in an unweighted graph. Your proof should use a loop invariant.",
+          "markscheme": [
+            { "text": "Invariant: when a vertex v is added to the queue at distance d, dist[v] = d is the true shortest-path distance from s", "marks": 1 },
+            { "text": "Induction: dist[s]=0 trivially correct. For vertex v extracted at distance d: v was enqueued when processing some u with dist[u]=d−1; edge (u,v) gives dist[v]≤d. Any shorter path would have enqueued v earlier at distance < d, contradiction (FIFO property of BFS queue)", "marks": 1 },
+            { "text": "Conclusion: all vertices at distance d are enqueued before any at distance d+1 (by induction and FIFO), so BFS processes vertices in non-decreasing distance order", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Dijkstra's algorithm can be implemented with different priority queue data structures. Complete the table: for each PQ implementation, give the time for decreaseKey and extractMin, and state the overall complexity of Dijkstra on G=(V,E).<br>PQ type: (i) unsorted array, (ii) binary heap, (iii) Fibonacci heap.",
+          "markscheme": [
+            { "text": "(i) Unsorted array: extractMin O(V), decreaseKey O(1); Dijkstra total O(V²) — good for dense graphs", "marks": 1 },
+            { "text": "(ii) Binary heap: extractMin O(log V), decreaseKey O(log V); Dijkstra total O((V+E) log V)", "marks": 1 },
+            { "text": "(iii) Fibonacci heap: extractMin O(log V) amortised, decreaseKey O(1) amortised; Dijkstra total O(E + V log V) — theoretically optimal for sparse graphs", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a2-graph1-d5b",
+      "topic": "graphs-and-path-finding-algorithms",
+      "topicTitle": "Graphs and Pathfinding Algorithms",
+      "difficulty": 5,
+      "title": "DFS and topological sort",
+      "totalMarks": 12,
+      "prompt": "This question concerns Depth-First Search and its applications.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Describe the DFS algorithm on a directed graph G=(V,E) and explain how finish times are assigned. How are edge types (tree, back, forward, cross) characterised in terms of DFS timestamps?",
+          "markscheme": [
+            { "text": "DFS: maintain discover[v] (grey) and finish[v] (black) timestamps. Recurse on all unvisited neighbours before finishing v", "marks": 1 },
+            { "text": "Tree edge: v discovered via edge (u,v); Back edge: (u,v) where v is an ancestor of u (v is grey when (u,v) explored)", "marks": 1 },
+            { "text": "Forward edge: (u,v) where v is a descendant of u but not direct tree child (v is black, discover[u] < discover[v]); Cross edge: (u,v) where v is in a different DFS tree (v is black, discover[u] > discover[v])", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Prove that a directed graph has a topological ordering if and only if it is a DAG (directed acyclic graph).",
+          "markscheme": [
+            { "text": "(→) If a topological ordering exists, a cycle would require some vertex to come before itself — contradiction. So the graph must be a DAG", "marks": 1 },
+            { "text": "(←) If G is a DAG: run DFS. Claim: outputting vertices in reverse finish order gives a topological ordering", "marks": 1 },
+            { "text": "Proof of claim: for any edge (u,v) in a DAG, finish[v] < finish[u] (v finishes before u since DFS fully explores v before returning to u). DAGs have no back edges. So reverse finish order is a valid topological order", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Run DFS on the DAG with vertices {A,B,C,D,E,F} and edges {A→C, A→B, B→D, C→D, C→E, D→F, E→F}. Starting from A, list the finish times and give the topological order.",
+          "markscheme": [
+            { "text": "Valid DFS traversal (order may vary): A→C→D→F(finish F)→(back to D, finish D)→(back to C)→E→(F already visited, finish E)→(finish C)→B→(D visited, finish B)→(finish A)", "marks": 1 },
+            { "text": "Finish order (one valid run): F, D, E, C, B, A (or similar consistent with DFS)", "marks": 1 },
+            { "text": "Topological order (reverse finish): A, B, C, E, D, F (or any valid topological sort consistent with the DFS run)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Describe Kosaraju's algorithm for finding strongly connected components (SCCs). State its time complexity.",
+          "markscheme": [
+            { "text": "Step 1: Run DFS on G; record finish times for all vertices", "marks": 1 },
+            { "text": "Step 2: Compute G^T (transpose graph — reverse all edges)", "marks": 1 },
+            { "text": "Step 3: Run DFS on G^T in decreasing finish-time order; each DFS tree is an SCC. Time: O(V+E)", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a2-graph2-d1",
+      "topic": "graphs-and-subgraphs",
+      "topicTitle": "Graphs and Subgraphs",
+      "difficulty": 1,
+      "title": "Spanning tree definitions",
+      "totalMarks": 3,
+      "prompt": "Define: (i) a spanning tree of an undirected connected graph G; (ii) a minimum spanning tree (MST). State how many edges an MST of a graph with n vertices has.",
+      "markscheme": [
+        { "text": "Spanning tree: a subgraph of G that is a tree and includes all vertices of G (connected, acyclic, V vertices)", "marks": 1 },
+        { "text": "MST: a spanning tree whose total edge weight is minimised over all spanning trees of G", "marks": 1 },
+        { "text": "An MST of a graph with n vertices has exactly n−1 edges", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a2-graph2-d2",
+      "topic": "graphs-and-subgraphs",
+      "topicTitle": "Graphs and Subgraphs",
+      "difficulty": 2,
+      "title": "Cut property for MSTs",
+      "totalMarks": 4,
+      "prompt": "State the cut property for minimum spanning trees. Explain informally why it is true. How does this property justify Kruskal's algorithm?",
+      "markscheme": [
+        { "text": "Cut property: for any cut (S, V\\S) of a connected graph with distinct edge weights, the minimum-weight edge crossing the cut is in every MST", "marks": 1 },
+        { "text": "Justification: suppose the min-cut edge e = (u,v) is not in some MST T. Adding e to T creates a cycle; at least one other edge e' crosses the cut (since u and v are on opposite sides). Since w(e) < w(e'), swapping e' for e gives a lighter spanning tree — contradiction", "marks": 2 },
+        { "text": "Kruskal's: processes edges in order of increasing weight; adds edge (u,v) if it connects two different components — exactly the minimum-weight edge crossing the cut between those components", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a2-graph2-d3",
+      "topic": "graphs-and-subgraphs",
+      "topicTitle": "Graphs and Subgraphs",
+      "difficulty": 3,
+      "title": "Running Kruskal's algorithm",
+      "totalMarks": 5,
+      "prompt": "Apply Kruskal's algorithm to find an MST of the graph with vertices {A,B,C,D,E} and edges: A-B:1, A-C:3, B-C:2, B-D:4, C-D:5, C-E:6, D-E:2. Show the Union-Find structure after each edge addition.",
+      "hint": "Sort edges by weight, then add an edge if its endpoints are in different components. Track components with Union-Find.",
+      "markscheme": [
+        { "text": "Sort edges: A-B:1, B-C:2, D-E:2, A-C:3, B-D:4, C-D:5, C-E:6", "marks": 1 },
+        { "text": "Add A-B:1 (components: {A,B},{C},{D},{E}); Add B-C:2 → {A,B,C},{D},{E}; Add D-E:2 → {A,B,C},{D,E}", "marks": 1 },
+        { "text": "Skip A-C:3 (A and C already connected); Add B-D:4 → {A,B,C,D,E} — MST complete (4 edges for 5 vertices)", "marks": 2 },
+        { "text": "MST edges: A-B:1, B-C:2, D-E:2, B-D:4; total weight = 9", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a2-graph2-d4",
+      "topic": "graphs-and-subgraphs",
+      "topicTitle": "Graphs and Subgraphs",
+      "difficulty": 4,
+      "title": "Kruskal vs Prim algorithm comparison",
+      "totalMarks": 6,
+      "prompt": "(i) Describe Prim's MST algorithm and give its time complexity with a binary heap priority queue.<br>(ii) Compare Prim's and Kruskal's algorithms: which is preferable for sparse graphs? For dense graphs? Explain why.<br>(iii) State and prove the cycle property for MSTs.",
+      "hint": "The cycle property is the 'dual' of the cut property.",
+      "markscheme": [
+        { "text": "Prim: grow MST greedily from a starting vertex. Maintain a priority queue of non-tree vertices keyed by minimum edge weight to the current tree. Repeatedly extract minimum and add to tree. O((V+E) log V) with binary heap", "marks": 2 },
+        { "text": "Sparse graphs (E ≈ V): Kruskal's O(E log E) = O(E log V) — sorting dominates, small E is fast. Prim with Fibonacci heap O(E + V log V) is also good. Kruskal preferred for sparse graphs when implemented with efficient Union-Find", "marks": 2 },
+        { "text": "Dense graphs (E ≈ V²): Prim with adjacency matrix runs in O(V²) which beats Kruskal's O(E log V) = O(V² log V)", "marks": 1 },
+        { "text": "Cycle property: for any cycle in G, the maximum-weight edge in that cycle is not in any MST. Proof: if max edge e were in MST T, removing e splits T into two components; re-adding any other edge of the cycle (weight < w(e)) reconnects them with lower total weight — contradiction", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a2-graph2-d5a",
+      "topic": "graphs-and-subgraphs",
+      "topicTitle": "Graphs and Subgraphs",
+      "difficulty": 5,
+      "title": "Graph connectivity and network flow",
+      "totalMarks": 13,
+      "prompt": "This question concerns graph connectivity.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 2,
+          "prompt": "Define (i) a bridge and (ii) an articulation point (cut vertex) in an undirected graph. Give an example graph containing both.",
+          "markscheme": [
+            { "text": "Bridge: an edge whose removal disconnects the graph (increases number of connected components)", "marks": 1 },
+            { "text": "Articulation point: a vertex whose removal disconnects the graph. Example: path graph A-B-C: B is an articulation point, A-B and B-C are bridges", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Describe how DFS can be used to find all bridges in an undirected graph in O(V+E) time. Define the 'low' value used in the algorithm.",
+          "markscheme": [
+            { "text": "DFS tree: assign discovery times disc[v] to each vertex when first visited", "marks": 1 },
+            { "text": "low[v] = min of: disc[v], disc[w] for all back edges (v,w), low[u] for all tree edges (v,u)", "marks": 1 },
+            { "text": "An edge (u,v) (where v is a child of u in DFS tree) is a bridge if and only if low[v] > disc[u] — i.e., no back edge from v's subtree reaches u or an ancestor of u", "marks": 1 },
+            { "text": "Single DFS pass computes all disc[] and low[] values, checking bridge condition for each tree edge: O(V+E)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 4,
+          "prompt": "Define the maximum flow problem. State the max-flow min-cut theorem. Give an informal justification.",
+          "markscheme": [
+            { "text": "Max flow: given directed graph G=(V,E) with capacities c(u,v), source s and sink t, find a flow f (satisfying capacity and conservation constraints) that maximises flow from s to t", "marks": 1 },
+            { "text": "Max-flow min-cut theorem: maximum value of a flow = minimum capacity of an s-t cut (a partition (S,T) of V with s∈S, t∈T; cut capacity = sum of capacities of edges from S to T)", "marks": 1 },
+            { "text": "Informal justification: every unit of flow from s to t must cross some s-t cut; a flow cannot exceed the min-cut capacity. Conversely, the Ford-Fulkerson algorithm achieves flow = min-cut (augmenting paths until residual graph has no s-t path)", "marks": 2 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "State the Ford-Fulkerson algorithm. Give its time complexity if augmenting paths are found by BFS (Edmonds-Karp). Why does using DFS to find augmenting paths give a worse bound?",
+          "markscheme": [
+            { "text": "Ford-Fulkerson: while there exists an augmenting path in the residual graph, push flow along it and update residual capacities. Repeat until no augmenting path exists", "marks": 1 },
+            { "text": "Edmonds-Karp (BFS): O(VE²) — each BFS finds a shortest augmenting path; at most O(VE) augmentations each taking O(E)", "marks": 1 },
+            { "text": "DFS: no guarantee of short paths; with integer capacities, worst case O(E·f*) augmentations (where f* is max flow value) — can be exponential in the network description size", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a2-graph2-d5b",
+      "topic": "graphs-and-subgraphs",
+      "topicTitle": "Graphs and Subgraphs",
+      "difficulty": 5,
+      "title": "Union-Find and MST correctness",
+      "totalMarks": 12,
+      "prompt": "This question concerns the Union-Find (disjoint set) data structure.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Describe the Union-Find data structure with union-by-rank and path compression. State the amortised time per operation.",
+          "markscheme": [
+            { "text": "Forest of trees; each set represented by a tree; each node stores parent and rank. Find(x): traverse to root (path compress: make all nodes on path point directly to root)", "marks": 1 },
+            { "text": "Union(x,y): find roots rx, ry; if rank(rx) < rank(ry), make rx point to ry (and vice versa); if equal, increment rank of new root", "marks": 1 },
+            { "text": "With both optimisations: amortised O(α(n)) per operation, where α is the inverse Ackermann function (practically constant)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Prove that Kruskal's algorithm produces a minimum spanning tree. Your proof should use the cut property.",
+          "markscheme": [
+            { "text": "Kruskal's produces a spanning tree T. We show it is minimum by showing every edge it adds satisfies the cut property", "marks": 1 },
+            { "text": "When Kruskal's adds edge e=(u,v): at this point, u and v are in different components C_u and C_v. The cut (C_u, V\\C_u) has e as its minimum-weight crossing edge (all lighter edges were either already added or created a cycle within a component)", "marks": 2 },
+            { "text": "By the cut property, e is in every MST. Since Kruskal's adds exactly n−1 such edges and produces a spanning tree, it produces an MST", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 2,
+          "prompt": "Is the MST of a graph unique? State conditions under which it is guaranteed to be unique, and give a counterexample when those conditions fail.",
+          "markscheme": [
+            { "text": "MST is unique if all edge weights are distinct (follows from the cut property: the unique minimum-weight edge crossing any cut must be in the MST)", "marks": 1 },
+            { "text": "Not unique with ties: graph A-B:1, A-C:1, B-C:1 has three spanning trees, any two edges form an MST", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "A graph G has an MST T. One edge weight is decreased by δ > 0. Describe an efficient algorithm to update the MST.",
+          "markscheme": [
+            { "text": "Case 1: decreased edge (u,v) is already in T. Decreasing its weight keeps T valid as an MST (T's total weight only decreases, and T was optimal before)", "marks": 1 },
+            { "text": "Case 2: decreased edge (u,v) is not in T. Adding (u,v) to T creates a unique cycle. If the new weight of (u,v) is less than the maximum-weight edge e_max on the cycle, swap e_max for (u,v)", "marks": 1 },
+            { "text": "Efficiency: finding the cycle path between u and v in T takes O(V). Checking the maximum edge on that path and performing the swap takes O(V). Total: O(V)", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a2-advds-d1",
+      "topic": "advanced-data-structures",
+      "topicTitle": "Advanced Data Structures",
+      "difficulty": 1,
+      "title": "Trie definition and operations",
+      "totalMarks": 3,
+      "prompt": "Define a trie (prefix tree). State the time complexity of insert, search, and startsWith (prefix query) operations on a trie storing n strings of maximum length L.",
+      "markscheme": [
+        { "text": "Trie: a tree data structure where each path from root to a node spells out a prefix; children are labelled by characters of an alphabet Σ", "marks": 1 },
+        { "text": "Insert: O(L) — follow/create nodes for each character of the string", "marks": 1 },
+        { "text": "Search and startsWith: O(L) — traverse the path for the query string; for search, check the end-of-word flag; for prefix query, simply check the node exists", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a2-advds-d2",
+      "topic": "advanced-data-structures",
+      "topicTitle": "Advanced Data Structures",
+      "difficulty": 2,
+      "title": "Amortised analysis of Union-Find",
+      "totalMarks": 4,
+      "prompt": "Explain what amortised O(α(n)) time complexity means for Union-Find operations. Why is the inverse Ackermann function α(n) considered 'practically constant'? What does path compression achieve structurally?",
+      "markscheme": [
+        { "text": "Amortised O(α(n)): over a sequence of m operations, total cost is O(m·α(n)); any single operation may be slower but the average is O(α(n))", "marks": 1 },
+        { "text": "α(n) grows so slowly that α(n) ≤ 4 for all n ≤ 2^(2^(2^(2^65536))) — any conceivable real-world input", "marks": 1 },
+        { "text": "Path compression: when Find(x) traverses up to the root, all nodes on the path are made direct children of the root. Flattens the tree, making future finds faster", "marks": 1 },
+        { "text": "Union by rank: without path compression, ensures tree height ≤ log n; combined with path compression gives the nearly-linear total complexity", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a2-advds-d3",
+      "topic": "advanced-data-structures",
+      "topicTitle": "Advanced Data Structures",
+      "difficulty": 3,
+      "title": "Augmented BST: order statistics",
+      "totalMarks": 5,
+      "prompt": "An order-statistics tree augments a red-black BST with a size field at each node (the number of nodes in that node's subtree). Describe how to implement Select(i) — return the i-th smallest element — and Rank(x) — return the rank of element x — in O(log n) time.",
+      "hint": "At each node, the rank of the node's key depends on the size of its left subtree.",
+      "markscheme": [
+        { "text": "Select(i): at node v with left subtree size r. If i = r+1, return v. If i ≤ r, recurse into left child with Select(i). If i > r+1, recurse into right child with Select(i−r−1)", "marks": 2 },
+        { "text": "Rank(x): start at root, track rank = 0. If x = node key, rank += left-size + 1 and return. If x > node key, rank += left-size + 1, recurse right. If x < node key, recurse left", "marks": 2 },
+        { "text": "Both O(log n): each step descends one level in the tree; tree height is O(log n) for a balanced BST", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a2-advds-d4",
+      "topic": "advanced-data-structures",
+      "topicTitle": "Advanced Data Structures",
+      "difficulty": 4,
+      "title": "Red-black tree properties and rotation",
+      "totalMarks": 6,
+      "prompt": "(i) State all five red-black tree properties.<br>(ii) Explain why a red-black tree with n nodes has height at most 2⌊log₂(n+1)⌋.<br>(iii) Briefly describe what happens when a new node is inserted into a red-black tree (the rebalancing cases).",
+      "hint": "For (ii), count black nodes on any root-to-leaf path and use the property that the height of a 'black-only' path bounds the full height.",
+      "markscheme": [
+        { "text": "Five properties: (1) every node is red or black; (2) root is black; (3) every leaf (NIL) is black; (4) both children of every red node are black; (5) all simple paths from any node to its descendant leaves have the same number of black nodes (black-height)", "marks": 2 },
+        { "text": "Height bound: let bh = black-height of root. By property 5, every path has bh black nodes; by property 4, no two consecutive red nodes → red nodes ≤ bh. So height h ≤ 2·bh. Minimum nodes in subtree of black-height bh is 2^bh − 1, so n ≥ 2^bh − 1 → bh ≤ log₂(n+1) → h ≤ 2log₂(n+1)", "marks": 2 },
+        { "text": "Insertion: new node inserted red. Cases: (1) parent is black → done; (2) parent is red, uncle is red → recolour parent+uncle black, grandparent red, recurse upward; (3) parent is red, uncle is black → rotations (LL/RR/LR/RL-style) to restore properties. At most O(log n) recolours, O(1) rotations", "marks": 2 }
+      ]
+    },
+    {
+      "id": "a2-advds-d5a",
+      "topic": "advanced-data-structures",
+      "topicTitle": "Advanced Data Structures",
+      "difficulty": 5,
+      "title": "B-trees and disk-based storage",
+      "totalMarks": 12,
+      "prompt": "This question concerns B-trees, used in database systems and file systems.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Define a B-tree of minimum degree t. State the constraints on the number of keys and children for (i) non-root nodes and (ii) the root. What is the maximum height of a B-tree with n keys?",
+          "markscheme": [
+            { "text": "B-tree min degree t: every non-root node has at least t−1 keys (and t children if internal); every node has at most 2t−1 keys (and 2t children if internal)", "marks": 1 },
+            { "text": "Root: at least 1 key (and 2 children if not a leaf); at most 2t−1 keys", "marks": 1 },
+            { "text": "Maximum height: h ≤ log_t((n+1)/2) = O(log_t n). For t=2 (2-3-4 tree), height is O(log n); large t means fewer disk accesses for the same n", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Describe the B-tree search algorithm. Explain why large values of t are preferred in practice (e.g. t = 100 or more in a database index).",
+          "markscheme": [
+            { "text": "B-tree search: at each node, binary search among keys k_1 < k_2 < ... < k_n. If target = k_i, found. If target < k_1, descend to child pointer c_1. Etc. Recurse until found or reach leaf", "marks": 2 },
+            { "text": "Large t: a node fills one or more disk blocks; reading a node costs one disk I/O. With t=100, a B-tree with 10^9 keys has height ≤ 3 (since 100^3 = 10^6 ... hmm). Actually t=1000: height ≤ log_{1000}(10^9) = 3. 3 disk reads for any lookup in a billion-key index", "marks": 1 },
+            { "text": "Key insight: disk access time (ms) dominates CPU time (ns); minimising tree height minimises disk I/Os; large branching factor gives shallow trees", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Describe the B-tree insertion algorithm at a high level. Explain the 'split' operation — when does it occur, what does it do, and how does it maintain the B-tree invariants?",
+          "markscheme": [
+            { "text": "Insertion: search for the correct leaf position. If leaf has room (<2t−1 keys), insert. Otherwise, split required", "marks": 1 },
+            { "text": "Split: when a node has 2t−1 keys (full), split it into two nodes of t−1 keys each; promote the median key to the parent", "marks": 1 },
+            { "text": "Invariant maintenance: each half-node has ≥ t−1 keys (minimum); promoting the median grows the parent (which may itself need splitting, propagating upward). If root splits, new root is created — this is the only way height increases", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 2,
+          "prompt": "Compare B-trees with red-black trees as implementations of an ordered dictionary. In what setting is each preferable?",
+          "markscheme": [
+            { "text": "Red-black tree: O(log n) for all operations; binary branching; all data in RAM; better constant factors for small n; used in main-memory data structures (e.g. std::map in C++)", "marks": 1 },
+            { "text": "B-tree: O(log_t n) height; high branching factor; each node fits one disk block; minimises disk I/Os; used for database indexes, file systems (NTFS, ext4) where data exceeds RAM", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a2-advds-d5b",
+      "topic": "advanced-data-structures",
+      "topicTitle": "Advanced Data Structures",
+      "difficulty": 5,
+      "title": "Skip lists and probabilistic data structures",
+      "totalMarks": 11,
+      "prompt": "This question concerns skip lists.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Describe the skip list data structure. How are the levels of each node determined? What is the expected height of a skip list with n elements?",
+          "markscheme": [
+            { "text": "Skip list: a linked list with multiple levels. Level 1 contains all elements; each higher level contains a random subset. Elements are sorted at each level", "marks": 1 },
+            { "text": "Level promotion: each node independently promoted to next level with probability p (typically 1/2). A node at level i is promoted to i+1 with prob p", "marks": 1 },
+            { "text": "Expected height: O(log n) for p=1/2 — by geometric distribution, expected number of levels is log_{1/p}(n)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Describe the search algorithm for a skip list. What is the expected time complexity of search, insert, and delete?",
+          "markscheme": [
+            { "text": "Search: start at top-left. At each position, advance right if next element ≤ target; drop to next level otherwise. Continue until found or level 1 exhausted", "marks": 2 },
+            { "text": "Expected O(log n) per operation: at each level, expected O(1/p) = O(1) steps before dropping; O(log n) levels total", "marks": 1 },
+            { "text": "Insert and delete: same navigation as search, then O(1) pointer updates per level; still expected O(log n) total", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 2,
+          "prompt": "Compare skip lists with balanced BSTs (e.g. AVL trees). Give one advantage and one disadvantage of skip lists.",
+          "markscheme": [
+            { "text": "Advantage: simpler to implement (no rotations); concurrent access easier (fine-grained locking per node rather than tree rotations); constant factors often better in practice", "marks": 1 },
+            { "text": "Disadvantage: expected O(log n) vs guaranteed O(log n) for balanced BSTs; higher space usage (O(n log n) expected due to multiple pointers per element vs O(n) for BST)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 2,
+          "prompt": "Bloom filters are another probabilistic data structure. Describe what a Bloom filter supports and state one key limitation.",
+          "markscheme": [
+            { "text": "Bloom filter: space-efficient structure supporting insert and membership query. Uses a bit array of size m and k independent hash functions. Insert: set bits at all k positions. Query: check if all k bits are set", "marks": 1 },
+            { "text": "Limitation: false positives possible (a query may return 'present' for an element never inserted); false negatives are impossible. Also: deletions are not supported in the basic version", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a2-geom-d1",
+      "topic": "geometric-algorithms",
+      "topicTitle": "Geometric Algorithms",
+      "difficulty": 1,
+      "title": "Convex hull definition",
+      "totalMarks": 3,
+      "prompt": "Define the convex hull of a set of points P in the plane. State the output format. Name two algorithms for computing the convex hull and give their time complexities.",
+      "markscheme": [
+        { "text": "Convex hull: the smallest convex polygon containing all points in P; equivalently, the intersection of all half-planes containing P", "marks": 1 },
+        { "text": "Output: vertices of the convex polygon in (counter-)clockwise order", "marks": 1 },
+        { "text": "Graham scan: O(n log n); Jarvis march (gift wrapping): O(nh) where h is number of hull vertices; also acceptable: QuickHull O(n log n) expected", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a2-geom-d2",
+      "topic": "geometric-algorithms",
+      "topicTitle": "Geometric Algorithms",
+      "difficulty": 2,
+      "title": "Cross product for orientation tests",
+      "totalMarks": 4,
+      "prompt": "Explain how the cross product of two 2D vectors is used to determine the orientation of three points P, Q, R (left turn, right turn, or collinear). Write the formula and explain what each sign means.",
+      "markscheme": [
+        { "text": "Given three points P, Q, R: form vectors QP = P−Q and QR = R−Q (or equivalently compute the signed area of triangle PQR)", "marks": 1 },
+        { "text": "Cross product (z-component): (Q.x−P.x)(R.y−P.y) − (Q.y−P.y)(R.x−P.x)", "marks": 1 },
+        { "text": "Positive: left turn (counter-clockwise, P→Q→R is CCW); Negative: right turn (clockwise); Zero: P, Q, R are collinear", "marks": 2 }
+      ]
+    },
+    {
+      "id": "a2-geom-d3",
+      "topic": "geometric-algorithms",
+      "topicTitle": "Geometric Algorithms",
+      "difficulty": 3,
+      "title": "Graham scan algorithm",
+      "totalMarks": 5,
+      "prompt": "Describe Graham's scan algorithm for convex hull computation. Illustrate by running it on the points: (0,0), (1,3), (2,1), (3,4), (4,0), (2,2).",
+      "hint": "Sort by angle from the lowest point, then scan maintaining a stack where we remove points causing non-left-turns.",
+      "markscheme": [
+        { "text": "Step 1: find the lowest point (break ties by x-coordinate): (0,0). Sort remaining points by polar angle with respect to (0,0)", "marks": 1 },
+        { "text": "Approximate polar order from (0,0): (4,0), (2,1), (2,2), (1,3), (3,4) — exact order depends on angles calculated", "marks": 1 },
+        { "text": "Graham scan: push first 3 sorted points. For each new point, while top two stack points + new point make a non-left turn (CW or collinear), pop. Push new point", "marks": 2 },
+        { "text": "Convex hull vertices: (0,0), (4,0), (3,4), (1,3) (or similar valid convex hull; must check each point correctly included/excluded)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a2-geom-d4",
+      "topic": "geometric-algorithms",
+      "topicTitle": "Geometric Algorithms",
+      "difficulty": 4,
+      "title": "Closest pair of points",
+      "totalMarks": 6,
+      "prompt": "(i) Describe the divide-and-conquer algorithm for closest pair of points. State the recurrence and resulting complexity.<br>(ii) Explain the key insight used in the combine step: why is it sufficient to check only O(1) candidate pairs per point in the strip?",
+      "hint": "In the strip of width 2δ around the dividing line, how many points can fit in a 2δ × δ rectangle while being at distance > δ from each other?",
+      "markscheme": [
+        { "text": "Algorithm: sort by x. Divide at median x-coordinate. Recursively find δ = min(closest pair in left, closest pair in right). Combine: check pairs (p,q) with |p.x − median| < δ and |p.y − q.y| < δ (the strip)", "marks": 2 },
+        { "text": "Recurrence: T(n) = 2T(n/2) + O(n log n) [strip sorting each time] → T(n)=O(n log² n); or presort by y: T(n)=2T(n/2)+O(n) → T(n)=O(n log n)", "marks": 2 },
+        { "text": "Combine step insight: in the strip, all points are > δ apart. A 2δ × δ rectangle (δ in the x-direction around the line, δ in the y-direction) can contain at most 8 points (pack at distance δ: 2 columns × 4 rows of δ/2 grid). So each point in the strip has at most 7 (constant) neighbours to check", "marks": 2 }
+      ]
+    },
+    {
+      "id": "a2-geom-d5a",
+      "topic": "geometric-algorithms",
+      "topicTitle": "Geometric Algorithms",
+      "difficulty": 5,
+      "title": "Line segment intersection and sweep line",
+      "totalMarks": 12,
+      "prompt": "This question concerns geometric algorithms using the sweep line technique.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Describe the problem of detecting whether any two line segments in a set S of n segments intersect. State the naïve O(n²) approach and explain why the Shamos-Hoey algorithm achieves O(n log n).",
+          "markscheme": [
+            { "text": "Naïve: test all O(n²) pairs of segments for intersection; each test is O(1) using cross product", "marks": 1 },
+            { "text": "Shamos-Hoey: sweep a vertical line from left to right. Events: segment endpoints (n left and n right endpoints = 2n events). Maintain ordered status structure of currently active segments", "marks": 1 },
+            { "text": "Key observation: if two segments intersect, they must be adjacent in the status structure at some point during the sweep (just before or at intersection). Check only adjacent pairs → O(n log n) total with O(n log n) event processing", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Describe the Bentley-Ottmann sweep line algorithm that reports all k intersections in O((n + k) log n) time. What data structures does it use and what events does it handle?",
+          "markscheme": [
+            { "text": "Event queue: priority queue of events ordered by x-coordinate: (1) left endpoint of segment, (2) right endpoint, (3) intersection points discovered during sweep", "marks": 1 },
+            { "text": "Status structure: balanced BST of segments ordered by y-coordinate at the current sweep line position", "marks": 1 },
+            { "text": "Left endpoint: insert segment into status; check against its new neighbours for intersections; add intersection events to queue", "marks": 1 },
+            { "text": "Right endpoint: remove segment; check its former neighbours against each other. Intersection event: swap two segments in status; check each against their new neighbours. Total: O((n+k) log n)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Describe the point-in-polygon test using ray casting. What special cases must be handled?",
+          "markscheme": [
+            { "text": "Ray casting: cast a ray from the query point q in any direction (e.g. rightward). Count the number of polygon edges intersected by the ray. Odd count = inside; even count = outside", "marks": 1 },
+            { "text": "Special case 1: ray passes exactly through a vertex — count it as half an intersection (or perturb the ray direction slightly)", "marks": 1 },
+            { "text": "Special case 2: ray is collinear with an edge — can cause double or zero counting; handle by only counting edges where one endpoint is strictly above and one below the ray, counting vertices on the ray consistently", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 2,
+          "prompt": "What is the time complexity of the point-in-polygon test for a polygon with n vertices? Describe an improved data structure for repeated point-in-polygon queries on the same polygon.",
+          "markscheme": [
+            { "text": "Single query: O(n) — check ray against each of n edges", "marks": 1 },
+            { "text": "Repeated queries: preprocess polygon into a trapezoidal decomposition or slab decomposition in O(n log n); each query then O(log n) using binary search", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a2-geom-d5b",
+      "topic": "geometric-algorithms",
+      "topicTitle": "Geometric Algorithms",
+      "difficulty": 5,
+      "title": "Voronoi diagrams and Delaunay triangulations",
+      "totalMarks": 11,
+      "prompt": "This question concerns Voronoi diagrams.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 2,
+          "prompt": "Define the Voronoi diagram of a set P of n point sites in the plane. How many vertices, edges, and faces does a Voronoi diagram of n sites have (in general position)?",
+          "markscheme": [
+            { "text": "Voronoi diagram: partition of the plane into n regions, one per site p_i; the region V(p_i) = all points closer to p_i than to any other site", "marks": 1 },
+            { "text": "By Euler's formula: n faces, 2n−5 vertices, 3n−6 edges (for n ≥ 3 in general position)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "State Fortune's algorithm for constructing the Voronoi diagram. What is its time complexity? What technique does it use?",
+          "markscheme": [
+            { "text": "Fortune's algorithm: sweep line technique with a parabolic front (beach line). Event types: site events (new parabola added) and circle events (three beach line arcs converge — Voronoi vertex created)", "marks": 2 },
+            { "text": "Time: O(n log n) with O(n) space; asymptotically optimal (matches Ω(n log n) lower bound for sorting, which reduces to Voronoi)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Define the Delaunay triangulation of a point set P. State the relationship between the Delaunay triangulation and the Voronoi diagram. State the empty circumcircle property.",
+          "markscheme": [
+            { "text": "Delaunay triangulation: a triangulation of P such that no point of P lies inside the circumcircle of any triangle (empty circumcircle property)", "marks": 1 },
+            { "text": "Relationship: the Delaunay triangulation is the dual graph of the Voronoi diagram — connect two sites p_i, p_j iff their Voronoi cells share an edge", "marks": 1 },
+            { "text": "Empty circumcircle: for every triangle pqr in the Delaunay triangulation, the circumcircle of pqr contains no other point of P in its interior", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Give two practical applications of Voronoi diagrams and one application of Delaunay triangulations.",
+          "markscheme": [
+            { "text": "Voronoi applications (2 of): nearest-neighbour search; facility location (find empty Voronoi vertex to place new facility maximally far from existing ones); computational biology (protein structure); geographic analysis (catchment areas)", "marks": 2 },
+            { "text": "Delaunay application: mesh generation for finite element analysis (maximises the minimum angle of triangles, avoiding sliver triangles); also: terrain modelling, interpolation", "marks": 1 }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -4,7 +4,9 @@ import { MODULES, type ModuleSlug } from '../lib/syllabus';
 import ConfidenceButtons from '../components/ConfidenceButtons.tsx';
 import TopicSidebar from '../components/TopicSidebar.astro';
 import PastQuestionsPanel from '../components/PastQuestionsPanel.tsx';
+import PracticePanel from '../components/PracticePanel.tsx';
 import { questionsForTopic } from '../lib/past-papers';
+import { getCollection } from 'astro:content';
 
 interface Props {
   module: ModuleSlug;
@@ -17,6 +19,12 @@ const { module, topicSlug, topicTitle, isSupplement = false } = Astro.props;
 const meta = MODULES[module];
 const topic = meta.topics.find((t) => t.slug === topicSlug);
 const topicId = `${module}/${topicSlug}`;
+
+const practiceEntries = await getCollection('practice-questions');
+const practiceEntry = practiceEntries.find((e: { data: { module: string; questions: unknown[] } }) => e.data.module === module);
+const practiceForTopic = (practiceEntry?.data.questions ?? []).filter(
+  (q: any) => q.topic === topicSlug,
+);
 ---
 <BaseLayout title={topicTitle} currentModule={module} currentPaper={meta.paper}>
   <div class="grid grid-cols-1 lg:grid-cols-[18rem_1fr] gap-8">
@@ -53,7 +61,14 @@ const topicId = `${module}/${topicSlug}`;
         </section>
       )}
 
-      <section class="grid grid-cols-1 md:grid-cols-2 gap-4 no-print">
+      {practiceForTopic.length > 0 && (
+        <section class="no-print mb-8">
+          <h2 class="text-xl font-bold tracking-tight mb-3">Practice questions</h2>
+          <PracticePanel client:load module={module} topicSlug={topicSlug} questions={practiceForTopic} />
+        </section>
+      )}
+
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 no-print">
         <a href={`/flashcards/${module}`} class="rounded-lg border border-ink-200 dark:border-ink-800 p-4 hover:border-accent-500 transition">
           <div class="text-sm font-semibold text-ink-500 dark:text-ink-400">Drill</div>
           <div class="font-bold mt-1">Flashcards for {meta.short}</div>
@@ -69,8 +84,13 @@ const topicId = `${module}/${topicSlug}`;
           <div class="font-bold mt-1">Cheat sheet</div>
           <p class="text-sm text-ink-500 dark:text-ink-400 mt-1">One-page distillation</p>
         </a>
+        <a href={`/practice/${module}?topic=${topicSlug}`} class="rounded-lg border border-ink-200 dark:border-ink-800 p-4 hover:border-accent-500 transition">
+          <div class="text-sm font-semibold text-ink-500 dark:text-ink-400">Exam practice</div>
+          <div class="font-bold mt-1">Practice questions</div>
+          <p class="text-sm text-ink-500 dark:text-ink-400 mt-1">Graded difficulty with markschemes</p>
+        </a>
         <a href="/past-papers" class="rounded-lg border border-ink-200 dark:border-ink-800 p-4 hover:border-accent-500 transition">
-          <div class="text-sm font-semibold text-ink-500 dark:text-ink-400">Practice</div>
+          <div class="text-sm font-semibold text-ink-500 dark:text-ink-400">Archive</div>
           <div class="font-bold mt-1">Past Tripos papers</div>
           <p class="text-sm text-ink-500 dark:text-ink-400 mt-1">Browse Cambridge archive</p>
         </a>

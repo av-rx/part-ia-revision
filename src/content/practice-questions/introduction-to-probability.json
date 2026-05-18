@@ -1,0 +1,501 @@
+{
+  "module": "introduction-to-probability",
+  "title": "Introduction to Probability — Practice Questions",
+  "questions": [
+    {
+      "id": "prob-cond-d1",
+      "topic": "conditional-probabilities-and-bayes-theorem",
+      "topicTitle": "Conditional Probabilities and Bayes' Theorem",
+      "difficulty": 1,
+      "title": "Conditional probability definition",
+      "totalMarks": 3,
+      "prompt": "Define conditional probability P(A | B). State Bayes' theorem. What does it mean for two events A and B to be independent?",
+      "markscheme": [
+        { "text": "P(A | B) = P(A ∩ B) / P(B), defined when P(B) > 0", "marks": 1 },
+        { "text": "Bayes' theorem: P(A | B) = P(B | A) · P(A) / P(B)", "marks": 1 },
+        { "text": "A and B are independent if P(A ∩ B) = P(A) · P(B), equivalently P(A | B) = P(A) (knowledge of B gives no information about A)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "prob-cond-d2",
+      "topic": "conditional-probabilities-and-bayes-theorem",
+      "topicTitle": "Conditional Probabilities and Bayes' Theorem",
+      "difficulty": 2,
+      "title": "Law of total probability",
+      "totalMarks": 4,
+      "prompt": "State the Law of Total Probability. Explain when it is useful and give a medical testing example: a disease affects 1% of the population. A test is 90% sensitive (P(positive | disease) = 0.9) and 95% specific (P(negative | no disease) = 0.95). Calculate the probability that a randomly chosen person tests positive.",
+      "markscheme": [
+        { "text": "Law of total probability: if B₁,...,Bₙ partition the sample space, then P(A) = Σ P(A | Bᵢ)·P(Bᵢ)", "marks": 1 },
+        { "text": "P(positive) = P(positive | disease)·P(disease) + P(positive | no disease)·P(no disease)", "marks": 1 },
+        { "text": "= 0.9 × 0.01 + 0.05 × 0.99 = 0.009 + 0.0495 = 0.0585", "marks": 2 }
+      ]
+    },
+    {
+      "id": "prob-cond-d3",
+      "topic": "conditional-probabilities-and-bayes-theorem",
+      "topicTitle": "Conditional Probabilities and Bayes' Theorem",
+      "difficulty": 3,
+      "title": "Applying Bayes' theorem",
+      "totalMarks": 5,
+      "prompt": "Using the medical testing scenario from above (disease prevalence 1%, sensitivity 90%, specificity 95%), calculate the probability that a person <em>has</em> the disease given that they tested positive. Comment on this result — why might it surprise a doctor?",
+      "hint": "Apply Bayes' theorem with the prior P(disease) = 0.01 and the likelihood P(positive | disease) = 0.9.",
+      "markscheme": [
+        { "text": "P(disease | positive) = P(positive | disease) · P(disease) / P(positive)", "marks": 1 },
+        { "text": "Numerator: 0.9 × 0.01 = 0.009", "marks": 1 },
+        { "text": "Denominator (from previous question): 0.0585", "marks": 1 },
+        { "text": "P(disease | positive) = 0.009 / 0.0585 ≈ 0.154 (about 15%)", "marks": 1 },
+        { "text": "Interpretation: despite a 90% sensitive test, a positive result only means ~15% chance of having the disease. This is because the disease is rare (low prior), so most positives are false positives — known as the base rate fallacy", "marks": 1 }
+      ]
+    },
+    {
+      "id": "prob-cond-d4",
+      "topic": "conditional-probabilities-and-bayes-theorem",
+      "topicTitle": "Conditional Probabilities and Bayes' Theorem",
+      "difficulty": 4,
+      "title": "Monty Hall and conditional independence",
+      "totalMarks": 6,
+      "prompt": "(i) In the Monty Hall problem, a contestant chooses door 1. The host (who knows where the car is) opens door 3 to reveal a goat. Should the contestant switch to door 2? Prove your answer using Bayes' theorem.<br>(ii) Define conditional independence: A and B are conditionally independent given C. Give an example where two events are conditionally independent given a third but not marginally independent.",
+      "hint": "For (i), let Cᵢ be the event 'car is behind door i'. Compute P(C₁ | host opens 3) and P(C₂ | host opens 3).",
+      "markscheme": [
+        { "text": "Let Cᵢ = car behind door i, H₃ = host opens door 3. Priors: P(C₁)=P(C₂)=P(C₃)=1/3", "marks": 1 },
+        { "text": "P(H₃ | C₁) = 1/2 (host can open 2 or 3); P(H₃ | C₂) = 1 (must open 3 as door 1 chosen and car at 2 ≠ 3); P(H₃ | C₃) = 0", "marks": 1 },
+        { "text": "P(H₃) = P(H₃|C₁)·1/3 + P(H₃|C₂)·1/3 + 0 = 1/6 + 1/3 = 1/2", "marks": 1 },
+        { "text": "P(C₁ | H₃) = (1/2 · 1/3)/(1/2) = 1/3; P(C₂ | H₃) = (1 · 1/3)/(1/2) = 2/3. Yes, switch!", "marks": 1 },
+        { "text": "Conditional independence: A ⊥ B | C iff P(A ∩ B | C) = P(A|C)·P(B|C)", "marks": 1 },
+        { "text": "Example: let C = 'it is raining'; A = 'road is wet'; B = 'umbrella is used'. A and B are correlated (both caused by rain), so not marginally independent. But given C, knowing A gives no additional info about B (they share only the common cause C) — conditionally independent given C", "marks": 1 }
+      ]
+    },
+    {
+      "id": "prob-cond-d5a",
+      "topic": "conditional-probabilities-and-bayes-theorem",
+      "topicTitle": "Conditional Probabilities and Bayes' Theorem",
+      "difficulty": 5,
+      "title": "Bayesian inference and sequential updating",
+      "totalMarks": 13,
+      "prompt": "This question concerns Bayesian probability.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "You have two coins: coin A is fair (P(heads)=0.5) and coin B is biased (P(heads)=0.8). You pick a coin at random (each with probability 0.5) and flip it twice, obtaining HH. Calculate the posterior probability that you chose coin A.",
+          "markscheme": [
+            { "text": "Prior: P(A)=P(B)=0.5. Likelihood: P(HH|A)=0.25, P(HH|B)=0.64", "marks": 1 },
+            { "text": "P(HH) = P(HH|A)·0.5 + P(HH|B)·0.5 = 0.125 + 0.32 = 0.445", "marks": 1 },
+            { "text": "P(A|HH) = P(HH|A)·P(A)/P(HH) = 0.125/0.445 ≈ 0.281", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Using P(A|HH) ≈ 0.281 as your new prior, you flip the same coin again and observe T. Update the posterior to find P(A | HHT). Show your work.",
+          "markscheme": [
+            { "text": "New prior: P(A)=0.281, P(B)=0.719. Likelihood: P(T|A)=0.5, P(T|B)=0.2", "marks": 1 },
+            { "text": "P(T) = 0.5×0.281 + 0.2×0.719 = 0.1405 + 0.1438 = 0.2843", "marks": 1 },
+            { "text": "P(A|HHT) = 0.5×0.281/0.2843 ≈ 0.494", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 4,
+          "prompt": "Explain the concepts of prior, likelihood, posterior, and evidence in Bayesian inference. How does the posterior become the prior for the next observation (sequential updating)?",
+          "markscheme": [
+            { "text": "Prior P(H): your belief about hypothesis H before seeing data", "marks": 1 },
+            { "text": "Likelihood P(D|H): how probable the observed data D is under hypothesis H", "marks": 1 },
+            { "text": "Evidence P(D): total probability of data under all hypotheses (normalising constant)", "marks": 1 },
+            { "text": "Posterior P(H|D) ∝ P(D|H)·P(H). For sequential data: posterior after observing D₁ becomes the prior for D₂; equivalent to processing all data at once (multiplication of likelihoods)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Three machines A, B, C produce 20%, 30%, 50% of a factory's output respectively. The defect rates are 5%, 3%, 2%. A defective item is found. What is the probability it came from machine A?",
+          "markscheme": [
+            { "text": "P(defective) = 0.05×0.2 + 0.03×0.3 + 0.02×0.5 = 0.01 + 0.009 + 0.01 = 0.029", "marks": 1 },
+            { "text": "P(A | defective) = P(defective|A)·P(A)/P(defective) = 0.01/0.029", "marks": 1 },
+            { "text": "≈ 0.345 (34.5%)", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prob-cond-d5b",
+      "topic": "conditional-probabilities-and-bayes-theorem",
+      "topicTitle": "Conditional Probabilities and Bayes' Theorem",
+      "difficulty": 5,
+      "title": "Spam filtering and naive Bayes",
+      "totalMarks": 12,
+      "prompt": "This question concerns Bayesian classification.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Describe the naïve Bayes classifier for spam filtering. What is the 'naïve' assumption, and when is it reasonable?",
+          "markscheme": [
+            { "text": "Model: classify email as spam/ham based on word frequencies. P(spam|words) ∝ P(spam)·∏ P(wᵢ|spam)", "marks": 1 },
+            { "text": "Naïve assumption: words are conditionally independent given the class label (given spam, occurrence of 'free' doesn't affect probability of 'win')", "marks": 1 },
+            { "text": "Reasonable when: dependencies between words are weak or cancel out in practice; often works well empirically despite the assumption being false", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "You have a training set where 40% of emails are spam. In spam emails, 'free' appears in 60% and 'meeting' in 5%. In ham, 'free' appears in 10% and 'meeting' in 40%. A new email contains both 'free' and 'meeting'. Classify it using naïve Bayes. Show all working.",
+          "markscheme": [
+            { "text": "P(spam) = 0.4, P(ham) = 0.6", "marks": 1 },
+            { "text": "P(free, meeting | spam) = 0.6 × 0.05 = 0.03 (naïve assumption); P(free, meeting | ham) = 0.1 × 0.4 = 0.04", "marks": 1 },
+            { "text": "Score(spam) = 0.03 × 0.4 = 0.012; Score(ham) = 0.04 × 0.6 = 0.024", "marks": 1 },
+            { "text": "Score(ham) > Score(spam) → classify as ham. P(spam | email) = 0.012/(0.012+0.024) = 1/3 ≈ 33%", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "What problem arises in naïve Bayes if a word never appears in the training set for one class? Describe the Laplace (add-one) smoothing solution.",
+          "markscheme": [
+            { "text": "Problem: if P(w|spam) = 0 (word never seen in spam training), the entire product becomes 0 — the classifier ignores all other evidence", "marks": 1 },
+            { "text": "Laplace smoothing: add a pseudo-count of 1 to every word count. P(w|class) = (count(w, class) + 1) / (total words in class + |vocabulary|)", "marks": 1 },
+            { "text": "Effect: no probability is zero; rare words get a small positive probability; classifier remains robust to unseen words", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 2,
+          "prompt": "In practice, naïve Bayes multiplies many small probabilities, causing numerical underflow. How is this addressed?",
+          "markscheme": [
+            { "text": "Work in log-space: compute log P(class) + Σ log P(wᵢ|class). Compare log-scores rather than probabilities", "marks": 1 },
+            { "text": "Avoids multiplying many small numbers; additions are numerically stable; final classification based on which class has the higher log-score", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prob-rv-d1",
+      "topic": "random-variables-pmf-expectation",
+      "topicTitle": "Random Variables, PMF, and Expectation",
+      "difficulty": 1,
+      "title": "Discrete random variable basics",
+      "totalMarks": 3,
+      "prompt": "Define: (i) a discrete random variable X; (ii) its probability mass function (PMF); (iii) the expected value E[X]. State the condition that a PMF must satisfy.",
+      "markscheme": [
+        { "text": "Discrete RV: a function X: Ω → ℝ where Ω is a sample space; X takes at most countably many values", "marks": 1 },
+        { "text": "PMF: p(x) = P(X = x) for each value x. Conditions: p(x) ≥ 0 for all x, and Σ_x p(x) = 1", "marks": 1 },
+        { "text": "Expected value: E[X] = Σ_x x · p(x) (sum over all values weighted by probability)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "prob-rv-d2",
+      "topic": "random-variables-pmf-expectation",
+      "topicTitle": "Random Variables, PMF, and Expectation",
+      "difficulty": 2,
+      "title": "Geometric distribution and memorylessness",
+      "totalMarks": 4,
+      "prompt": "The geometric distribution models the number of trials until the first success (with success probability p). State its PMF, expected value, and the memoryless property. Verify the memoryless property formally.",
+      "markscheme": [
+        { "text": "PMF: P(X = k) = (1−p)^(k−1) · p for k = 1, 2, 3, ... (number of trials until first success)", "marks": 1 },
+        { "text": "E[X] = 1/p", "marks": 1 },
+        { "text": "Memoryless property: P(X > m+n | X > m) = P(X > n) — given that the first success hasn't occurred in m trials, the distribution of remaining trials is the same as the original", "marks": 1 },
+        { "text": "Verification: P(X > m) = (1−p)^m. P(X > m+n | X > m) = P(X > m+n)/P(X > m) = (1−p)^(m+n)/(1−p)^m = (1−p)^n = P(X > n) ✓", "marks": 1 }
+      ]
+    },
+    {
+      "id": "prob-rv-d3",
+      "topic": "random-variables-pmf-expectation",
+      "topicTitle": "Random Variables, PMF, and Expectation",
+      "difficulty": 3,
+      "title": "Expectation by indicator variables",
+      "totalMarks": 5,
+      "prompt": "A fair coin is flipped n times. Let X be the number of heads. Using indicator random variables, derive E[X]. Then generalise: a biased coin with P(heads) = p is flipped n times. What is E[X]? Now, in a group of 30 people, what is the expected number of pairs who share a birthday? (Assume 365 days in a year.)",
+      "hint": "For the birthday problem, define an indicator variable for each pair. There are C(30,2) pairs.",
+      "markscheme": [
+        { "text": "Let Iᵢ = 1 if flip i is heads. E[Iᵢ] = P(heads) = 1/2. X = I₁+...+Iₙ; E[X] = n·(1/2) = n/2 by linearity of expectation", "marks": 1 },
+        { "text": "Biased coin: E[X] = n·p (same argument)", "marks": 1 },
+        { "text": "Birthday problem: define Iᵢⱼ = 1 if persons i and j share a birthday. P(same birthday) = 1/365", "marks": 1 },
+        { "text": "Number of pairs = C(30,2) = 435; E[shared birthday pairs] = 435 × 1/365 ≈ 1.19", "marks": 2 }
+      ]
+    },
+    {
+      "id": "prob-rv-d4",
+      "topic": "random-variables-pmf-expectation",
+      "topicTitle": "Random Variables, PMF, and Expectation",
+      "difficulty": 4,
+      "title": "Functions of random variables and LOTUS",
+      "totalMarks": 6,
+      "prompt": "(i) State the Law of the Unconscious Statistician (LOTUS) for discrete random variables.<br>(ii) A fair die has faces {1,2,3,4,5,6}. Let X be the result of one roll. Find E[X], E[X²], and E[(X−E[X])²] (the variance).<br>(iii) You win £X² for rolling X. Is this a fair game at a cost of £15 per roll? Justify.",
+      "hint": "Use LOTUS for E[X²]: E[g(X)] = Σ g(x)·P(X=x).",
+      "markscheme": [
+        { "text": "LOTUS: for g: ℝ→ℝ, E[g(X)] = Σ_x g(x)·P(X=x)", "marks": 1 },
+        { "text": "E[X] = (1+2+3+4+5+6)/6 = 21/6 = 3.5", "marks": 1 },
+        { "text": "E[X²] = (1+4+9+16+25+36)/6 = 91/6 ≈ 15.17", "marks": 1 },
+        { "text": "Var(X) = E[X²] − (E[X])² = 91/6 − 12.25 = 91/6 − 49/4 = (182−147)/12 = 35/12 ≈ 2.92", "marks": 2 },
+        { "text": "Expected winnings per roll = E[X²] = 91/6 ≈ 15.17 > 15. Yes, slightly favourable at £15 cost (expected profit ≈ 17p per roll)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "prob-rv-d5a",
+      "topic": "random-variables-pmf-expectation",
+      "topicTitle": "Random Variables, PMF, and Expectation",
+      "difficulty": 5,
+      "title": "Coupon collector and expected waiting times",
+      "totalMarks": 12,
+      "prompt": "This question concerns the Coupon Collector Problem.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "There are n types of coupon; each purchase gives a uniformly random coupon type. Let T be the total number of purchases to collect all n types. Express T = T₁ + T₂ + ... + Tₙ where Tᵢ is the number of purchases to get the i-th new type after already having i−1 distinct types. State the distribution of Tᵢ and find E[Tᵢ].",
+          "markscheme": [
+            { "text": "After i−1 distinct coupons, probability of getting a new one is p = (n−i+1)/n. Each trial is independent.", "marks": 1 },
+            { "text": "Tᵢ ~ Geometric((n−i+1)/n)", "marks": 1 },
+            { "text": "E[Tᵢ] = 1/p = n/(n−i+1)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Using part (a) and linearity of expectation, derive E[T] in terms of n and the harmonic number Hₙ = 1 + 1/2 + 1/3 + ... + 1/n. Evaluate for n=4.",
+          "markscheme": [
+            { "text": "E[T] = Σᵢ₌₁ⁿ E[Tᵢ] = Σᵢ₌₁ⁿ n/(n−i+1) = n·Σⱼ₌₁ⁿ 1/j = n·Hₙ (substituting j = n−i+1)", "marks": 2 },
+            { "text": "n=4: H₄ = 1 + 1/2 + 1/3 + 1/4 = 25/12. E[T] = 4 × 25/12 = 25/3 ≈ 8.33 purchases", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Since Hₙ ≈ ln n for large n, E[T] ≈ n ln n. Explain intuitively why the last few coupons take so long to collect. Compare this to the O(n log n) complexity of comparison sorting — is the connection a coincidence?",
+          "markscheme": [
+            { "text": "The last coupon: probability of getting the final missing type is 1/n, so expected wait is n trials. The last few distinct types take O(n) each → they dominate the sum", "marks": 1 },
+            { "text": "E[T] = n·Hₙ ≈ n ln n. The O(n log n) lower bound for comparison sorting also arises from a counting argument (n! permutations → log₂(n!) ≈ n log₂ n). Both are instances of the same information-theoretic structure", "marks": 1 },
+            { "text": "Not a coincidence: both problems require 'distinguishing' n objects; the total number of bits of information needed is Θ(n log n) in both cases", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Let X be the number of coupons until the first duplicate. Show that E[X] = Θ(√n). (Hint: use the birthday paradox — after k draws, what is the probability of no duplicate?)",
+          "markscheme": [
+            { "text": "P(no duplicate in k draws) = 1 × (n−1)/n × (n−2)/n × ... × (n−k+1)/n = Π_{i=0}^{k-1}(1 − i/n)", "marks": 1 },
+            { "text": "Using 1−x ≈ e^(−x): product ≈ e^(−k(k−1)/(2n)). This ≈ 1/2 when k(k−1)/2 ≈ n·ln 2, i.e. k ≈ √(2n·ln 2) = Θ(√n)", "marks": 1 },
+            { "text": "E[X] ≈ Σ_{k=0}^{∞} P(no duplicate in k draws) ≈ Σ e^{−k²/(2n)} ≈ √(πn/2) = Θ(√n)", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prob-rv-d5b",
+      "topic": "random-variables-pmf-expectation",
+      "topicTitle": "Random Variables, PMF, and Expectation",
+      "difficulty": 5,
+      "title": "Binomial distribution and applications",
+      "totalMarks": 13,
+      "prompt": "This question concerns the Binomial distribution.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Define the Binomial distribution B(n, p). Derive its PMF and state its expected value and variance.",
+          "markscheme": [
+            { "text": "B(n,p): number of successes in n independent Bernoulli(p) trials. PMF: P(X=k) = C(n,k)·p^k·(1−p)^(n−k) for k=0,...,n", "marks": 1 },
+            { "text": "Derivation: C(n,k) ways to choose which k trials succeed; each such outcome has probability p^k·(1−p)^(n−k)", "marks": 1 },
+            { "text": "E[X] = np; Var(X) = np(1−p) (both derived by indicator variable decomposition X = Σ Iᵢ)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "A network packet is independently dropped with probability p = 0.01 at each of n = 10 routers. Let X be the number of drops. Find P(X ≥ 2). Would you expect the Poisson approximation to be accurate here? Justify.",
+          "markscheme": [
+            { "text": "X ~ B(10, 0.01). P(X≥2) = 1 − P(X=0) − P(X=1)", "marks": 1 },
+            { "text": "P(X=0) = (0.99)^10 ≈ 0.9044; P(X=1) = 10 × 0.01 × (0.99)^9 ≈ 0.0914", "marks": 1 },
+            { "text": "P(X≥2) ≈ 1 − 0.9044 − 0.0914 = 0.0042. Poisson(λ=0.1) would give P(X≥2)=1−e^{−0.1}−0.1e^{−0.1}≈0.0047; reasonable approximation (n large, p small, λ=np=0.1 moderate)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 4,
+          "prompt": "State the Poisson distribution Poisson(λ). Prove that it arises as the limit of B(n, λ/n) as n→∞ with λ fixed.",
+          "markscheme": [
+            { "text": "Poisson(λ): P(X=k) = e^{−λ}·λ^k/k! for k=0,1,2,...; E[X]=Var(X)=λ", "marks": 1 },
+            { "text": "Starting from B(n, λ/n): P(X=k) = C(n,k)·(λ/n)^k·(1−λ/n)^{n−k}", "marks": 1 },
+            { "text": "C(n,k)/n^k = n(n−1)···(n−k+1)/n^k → 1 as n→∞ (k fixed). (1−λ/n)^n → e^{−λ}. (1−λ/n)^{−k} → 1", "marks": 1 },
+            { "text": "So P(X=k) → (1·λ^k/k!)·e^{−λ}·1 = e^{−λ}λ^k/k! as required", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "The sum of independent Poisson random variables is Poisson. If X ~ Poisson(λ₁) and Y ~ Poisson(λ₂) are independent, state the distribution of X + Y and compute E[X+Y] and Var(X+Y).",
+          "markscheme": [
+            { "text": "X+Y ~ Poisson(λ₁+λ₂)", "marks": 1 },
+            { "text": "E[X+Y] = E[X]+E[Y] = λ₁+λ₂ (linearity of expectation)", "marks": 1 },
+            { "text": "Var(X+Y) = Var(X)+Var(Y) = λ₁+λ₂ (since X and Y are independent)", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prob-var-d1",
+      "topic": "expectation-properties-variance-discrete-distributions",
+      "topicTitle": "Expectation Properties, Variance, and Discrete Distributions",
+      "difficulty": 1,
+      "title": "Variance and standard deviation",
+      "totalMarks": 3,
+      "prompt": "Define the variance Var(X) of a random variable X. State the alternative formula Var(X) = E[X²] − (E[X])². What is the standard deviation? For a Bernoulli(p) random variable, compute E[X], E[X²], and Var(X).",
+      "markscheme": [
+        { "text": "Var(X) = E[(X − E[X])²]; standard deviation = √Var(X). Alternative: Var(X) = E[X²] − (E[X])²", "marks": 1 },
+        { "text": "Bernoulli(p): P(X=1)=p, P(X=0)=1−p. E[X] = p", "marks": 1 },
+        { "text": "E[X²] = 1²·p + 0²·(1−p) = p. Var(X) = p − p² = p(1−p)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "prob-var-d2",
+      "topic": "expectation-properties-variance-discrete-distributions",
+      "topicTitle": "Expectation Properties, Variance, and Discrete Distributions",
+      "difficulty": 2,
+      "title": "Linearity of expectation and variance rules",
+      "totalMarks": 4,
+      "prompt": "State: (i) linearity of expectation; (ii) the formula for Var(aX + b); (iii) the formula for Var(X + Y) when X and Y are independent. Prove (iii).",
+      "markscheme": [
+        { "text": "Linearity: E[aX+b] = a·E[X]+b; E[X+Y] = E[X]+E[Y] (always, no independence needed)", "marks": 1 },
+        { "text": "Var(aX+b) = a²·Var(X) (constants shift mean but don't change spread; squaring makes scale factor a²)", "marks": 1 },
+        { "text": "Var(X+Y) = Var(X)+Var(Y) when independent (Cov(X,Y)=0)", "marks": 1 },
+        { "text": "Proof: Var(X+Y) = E[(X+Y)²]−(E[X+Y])² = E[X²]+2E[XY]+E[Y²]−(E[X])²−2E[X]E[Y]−(E[Y])². Since independent: E[XY]=E[X]E[Y], so 2E[XY]−2E[X]E[Y]=0. Remaining: Var(X)+Var(Y)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "prob-var-d3",
+      "topic": "expectation-properties-variance-discrete-distributions",
+      "topicTitle": "Expectation Properties, Variance, and Discrete Distributions",
+      "difficulty": 3,
+      "title": "Markov and Chebyshev inequalities",
+      "totalMarks": 5,
+      "prompt": "(i) State Markov's inequality and Chebyshev's inequality.<br>(ii) A random variable X has E[X]=50 and Var(X)=25. Use Chebyshev's inequality to bound P(|X−50|≥15).<br>(iii) Compare this bound to the exact value if X ~ Binomial(100, 0.5). Is Chebyshev tight here?",
+      "hint": "Chebyshev: P(|X−μ|≥k) ≤ Var(X)/k² for any k>0.",
+      "markscheme": [
+        { "text": "Markov: for non-negative X, P(X≥a) ≤ E[X]/a. Chebyshev: P(|X−μ|≥k) ≤ σ²/k² where σ²=Var(X)", "marks": 2 },
+        { "text": "P(|X−50|≥15) ≤ 25/225 = 1/9 ≈ 0.111", "marks": 1 },
+        { "text": "X~B(100,0.5): E[X]=50, Var(X)=25. P(|X−50|≥15) = P(X≤35 or X≥65) is very small (≈0.003 by normal approximation or exact binomial — much smaller than 1/9)", "marks": 1 },
+        { "text": "Chebyshev is very loose here; it's distribution-agnostic so gives a weak bound. For specific distributions, tighter bounds are available", "marks": 1 }
+      ]
+    },
+    {
+      "id": "prob-var-d4",
+      "topic": "expectation-properties-variance-discrete-distributions",
+      "topicTitle": "Expectation Properties, Variance, and Discrete Distributions",
+      "difficulty": 4,
+      "title": "Generating functions",
+      "totalMarks": 6,
+      "prompt": "(i) Define the probability generating function (PGF) G_X(z) of a discrete non-negative integer-valued RV X.<br>(ii) Show how E[X] and Var(X) can be extracted from G_X.<br>(iii) Find the PGF of a Poisson(λ) random variable and use it to compute E[X] and Var(X).",
+      "hint": "Differentiate the PGF at z=1. For Var(X), use G''(1)+G'(1)−(G'(1))².",
+      "markscheme": [
+        { "text": "PGF: G_X(z) = E[z^X] = Σ_{k=0}^∞ P(X=k)·z^k", "marks": 1 },
+        { "text": "E[X] = G'_X(1) (differentiate and set z=1); E[X(X−1)] = G''_X(1); Var(X) = G''(1)+G'(1)−(G'(1))²", "marks": 2 },
+        { "text": "Poisson(λ): G_X(z) = Σ e^{−λ}λ^k z^k/k! = e^{−λ}·e^{λz} = e^{λ(z−1)}", "marks": 1 },
+        { "text": "G'(z) = λe^{λ(z−1)}; G'(1) = λ → E[X] = λ", "marks": 1 },
+        { "text": "G''(z) = λ²e^{λ(z−1)}; G''(1) = λ²; Var(X) = λ²+λ−λ² = λ ✓", "marks": 1 }
+      ]
+    },
+    {
+      "id": "prob-var-d5a",
+      "topic": "expectation-properties-variance-discrete-distributions",
+      "topicTitle": "Expectation Properties, Variance, and Discrete Distributions",
+      "difficulty": 5,
+      "title": "Central Limit Theorem and random walks",
+      "totalMarks": 13,
+      "prompt": "This question concerns sums of random variables.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "State the Central Limit Theorem (CLT). A fair coin is flipped n=900 times; let X be the number of heads. Use the CLT to approximate P(435 ≤ X ≤ 465).",
+          "markscheme": [
+            { "text": "CLT: if X₁,...,Xₙ are i.i.d. with mean μ and variance σ², then (X̄ − μ)/(σ/√n) → N(0,1) in distribution as n→∞; equivalently Sₙ = Σ Xᵢ ≈ N(nμ, nσ²)", "marks": 1 },
+            { "text": "X~B(900,0.5): E[X]=450, Var(X)=225, σ=15. Standardise: P(435≤X≤465) ≈ P((435−450)/15 ≤ Z ≤ (465−450)/15) = P(−1≤Z≤1)", "marks": 1 },
+            { "text": "P(−1≤Z≤1) ≈ 0.683 (68.3% rule for normal distribution)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "A symmetric random walk on ℤ starts at 0. At each step, move +1 with probability 1/2 and −1 with probability 1/2. Let Sₙ be the position after n steps. Find E[Sₙ] and Var(Sₙ).",
+          "markscheme": [
+            { "text": "Write Sₙ = X₁+...+Xₙ where Xᵢ = ±1 with probability 1/2 each. E[Xᵢ]=0, Var(Xᵢ)=1", "marks": 1 },
+            { "text": "E[Sₙ] = n·E[X₁] = 0 (by linearity)", "marks": 1 },
+            { "text": "Var(Sₙ) = n·Var(X₁) = n (by independence). So std dev = √n — random walk spreads as √n", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 4,
+          "prompt": "Explain what 'recurrence' means for a random walk. State whether the symmetric 1D random walk is recurrent. How does this change in 2D and 3D?",
+          "markscheme": [
+            { "text": "Recurrent: the walk returns to its starting position with probability 1 (infinitely often)", "marks": 1 },
+            { "text": "1D symmetric random walk: recurrent — by the CLT, the walk visits every integer infinitely often almost surely", "marks": 1 },
+            { "text": "2D: also recurrent (Pólya 1921 — probability of return to origin is 1)", "marks": 1 },
+            { "text": "3D: transient — probability of return to origin < 1 (≈0.34). The phrase: 'a drunk man will find his way home, but a drunk bird may get lost forever'", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "State Jensen's inequality. Use it to show that E[√X] ≤ √E[X] for any non-negative random variable X. Give a concrete numerical example.",
+          "markscheme": [
+            { "text": "Jensen's inequality: for a convex function f, E[f(X)] ≥ f(E[X]). For concave f, the inequality reverses", "marks": 1 },
+            { "text": "f(x) = √x is concave (f''(x) < 0). By Jensen: E[√X] ≤ √(E[X])", "marks": 1 },
+            { "text": "Example: X takes values 1 and 9 each with prob 1/2. E[X]=5. E[√X]=(1+3)/2=2. √(E[X])=√5≈2.24. Indeed 2 ≤ 2.24 ✓", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prob-var-d5b",
+      "topic": "expectation-properties-variance-discrete-distributions",
+      "topicTitle": "Expectation Properties, Variance, and Discrete Distributions",
+      "difficulty": 5,
+      "title": "Negative binomial and conditional expectation",
+      "totalMarks": 12,
+      "prompt": "This question concerns counting distributions and conditional expectation.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Define the Negative Binomial distribution NB(r, p). State its PMF, mean, and variance. Explain the relationship between NB(1, p) and the Geometric distribution.",
+          "markscheme": [
+            { "text": "NB(r,p): number of failures before the r-th success in a sequence of Bernoulli(p) trials. PMF: P(X=k) = C(k+r−1, k)·(1−p)^k·p^r for k=0,1,2,...", "marks": 1 },
+            { "text": "E[X] = r(1−p)/p; Var(X) = r(1−p)/p²", "marks": 1 },
+            { "text": "NB(1,p): number of failures before first success = Geometric(p) − 1 (where Geometric counts total trials). Same memoryless structure", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Define conditional expectation E[X|Y=y]. State the tower property (law of total expectation). Use it to find E[X] where X|N ~ Binomial(N, p) and N ~ Poisson(λ).",
+          "markscheme": [
+            { "text": "E[X|Y=y] = Σ_x x·P(X=x|Y=y); tower property: E[X] = E[E[X|Y]] = Σ_y E[X|Y=y]·P(Y=y)", "marks": 1 },
+            { "text": "E[X|N] = N·p (mean of Binomial(N,p))", "marks": 1 },
+            { "text": "E[X] = E[E[X|N]] = E[N·p] = p·E[N] = pλ", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Find Var(X) for the same compound distribution X|N~Bin(N,p), N~Poisson(λ). Use the law of total variance: Var(X) = E[Var(X|N)] + Var(E[X|N]).",
+          "markscheme": [
+            { "text": "Var(X|N) = N·p(1−p); E[Var(X|N)] = E[N]·p(1−p) = λp(1−p)", "marks": 1 },
+            { "text": "E[X|N] = Np; Var(E[X|N]) = Var(Np) = p²·Var(N) = p²·λ", "marks": 1 },
+            { "text": "Var(X) = λp(1−p) + λp² = λp(1−p+p) = λp. (Note: X ~ Poisson(λp) by compound Poisson result)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "State the weak law of large numbers. Prove it using Chebyshev's inequality.",
+          "markscheme": [
+            { "text": "WLLN: if X₁,...,Xₙ are i.i.d. with mean μ and finite variance σ², then for any ε>0: P(|X̄ₙ − μ| ≥ ε) → 0 as n→∞", "marks": 1 },
+            { "text": "Proof: E[X̄ₙ] = μ; Var(X̄ₙ) = σ²/n", "marks": 1 },
+            { "text": "By Chebyshev: P(|X̄ₙ−μ|≥ε) ≤ Var(X̄ₙ)/ε² = σ²/(nε²) → 0 as n→∞ ✓", "marks": 1 }
+          ]
+        }
+      ]
+    }
+  ]
+}

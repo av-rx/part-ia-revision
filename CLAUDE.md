@@ -81,3 +81,58 @@ Tailwind CSS with the `@tailwindcss/typography` plugin. Custom colour scales: `i
 - Code blocks: Shiki with `github-dark-dimmed` theme
 - Obsidian links/embeds: custom `remark-obsidian-links.mjs` plugin
 - MDX for all content to allow component imports in notes
+
+---
+
+## Quick Reference
+
+### Module slugs by paper
+
+**Paper 1:** `foundations-of-computer-science` (11 topics), `object-oriented-programming` (12 topics), `introduction-to-probability` (3 topics), `algorithms-1` (3 topics), `algorithms-2` (4 topics)
+
+**Paper 2:** `digital-electronics` (13 topics), `operating-systems` (12 topics), `software-security-engineering` (2 main topics + 5 supplements), `discrete-maths` (4 topics)
+
+**Paper 3:** `databases` (8 topics), `introduction-to-graphics` (6 topics), `interaction-design` (3 main topics + 5 supplements), `machine-learning-real-world-data` (3 topics)
+
+**Maths:** `nst-mathematics-a` (11 topics + 1 supplement)
+
+### Content collections (src/content/config.ts)
+
+| Collection | Type | File pattern | Key fields |
+|---|---|---|---|
+| `notes` | content | `notes/<module>/<topic>.md` | module, topicSlug, order, isSupplement |
+| `supplements` | content | `supplements/<module>/<slug>.md` | module, title, summary, order |
+| `cheatsheets` | content | `cheatsheets/<module>.mdx` | module, title, paper |
+| `flashcards` | data | `flashcards/<module>.json` | module, cards[]{id,front,back,topic,tags} |
+| `quizzes` | data | `quizzes/<module>.json` | module, questions[]{id,topic,kind,prompt,options,answer,explanation} |
+| `code-exercises` | data | `code-exercises/<module>.json` | module, language, exercises[]{id,topic,title,kind,prompt,codeSnippet,answer,hints,explanation,solutionCode} |
+| `practice-questions` | data | `practice-questions/<module>.json` | module, questions[]{id,topic,topicTitle,difficulty(1-5),title,totalMarks,prompt,hint,markscheme[],parts[]} |
+
+### Component inventory (src/components/)
+
+All interactive components are Preact (`/** @jsxImportSource preact */`), rendered with `client:load`.
+
+| Component | Purpose | Used on |
+|---|---|---|
+| `Quiz.tsx` | MCQ/short/truefalse quiz with post-submit review | `/quiz/[module]` |
+| `Flashcards.tsx` | SM-2 SRS flashcard deck | `/flashcards/[module]` |
+| `CodingExercises.tsx` | OCaml/Java trace+code exercises with hints and solution reveal | `/coding/[module]` |
+| `PracticeQuestions.tsx` | Practice questions with markschemes, topic+difficulty filter | `/practice/[module]` |
+| `PracticePanel.tsx` | Compact 3-question panel with markscheme toggle | Topic pages |
+| `PastQuestionsPanel.tsx` | Linked past Tripos questions with tried/nailed status | Topic pages |
+| `PastPapersBrowser.tsx` | Full archive browser with year/paper/module/status filters | `/past-papers` |
+| `ConfidenceButtons.tsx` | Per-topic weak/shaky/confident self-rating | Topic pages |
+| `ProgressMap.tsx` | Dashboard: confidence distribution + quiz history | `/progress` |
+
+### localStorage keys (src/lib/progress-store.ts)
+
+All under `piarev:` namespace.
+
+| Key | Type | Purpose |
+|---|---|---|
+| `piarev:confidence` | `Record<"module/topic", Confidence>` | Per-topic self-rating |
+| `piarev:srs` | `Record<cardId, SrsCardState>` | SM-2 flashcard intervals |
+| `piarev:quiz` | `QuizResult[]` | Quiz score history (capped 200) |
+| `piarev:recent-topics` | `{id,title,href,ts}[]` | Last 12 visited topics |
+| `piarev:questions` | `Record<"YYYY-P#-Q#", QuestionStatus>` | Past paper tried/nailed |
+| `piarev:practice` | `Record<questionId, PracticeStatus>` | Practice question attempted/got-it |

@@ -10,6 +10,7 @@ const KEYS = {
   recent: 'piarev:recent-topics',
   meta: 'piarev:meta',
   questions: 'piarev:questions',
+  practice: 'piarev:practice',
 };
 
 function safeGet<T>(key: string, fallback: T): T {
@@ -150,6 +151,22 @@ export function getQuizResults(): QuizResult[] {
 // ── Past paper question tracking ───────────────────────────────────────────
 
 export type QuestionStatus = 'tried' | 'nailed';
+
+// ── Practice question tracking ─────────────────────────────────────────────
+
+export type PracticeStatus = 'attempted' | 'got-it';
+
+export function getAllPracticeStatus(): Record<string, PracticeStatus> {
+  return safeGet<Record<string, PracticeStatus>>(KEYS.practice, {});
+}
+export function getPracticeStatus(qId: string): PracticeStatus | null {
+  return getAllPracticeStatus()[qId] ?? null;
+}
+export function setPracticeStatus(qId: string, s: PracticeStatus | null) {
+  const all = getAllPracticeStatus();
+  if (s === null) delete all[qId]; else all[qId] = s;
+  safeSet(KEYS.practice, all);
+}
 
 export function getAllQuestionStatus(): Record<string, QuestionStatus> {
   return safeGet<Record<string, QuestionStatus>>(KEYS.questions, {});

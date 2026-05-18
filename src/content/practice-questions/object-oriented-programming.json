@@ -1,0 +1,1905 @@
+{
+  "module": "object-oriented-programming",
+  "title": "Object-Oriented Programming — Practice Questions",
+  "questions": [
+    {
+      "id": "oop-motiv-d1",
+      "topic": "motivations-languages-oop-intro",
+      "topicTitle": "Motivations, Languages, and OOP Introduction",
+      "difficulty": 1,
+      "title": "OOP core concepts",
+      "totalMarks": 3,
+      "prompt": "Name the four main principles of object-oriented programming and give a one-sentence description of each.",
+      "markscheme": [
+        { "text": "Encapsulation: bundling data and methods together, hiding internal state from outside", "marks": 1 },
+        { "text": "Inheritance: a class can extend another, inheriting its fields and methods", "marks": 1 },
+        { "text": "Polymorphism: objects of different types can be treated uniformly through a common interface", "marks": 0.5 },
+        { "text": "Abstraction: exposing only essential features, hiding implementation details", "marks": 0.5 }
+      ]
+    },
+    {
+      "id": "oop-motiv-d2",
+      "topic": "motivations-languages-oop-intro",
+      "topicTitle": "Motivations, Languages, and OOP Introduction",
+      "difficulty": 2,
+      "title": "OOP vs procedural programming",
+      "totalMarks": 4,
+      "prompt": "Compare object-oriented and procedural programming. Give two advantages of OOP over procedural programming, and one disadvantage. Illustrate with a concrete example from modelling a bank account.",
+      "markscheme": [
+        { "text": "OOP advantage 1: encapsulation — bank account balance hidden behind methods (deposit/withdraw); prevents invalid direct mutation. Procedural: global state accessible to all functions", "marks": 1 },
+        { "text": "OOP advantage 2: reuse via inheritance — SavingsAccount extends BankAccount, reusing deposit/withdraw logic while adding interest calculation", "marks": 1 },
+        { "text": "Disadvantage: OOP can over-engineer simple problems; class hierarchies add complexity; not always the best fit for algorithmic/mathematical code", "marks": 1 },
+        { "text": "Concrete example: procedural — function creditAccount(accounts, id, amount) manipulates a struct; OOP — account.credit(amount) enforces invariants through the object interface", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-motiv-d3",
+      "topic": "motivations-languages-oop-intro",
+      "topicTitle": "Motivations, Languages, and OOP Introduction",
+      "difficulty": 3,
+      "title": "Classes vs objects and the class hierarchy",
+      "totalMarks": 5,
+      "prompt": "Explain the difference between a class and an object (instance). What does it mean for Java to be a single-rooted type hierarchy? Draw a small class hierarchy for animals: Animal, Dog, Cat, GoldenRetriever. Mark which relationships are 'is-a' and which are 'has-a'.",
+      "markscheme": [
+        { "text": "Class: a template/blueprint defining structure and behaviour. Object: a runtime instance of a class with its own state", "marks": 1 },
+        { "text": "Single-rooted: every Java class implicitly extends Object; all objects share common methods (toString, equals, hashCode)", "marks": 1 },
+        { "text": "Hierarchy: GoldenRetriever extends Dog extends Animal; Cat extends Animal. All are 'is-a' relationships", "marks": 2 },
+        { "text": "Has-a: e.g. Dog has-a Collar (composition/aggregation); distinct from inheritance. Is-a is modelled with extends/implements; has-a with fields", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-motiv-d4",
+      "topic": "motivations-languages-oop-intro",
+      "topicTitle": "Motivations, Languages, and OOP Introduction",
+      "difficulty": 4,
+      "title": "Compiled vs interpreted languages and the JVM",
+      "totalMarks": 6,
+      "prompt": "(i) Explain the difference between compilation and interpretation. Where does Java fall on this spectrum?<br>(ii) What is the JVM? What is bytecode? Why does Java's 'write once, run anywhere' claim depend on the JVM?<br>(iii) What is JIT compilation and why does it matter for Java performance?",
+      "markscheme": [
+        { "text": "Compilation: source → machine code ahead of time (e.g. C). Interpretation: source executed line by line at runtime (e.g. Python). Java: hybrid — compiled to bytecode (compile time), interpreted/JIT-compiled by JVM (runtime)", "marks": 2 },
+        { "text": "JVM: Java Virtual Machine, a program that executes bytecode. Bytecode: platform-neutral instruction set. Write once, run anywhere: same .class file runs on any JVM, regardless of OS/hardware", "marks": 2 },
+        { "text": "JIT: Just-In-Time compiler — JVM detects 'hot' code paths and compiles bytecode to native machine code at runtime. Makes long-running Java programs approach C performance", "marks": 2 }
+      ]
+    },
+    {
+      "id": "oop-motiv-d5a",
+      "topic": "motivations-languages-oop-intro",
+      "topicTitle": "Motivations, Languages, and OOP Introduction",
+      "difficulty": 5,
+      "title": "OOP design principles and SOLID",
+      "totalMarks": 12,
+      "prompt": "This question concerns object-oriented design principles.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "State the Single Responsibility Principle (SRP) and the Open/Closed Principle (OCP). Give an example violating each, and show how to fix it.",
+          "markscheme": [
+            { "text": "SRP: a class should have only one reason to change. Violation: a Report class that both generates report content AND formats it as PDF. Fix: split into ReportGenerator and PdfFormatter", "marks": 1.5 },
+            { "text": "OCP: open for extension, closed for modification. Violation: a Shape drawing method with if/else for each shape type — adding a new shape requires modifying existing code. Fix: Shape interface with draw(); each shape implements it", "marks": 1.5 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Explain the Liskov Substitution Principle (LSP). Give a classic counterexample involving Square and Rectangle, and explain what LSP violation implies for code correctness.",
+          "markscheme": [
+            { "text": "LSP: if S is a subtype of T, then objects of type T may be replaced with objects of type S without breaking the program", "marks": 1 },
+            { "text": "Square extends Rectangle: Rectangle has setWidth/setHeight independently. Square's setWidth also sets height (to maintain square). Code relying on 'setWidth doesn't change height' breaks when a Square is passed as a Rectangle", "marks": 1 },
+            { "text": "LSP violation implies: polymorphism becomes unreliable; you need instanceof checks to avoid bugs; the inheritance hierarchy doesn't model the true is-a relationship (a geometric square is a rectangle, but a Square class is not a Rectangle class in terms of behaviour)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Explain the Interface Segregation Principle and the Dependency Inversion Principle with examples.",
+          "markscheme": [
+            { "text": "ISP: no client should be forced to depend on methods it doesn't use. Fat interface violation: Printable has print(), scan(), fax() — a simple printer implements fax() as stub. Fix: separate Printer, Scanner, Fax interfaces", "marks": 1.5 },
+            { "text": "DIP: high-level modules should not depend on low-level modules; both should depend on abstractions. Violation: EmailNotifier directly instantiates SmtpClient. Fix: inject a Notifier interface, pass SmtpClient (or SmsClient) at construction", "marks": 1.5 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Describe composition over inheritance. Give an example where a deep inheritance hierarchy causes problems, and show how composition would be better.",
+          "markscheme": [
+            { "text": "Composition over inheritance: prefer giving a class references to objects with the desired behaviour, rather than inheriting it. 'Has-a' instead of 'is-a'", "marks": 1 },
+            { "text": "Problem: FlyingFishDog needs to extend both Fish and Bird and Dog — multiple inheritance diamond problem. Behaviour explosion: n features → 2^n subclasses", "marks": 1 },
+            { "text": "Fix with composition: Animal has a Locomotion field (interface); DogLocomotion, FishLocomotion, FlyingLocomotion implement it. Combine at construction: new Animal(new FlyingLocomotion()) — flexible and avoids class explosion", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oop-motiv-d5b",
+      "topic": "motivations-languages-oop-intro",
+      "topicTitle": "Motivations, Languages, and OOP Introduction",
+      "difficulty": 5,
+      "title": "Language comparison: Java, OCaml, Python, C++",
+      "totalMarks": 13,
+      "prompt": "This question concerns programming language design.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Compare static and dynamic typing with examples from Java and Python. What are the trade-offs in terms of safety, expressiveness, and performance?",
+          "markscheme": [
+            { "text": "Static typing (Java): types checked at compile time; type errors caught before runtime; better IDE support; some loss of flexibility. Dynamic typing (Python): types checked at runtime; more flexible (duck typing); easier prototyping; type errors only caught when code is executed", "marks": 1 },
+            { "text": "Safety: static typing catches class of errors (wrong type passed to function) at compile time; dynamic typing may fail at runtime. Java: int x = \"hello\" → compile error; Python: x = \"hello\"; x + 1 → runtime TypeError", "marks": 1 },
+            { "text": "Performance: static typing allows more optimisation (types known at compile time); dynamic typing requires runtime type checks overhead", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Java uses garbage collection; C++ relies on manual memory management. Give two advantages and two disadvantages of garbage collection compared to manual memory management.",
+          "markscheme": [
+            { "text": "GC advantage 1: no dangling pointer/use-after-free bugs — GC tracks live objects; memory freed only when unreachable", "marks": 1 },
+            { "text": "GC advantage 2: no memory leaks from forgotten deallocations; no need to track ownership manually", "marks": 1 },
+            { "text": "GC disadvantage 1: GC pauses — stop-the-world collection causes latency spikes (problematic for real-time systems)", "marks": 1 },
+            { "text": "GC disadvantage 2: higher memory overhead (GC needs to track all allocations; cannot immediately reclaim memory); less deterministic performance", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "What is the difference between pass-by-value and pass-by-reference? How does Java handle primitive types vs objects when passed to methods?",
+          "markscheme": [
+            { "text": "Pass-by-value: a copy of the value is passed; modifications in the callee don't affect the caller's variable. Pass-by-reference: the reference itself is passed; callee and caller share the same variable", "marks": 1 },
+            { "text": "Java is always pass-by-value. For primitives (int, double, etc.): the value is copied — changing the parameter doesn't affect the original", "marks": 1 },
+            { "text": "For objects: the reference (pointer) is passed by value. The callee can mutate the object's fields via the reference; but re-assigning the parameter (param = new Foo()) doesn't affect the caller's reference", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "OCaml and Java both have type systems but approach them very differently. Compare how each handles: (i) null/None; (ii) type inference; (iii) immutability.",
+          "markscheme": [
+            { "text": "(i) OCaml: optional values use type 'a option; the compiler forces you to handle None case. Java: null is a valid value for any reference type — leads to NullPointerException; Java 8+ added Optional<T> but it's not enforced", "marks": 1 },
+            { "text": "(ii) OCaml: global Hindley-Milner type inference — most types inferred without annotation. Java: limited local inference (var keyword in Java 10+); generally requires explicit type declarations", "marks": 1 },
+            { "text": "(iii) OCaml: immutable by default; mutation requires explicit ref/mutable. Java: mutable by default; final keyword for immutable variables; record types (Java 16+) for immutable data classes", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oop-java-d1",
+      "topic": "introduction-to-java",
+      "topicTitle": "Introduction to Java",
+      "difficulty": 1,
+      "title": "Java syntax basics",
+      "totalMarks": 3,
+      "prompt": "What is the output of the following Java code? Explain each step.<br><pre><code>int x = 5;\nint y = x++;\nSystem.out.println(x + \" \" + y);</code></pre>",
+      "markscheme": [
+        { "text": "Output: <code>6 5</code>", "marks": 1 },
+        { "text": "<code>y = x++</code>: post-increment assigns the current value of x (5) to y, then increments x to 6", "marks": 1 },
+        { "text": "After the statement: x=6, y=5. The post-increment ++ operator returns the old value, unlike pre-increment ++x which would assign 6 to y", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-java-d2",
+      "topic": "introduction-to-java",
+      "topicTitle": "Introduction to Java",
+      "difficulty": 2,
+      "title": "Java types: primitives vs references",
+      "totalMarks": 4,
+      "prompt": "List four Java primitive types and their sizes. Explain the difference between a primitive type and a reference type in Java. What is autoboxing?",
+      "markscheme": [
+        { "text": "Primitives: int (32-bit), long (64-bit), double (64-bit), boolean (1-bit), char (16-bit Unicode), byte (8-bit), short (16-bit), float (32-bit). Any four correct.", "marks": 1 },
+        { "text": "Primitive: stores value directly on stack (or as field inline); no object overhead. Reference type: stores a reference (pointer) to an object on the heap; null is a valid value", "marks": 2 },
+        { "text": "Autoboxing: automatic conversion between primitive types and their wrapper classes (int ↔ Integer, double ↔ Double). Allows primitives to be used where objects are required (e.g. in collections)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-java-d3",
+      "topic": "introduction-to-java",
+      "topicTitle": "Introduction to Java",
+      "difficulty": 3,
+      "title": "Writing a Java class",
+      "totalMarks": 5,
+      "prompt": "Write a complete Java class <code>Counter</code> with: a private int field <code>count</code>, a constructor initialising count to 0, methods <code>increment()</code>, <code>decrement()</code>, <code>reset()</code>, and <code>getCount()</code>. Include a <code>main</code> method that creates a Counter, increments it 3 times, decrements it once, and prints the result.",
+      "markscheme": [
+        { "text": "Correct field declaration: <code>private int count;</code>", "marks": 1 },
+        { "text": "Correct constructor and methods with appropriate return types (void for increment/decrement/reset, int for getCount)", "marks": 2 },
+        { "text": "Correct main method creating instance and calling methods; output should be 2", "marks": 1 },
+        { "text": "Proper Java syntax: semicolons, braces, public class name matching file name", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-java-d4",
+      "topic": "introduction-to-java",
+      "topicTitle": "Introduction to Java",
+      "difficulty": 4,
+      "title": "Arrays and strings in Java",
+      "totalMarks": 6,
+      "prompt": "(i) Declare and initialise a Java int array of size 5 with values 10,20,30,40,50. Write a method <code>sum(int[] arr)</code> that returns the sum using a for-each loop.<br>(ii) Explain the difference between String, StringBuilder, and StringBuffer in Java. When would you use each?<br>(iii) What does <code>\"hello\" == \"hello\"</code> evaluate to, and why might it give surprising results? How should strings be compared?",
+      "markscheme": [
+        { "text": "Array: <code>int[] arr = {10,20,30,40,50};</code>; sum: <code>int sum=0; for(int x: arr) sum+=x; return sum;</code>", "marks": 2 },
+        { "text": "String: immutable; suitable for string constants and few concatenations. StringBuilder: mutable, not thread-safe; best for frequent string building in single-threaded code. StringBuffer: mutable, thread-safe (synchronized); use in multi-threaded contexts at cost of performance", "marks": 2 },
+        { "text": "<code>\"hello\" == \"hello\"</code> compares references, not content; may be true for string literals (due to interning) but false for dynamically created strings. Always use <code>.equals()</code> for content comparison", "marks": 2 }
+      ]
+    },
+    {
+      "id": "oop-java-d5a",
+      "topic": "introduction-to-java",
+      "topicTitle": "Introduction to Java",
+      "difficulty": 5,
+      "title": "Java control flow and program structure",
+      "totalMarks": 12,
+      "prompt": "This question concerns Java program structure.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Write a Java method <code>static int[] sieve(int n)</code> that returns an array of all primes ≤ n using the Sieve of Eratosthenes.",
+          "markscheme": [
+            { "text": "Allocate boolean array isPrime[n+1]; initialise all true; mark 0 and 1 as false", "marks": 1 },
+            { "text": "For i from 2 to √n: if isPrime[i], mark multiples i*i, i*i+i, ... as false", "marks": 1 },
+            { "text": "Collect all i where isPrime[i]=true into result array; return", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Explain the difference between <code>break</code> and <code>continue</code> in Java loops. Show an example of a labelled break to exit a nested loop.",
+          "markscheme": [
+            { "text": "break: exits the innermost enclosing loop (or switch) immediately. continue: skips the rest of the current loop iteration and proceeds to the next", "marks": 1 },
+            { "text": "Labelled break: <code>outer: for(int i=0;i<5;i++) { for(int j=0;j<5;j++) { if(i+j==6) break outer; } }</code> — breaks out of both loops when i+j=6", "marks": 2 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "What is the difference between checked and unchecked exceptions in Java? Give one example of each. How are checked exceptions handled?",
+          "markscheme": [
+            { "text": "Checked exceptions: must be declared in method signature (throws) or caught; represent recoverable conditions. Example: IOException, SQLException", "marks": 1 },
+            { "text": "Unchecked exceptions: extend RuntimeException; need not be declared or caught; represent programming errors. Example: NullPointerException, ArrayIndexOutOfBoundsException", "marks": 1 },
+            { "text": "Handling checked: either catch in try-catch block, or declare throws in method signature to propagate to caller", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Describe the Java memory model at a high level: what is stored on the stack vs the heap? What is stored where for local variables, method parameters, and object fields?",
+          "markscheme": [
+            { "text": "Stack: per-thread; stores stack frames containing local variables (primitives stored directly) and references to objects; fast allocation/deallocation (LIFO)", "marks": 1 },
+            { "text": "Heap: shared across threads; stores all object instances (their fields) and arrays; managed by GC", "marks": 1 },
+            { "text": "Local variables/parameters: primitive values stored on stack; references stored on stack, but the referenced object is on the heap. Object fields: stored inside the object on the heap (whether primitive or reference)", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oop-java-d5b",
+      "topic": "introduction-to-java",
+      "topicTitle": "Introduction to Java",
+      "difficulty": 5,
+      "title": "Tripos: Java programming",
+      "totalMarks": 13,
+      "prompt": "This question concerns Java programming.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 4,
+          "prompt": "Write a Java class <code>Matrix</code> that encapsulates a 2D array of doubles. Provide a constructor, a <code>get(int i, int j)</code> method, a <code>set(int i, int j, double v)</code> method, and a static <code>multiply(Matrix a, Matrix b)</code> method. Include appropriate bounds checking.",
+          "markscheme": [
+            { "text": "Correct field <code>private double[][] data</code>; constructor allocating data[rows][cols]", "marks": 1 },
+            { "text": "Correct get/set with bounds checking (throw IllegalArgumentException or IndexOutOfBoundsException)", "marks": 1 },
+            { "text": "Correct multiply: check a.cols == b.rows; allocate result Matrix; triple nested loop for standard matrix multiplication", "marks": 2 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Explain what happens when you pass an array to a Java method and modify it. Write a method that swaps two elements of an int array in-place, and show it works from main.",
+          "markscheme": [
+            { "text": "Array passed by reference (reference passed by value): method receives a copy of the reference pointing to the same array. Modifications to array elements affect the original", "marks": 1 },
+            { "text": "Swap: <code>static void swap(int[] a, int i, int j) { int tmp=a[i]; a[i]=a[j]; a[j]=tmp; }</code>", "marks": 1 },
+            { "text": "Demonstration from main showing array is modified after call", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "What is method overloading in Java? Write a class <code>Printer</code> with overloaded <code>print</code> methods for int, double, and String. How does the compiler choose which overload to call?",
+          "markscheme": [
+            { "text": "Method overloading: multiple methods with the same name but different parameter lists (number or type of parameters)", "marks": 1 },
+            { "text": "Correct overloaded methods: print(int), print(double), print(String) — each with different parameter type", "marks": 1 },
+            { "text": "Compiler resolution: selects the most specific overload matching the argument types at compile time (static dispatch). Ambiguity (e.g. null for reference types) causes compile error", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Describe the Java compilation and execution process: from .java source file to running program. What roles do javac and java play?",
+          "markscheme": [
+            { "text": "javac: Java compiler; takes .java source → .class bytecode file(s); performs type checking and compilation", "marks": 1 },
+            { "text": "java: JVM launcher; loads .class file; verifies bytecode; interprets or JIT-compiles to native code; executes main method", "marks": 1 },
+            { "text": "Class loading: JVM loads classes on demand (lazy loading); resolves class references; bytecode verification ensures type safety before execution", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oop-encap-d1",
+      "topic": "class-design-and-encapsulation",
+      "topicTitle": "Class Design and Encapsulation",
+      "difficulty": 1,
+      "title": "Access modifiers",
+      "totalMarks": 3,
+      "prompt": "List Java's four access modifiers and describe what each allows. Which modifier should fields typically use, and why?",
+      "markscheme": [
+        { "text": "private: accessible only within the same class. (default/package-private): accessible within the same package. protected: accessible within package and subclasses. public: accessible from everywhere", "marks": 2 },
+        { "text": "Fields should be private: encapsulation principle — hide internal state; provide access only through public methods (getters/setters) enabling validation and future implementation change", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-encap-d2",
+      "topic": "class-design-and-encapsulation",
+      "topicTitle": "Class Design and Encapsulation",
+      "difficulty": 2,
+      "title": "Constructors and this",
+      "totalMarks": 4,
+      "prompt": "Explain the role of constructors in Java. What is constructor chaining? Show an example of a class with multiple constructors using <code>this(...)</code> to chain them. What happens if you don't define any constructor?",
+      "markscheme": [
+        { "text": "Constructor: special method called when creating an object; initialises fields; has same name as class; no return type", "marks": 1 },
+        { "text": "Constructor chaining: one constructor calls another using this(...) as first statement. Example: Rectangle() calls this(0,0) which calls this(0,0,1,1)", "marks": 2 },
+        { "text": "No constructor defined: compiler inserts a default no-arg constructor that calls super(). If any constructor is defined, the default is not inserted", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-encap-d3",
+      "topic": "class-design-and-encapsulation",
+      "topicTitle": "Class Design and Encapsulation",
+      "difficulty": 3,
+      "title": "Immutable class design",
+      "totalMarks": 5,
+      "prompt": "Describe how to design an immutable class in Java. List all the steps required. Write an immutable <code>Point</code> class with x and y coordinates. Why is immutability valuable?",
+      "hint": "Think about what could allow state to change: fields, constructors, methods, subclassing, mutable fields.",
+      "markscheme": [
+        { "text": "Steps: (1) declare class final; (2) all fields private final; (3) no setters; (4) defensive copies of mutable arguments in constructor; (5) defensive copies of mutable return values", "marks": 2 },
+        { "text": "Correct Point class: <code>public final class Point { private final double x, y; public Point(double x, double y){this.x=x;this.y=y;} public double getX(){return x;} public double getY(){return y;} }</code>", "marks": 2 },
+        { "text": "Value of immutability: thread-safe without synchronisation; safe to share and cache; simple reasoning (no unexpected state changes); makes good hash map keys", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-encap-d4",
+      "topic": "class-design-and-encapsulation",
+      "topicTitle": "Class Design and Encapsulation",
+      "difficulty": 4,
+      "title": "Static members and factory methods",
+      "totalMarks": 6,
+      "prompt": "(i) Explain the difference between instance members and static members. Give two appropriate uses of static fields and two of static methods.<br>(ii) What is a factory method? Implement a <code>Connection</code> class where the constructor is private and a static factory method <code>create(String url)</code> validates the URL before creating an instance.",
+      "markscheme": [
+        { "text": "Instance members: per-object (each instance has its own copy). Static members: per-class (shared across all instances). Static field uses: constants (PI, MAX_VALUE), singleton instance, shared counter", "marks": 2 },
+        { "text": "Static method uses: utility functions with no state (Math.sqrt), factory methods, main(), operations on the class rather than instances", "marks": 1 },
+        { "text": "Factory method: a static method that constructs and returns an instance; can validate input, return cached instances, or return subtype. Connection.create(url): validate url (throw exception if invalid), then return new Connection(url)", "marks": 3 }
+      ]
+    },
+    {
+      "id": "oop-encap-d5a",
+      "topic": "class-design-and-encapsulation",
+      "topicTitle": "Class Design and Encapsulation",
+      "difficulty": 5,
+      "title": "Class invariants and contracts",
+      "totalMarks": 13,
+      "prompt": "This question concerns class design and correctness.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Define a class invariant. Write a Java class <code>BoundedStack<T></code> with a maximum capacity, maintaining the invariant that size ≤ capacity. Methods: push, pop, peek, isEmpty, isFull.",
+          "markscheme": [
+            { "text": "Invariant: condition that is true before and after every public method call. For BoundedStack: 0 ≤ size ≤ capacity", "marks": 1 },
+            { "text": "Correct fields: T[] data, int size, int capacity. Constructor validates capacity > 0", "marks": 1 },
+            { "text": "push: checks !isFull before adding; pop: checks !isEmpty; invariant maintained by these checks", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Describe Design by Contract (preconditions, postconditions, invariants). Annotate your BoundedStack with Javadoc @param, @return, @throws comments expressing the contract for push and pop.",
+          "markscheme": [
+            { "text": "Precondition: what must be true before calling a method. Postcondition: what is guaranteed after. Invariant: always true between calls", "marks": 1 },
+            { "text": "push Javadoc: @param item the element to push; @throws IllegalStateException if isFull(); @ensures size increases by 1, peek()==item", "marks": 1.5 },
+            { "text": "pop Javadoc: @throws EmptyStackException if isEmpty(); @ensures size decreases by 1, returns element that was at top; @requires !isEmpty()", "marks": 1.5 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "What is the difference between defensive programming and design by contract? In what contexts would you choose each approach?",
+          "markscheme": [
+            { "text": "Defensive programming: method validates all inputs regardless of caller; throws exceptions on invalid input. More robust but adds runtime overhead and duplication", "marks": 1 },
+            { "text": "Design by contract: caller is responsible for meeting preconditions; method assumes they hold and does not check (may use assertions in debug mode only). Less overhead; clearer responsibility", "marks": 1 },
+            { "text": "Use defensive programming: public API (can't trust callers); security-sensitive code. Use DbC: within a system where contracts can be established; performance-critical code; well-defined component boundaries", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Describe the Builder pattern. When is it useful? Write a builder for a <code>Person</code> object with fields name (required), age (optional), email (optional).",
+          "markscheme": [
+            { "text": "Builder pattern: separates object construction from representation; useful when object has many optional parameters (avoids telescoping constructors or JavaBeans setter issues)", "marks": 1 },
+            { "text": "Person.Builder: constructor takes required field (name); optional methods setAge(int), setEmail(String) return this; final build() returns new Person. Fluent API: new Person.Builder(\"Alice\").setAge(30).setEmail(\"a@b.com\").build()", "marks": 2 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oop-encap-d5b",
+      "topic": "class-design-and-encapsulation",
+      "topicTitle": "Class Design and Encapsulation",
+      "difficulty": 5,
+      "title": "Interfaces and abstract classes",
+      "totalMarks": 12,
+      "prompt": "This question concerns Java interfaces and abstract classes.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Compare Java interfaces and abstract classes. Give two things you can do with an abstract class that you cannot do with an interface (pre-Java 8), and two things you can do with an interface that you cannot do with an abstract class.",
+          "markscheme": [
+            { "text": "Abstract class can: have instance fields (state); have constructors; have protected/package-private methods; implement partial behaviour", "marks": 1.5 },
+            { "text": "Interface can: be implemented by multiple classes (multiple inheritance of type); be used as a pure contract with no state; (Java 8+) have default and static methods", "marks": 1.5 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Design a Java interface <code>Shape</code> with methods area(), perimeter(), and a default method describe() that prints the shape's area and perimeter. Implement it in Circle and Rectangle classes.",
+          "markscheme": [
+            { "text": "Shape interface: abstract area() and perimeter() returning double; default describe() calling area() and perimeter()", "marks": 1 },
+            { "text": "Circle: implements area()=π*r², perimeter()=2π*r", "marks": 1 },
+            { "text": "Rectangle: implements area()=w*h, perimeter()=2*(w+h); both provide only the two abstract methods; describe() inherited for free", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "What is a functional interface in Java? List two examples from the Java standard library. Why are functional interfaces important for lambda expressions?",
+          "markscheme": [
+            { "text": "Functional interface: an interface with exactly one abstract method (SAM — Single Abstract Method); annotated with @FunctionalInterface (optional but documents intent)", "marks": 1 },
+            { "text": "Examples: Runnable (run()), Callable<V> (call()), Comparator<T> (compare()), Function<T,R> (apply()), Predicate<T> (test())", "marks": 1 },
+            { "text": "Lambda expressions provide a concise implementation of a functional interface; wherever a functional interface type is expected, a lambda can be used. This enables passing behaviour as a parameter without anonymous class boilerplate", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "What is the difference between an interface and a marker interface? Give an example of a Java marker interface. What design pattern does it represent?",
+          "markscheme": [
+            { "text": "Marker interface: an interface with no methods; used to 'tag' classes with a type for runtime type checking or to signal capability. Example: java.io.Serializable, Cloneable", "marks": 1 },
+            { "text": "Usage: instanceof checks or reflection; JVM uses Serializable to enable object serialisation. Without the marker, serialisation throws NotSerializableException", "marks": 1 },
+            { "text": "Design pattern: represents the Marker pattern; in modern Java, annotations are often preferred (e.g. @Override, @Deprecated) as they are more expressive and don't pollute the type hierarchy", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oop-mem-d1",
+      "topic": "memory-pointers-references",
+      "topicTitle": "Memory, Pointers, and References",
+      "difficulty": 1,
+      "title": "References and null",
+      "totalMarks": 3,
+      "prompt": "What is a reference in Java? What is null? What exception does dereferencing null throw? Give a code example that causes this exception.",
+      "markscheme": [
+        { "text": "Reference: a variable holding the address of an object on the heap (not the object itself). null: a reference value indicating 'no object'", "marks": 1 },
+        { "text": "NullPointerException (NPE): thrown when you attempt to call a method or access a field on a null reference", "marks": 1 },
+        { "text": "Example: <code>String s = null; int len = s.length(); // NPE</code>", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-mem-d2",
+      "topic": "memory-pointers-references",
+      "topicTitle": "Memory, Pointers, and References",
+      "difficulty": 2,
+      "title": "Stack and heap allocation",
+      "totalMarks": 4,
+      "prompt": "For the following Java code, identify what is stored on the stack and what is on the heap. Draw a simple memory diagram.<br><pre><code>public void example() {\n    int x = 5;\n    String s = new String(\"hello\");\n    int[] arr = {1, 2, 3};\n}</code></pre>",
+      "markscheme": [
+        { "text": "Stack: local variables x (value 5), s (reference), arr (reference) — all stored in the current stack frame", "marks": 1 },
+        { "text": "Heap: String object containing \"hello\"; int array {1,2,3}", "marks": 1 },
+        { "text": "Diagram: stack frame with x=5, s→[String@heap], arr→[int[]@heap]; heap shows two objects with the corresponding data", "marks": 2 }
+      ]
+    },
+    {
+      "id": "oop-mem-d3",
+      "topic": "memory-pointers-references",
+      "topicTitle": "Memory, Pointers, and References",
+      "difficulty": 3,
+      "title": "Reference aliasing",
+      "totalMarks": 5,
+      "prompt": "What is aliasing? Explain why aliasing can cause bugs. Trace the following code and state the final output:<br><pre><code>int[] a = {1, 2, 3};\nint[] b = a;\nb[0] = 99;\nSystem.out.println(a[0]);</code></pre><br>How would you fix this to make b an independent copy?",
+      "markscheme": [
+        { "text": "Aliasing: two references point to the same object. Changes via one reference are visible through the other", "marks": 1 },
+        { "text": "Output: 99 — b is assigned the same reference as a; b[0]=99 modifies the shared array; a[0] is now 99", "marks": 2 },
+        { "text": "Fix: <code>int[] b = Arrays.copyOf(a, a.length);</code> or <code>int[] b = a.clone();</code> — creates a new array with the same values", "marks": 2 }
+      ]
+    },
+    {
+      "id": "oop-mem-d4",
+      "topic": "memory-pointers-references",
+      "topicTitle": "Memory, Pointers, and References",
+      "difficulty": 4,
+      "title": "Object equality vs identity",
+      "totalMarks": 6,
+      "prompt": "(i) Explain the difference between == and equals() in Java for reference types.<br>(ii) What is the contract that equals() must satisfy (5 properties)?<br>(iii) Implement equals() and hashCode() for the following class:<br><pre><code>class Point { int x, y; }</code></pre>",
+      "markscheme": [
+        { "text": "==: reference equality (same object in memory). equals(): logical equality (contents same). Default equals() uses ==; classes should override for logical equality", "marks": 1 },
+        { "text": "equals() contract: (1) reflexive: a.equals(a); (2) symmetric: a.equals(b) ↔ b.equals(a); (3) transitive; (4) consistent; (5) a.equals(null) = false", "marks": 2 },
+        { "text": "equals(): check null, same class, then x==other.x && y==other.y. hashCode(): Objects.hash(x,y) or 31*x+y — must satisfy a.equals(b) → a.hashCode()==b.hashCode()", "marks": 3 }
+      ]
+    },
+    {
+      "id": "oop-mem-d5a",
+      "topic": "memory-pointers-references",
+      "topicTitle": "Memory, Pointers, and References",
+      "difficulty": 5,
+      "title": "Deep vs shallow copy and the Cloneable interface",
+      "totalMarks": 12,
+      "prompt": "This question concerns Java object copying.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Define shallow and deep copy. Implement a class <code>Team</code> containing a List<String> of member names. Show that Object.clone() gives a shallow copy. Then implement a deep copy constructor.",
+          "markscheme": [
+            { "text": "Shallow copy: new object with copied field references; mutable fields are shared. Deep copy: new object with recursively copied mutable fields", "marks": 1 },
+            { "text": "Shallow: Team clone has same List reference; modifying clone's list modifies original. Demonstration code showing this", "marks": 1 },
+            { "text": "Deep copy constructor: <code>Team(Team other) { this.members = new ArrayList<>(other.members); }</code> — creates new list with same strings (Strings are immutable so no deeper copy needed)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Explain Java's Cloneable interface and Object.clone(). What are its pitfalls? Why does Effective Java recommend copy constructors or factory methods instead?",
+          "markscheme": [
+            { "text": "Cloneable: marker interface; implementing it allows Object.clone() to perform field-by-field copy (shallow). Without it, clone() throws CloneNotSupportedException", "marks": 1 },
+            { "text": "Pitfalls: clone() returns Object (unchecked cast needed); doesn't call constructors (may bypass invariants); shallow by default; complex for inheritance hierarchies", "marks": 1 },
+            { "text": "Copy constructors preferred: explicit, type-safe, can do deep copy, respect invariants, work with final fields, don't require special interface", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Java passes object references by value. Explain precisely what happens when you call a method that 'swaps' two references:<br><pre><code>static void swap(Object a, Object b) { Object tmp=a; a=b; b=tmp; }</code></pre><br>Does this swap the objects in the calling scope? Why or why not?",
+          "markscheme": [
+            { "text": "The references a and b are local copies of the caller's references. Swapping them only swaps the local copies — the caller's references are unchanged", "marks": 1 },
+            { "text": "To observe the swap, the caller would need to inspect a and b after the call — but a and b in the caller are unaffected. Java passes the reference by value: you get a copy of the reference, not the reference itself", "marks": 1 },
+            { "text": "This is fundamentally different from pass-by-reference (as in C++ with &): there is no way in Java to write a method that modifies the caller's reference variable itself", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "What are Java's strong, soft, weak, and phantom references (from java.lang.ref)? When would you use a WeakReference?",
+          "markscheme": [
+            { "text": "Strong reference: normal reference; object never GC'd while a strong reference exists. Soft reference: GC may clear when memory is low; useful for caches", "marks": 1 },
+            { "text": "Weak reference: GC may clear at any time; object eligible for GC even if only weak references exist. Phantom reference: enqueued after GC for cleanup purposes; get() always returns null", "marks": 1 },
+            { "text": "Use WeakReference: for implementing caches where entries should be GC'd when not otherwise referenced (e.g. WeakHashMap); avoids memory leaks in event listener registries", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oop-mem-d5b",
+      "topic": "memory-pointers-references",
+      "topicTitle": "Memory, Pointers, and References",
+      "difficulty": 5,
+      "title": "Java memory model and concurrency basics",
+      "totalMarks": 13,
+      "prompt": "This question concerns the Java memory model.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Explain what a race condition is. Give a concrete Java example involving a shared counter incremented by two threads. What is the atomic issue with <code>counter++</code>?",
+          "markscheme": [
+            { "text": "Race condition: outcome depends on the relative timing of concurrent operations; non-deterministic bugs that are hard to reproduce", "marks": 1 },
+            { "text": "counter++ is not atomic: read counter, add 1, write back — three separate operations. Two threads can both read 5, both compute 6, both write 6 — result is 6 not 7", "marks": 1 },
+            { "text": "Fix: use synchronized, AtomicInteger.incrementAndGet(), or volatile (though volatile doesn't fix compound operations)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Explain the volatile keyword in Java and the happens-before relationship. When is volatile sufficient and when is synchronisation necessary?",
+          "markscheme": [
+            { "text": "volatile: ensures visibility — writes to a volatile variable are immediately visible to all threads (no caching in CPU registers). Establishes happens-before: write to volatile happens-before subsequent reads", "marks": 2 },
+            { "text": "Sufficient for: simple flags (boolean stop; one writer, many readers); reading/writing single variables atomically (64-bit writes to long/double are otherwise not atomic)", "marks": 1 },
+            { "text": "Not sufficient for: compound actions (check-then-act, read-modify-write like counter++); need synchronized or AtomicInteger for those", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Describe the difference between <code>synchronized</code> methods and <code>synchronized</code> blocks. What is the object monitor (lock)?",
+          "markscheme": [
+            { "text": "Every Java object has a monitor (intrinsic lock). synchronized method: acquires lock on 'this' (or the Class for static methods) for the entire method duration", "marks": 1 },
+            { "text": "synchronized block: acquires lock on a specified object for a specific code region — finer granularity, can lock on a dedicated object rather than 'this'", "marks": 1 },
+            { "text": "Lock ensures mutual exclusion: at most one thread in a synchronized block on the same object at a time. Other threads block until the lock is released", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "What is deadlock? Give a minimal two-thread example in Java that deadlocks. State the four Coffman conditions for deadlock.",
+          "markscheme": [
+            { "text": "Deadlock: two or more threads each holding a lock and waiting for a lock held by another — circular wait, all threads blocked forever", "marks": 1 },
+            { "text": "Example: Thread1 locks A then waits for B; Thread2 locks B then waits for A — both block indefinitely", "marks": 1 },
+            { "text": "Coffman conditions: (1) mutual exclusion; (2) hold and wait; (3) no preemption; (4) circular wait. All four must hold for deadlock", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oop-inherit-d1",
+      "topic": "inheritance",
+      "topicTitle": "Inheritance",
+      "difficulty": 1,
+      "title": "extends and super",
+      "totalMarks": 3,
+      "prompt": "In Java, what does <code>extends</code> do? What is <code>super</code> used for? Write a class <code>Dog extends Animal</code> where Animal has a name field and Dog adds a breed field. Call the Animal constructor from Dog.",
+      "markscheme": [
+        { "text": "extends: creates a subclass relationship; Dog inherits all non-private members of Animal", "marks": 1 },
+        { "text": "super: refers to the parent class. super() calls parent constructor; super.method() calls parent's version of a method", "marks": 1 },
+        { "text": "Correct Dog constructor calling super(name) and initialising breed", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-inherit-d2",
+      "topic": "inheritance",
+      "topicTitle": "Inheritance",
+      "difficulty": 2,
+      "title": "Method overriding and @Override",
+      "totalMarks": 4,
+      "prompt": "Explain method overriding in Java. What is the purpose of the <code>@Override</code> annotation? Give an example where Animal has a <code>speak()</code> method and Dog overrides it. What happens if you call <code>speak()</code> on an Animal reference holding a Dog?",
+      "markscheme": [
+        { "text": "Overriding: subclass provides its own implementation of a method defined in the superclass (same signature). Dynamic dispatch selects the implementation based on the actual runtime type", "marks": 1 },
+        { "text": "@Override: annotation that asks the compiler to verify the method is actually overriding a superclass method; catches typos (if the signature doesn't match, compile error)", "marks": 1 },
+        { "text": "Correct example: Animal.speak() returns \"...\" and Dog.speak() returns \"Woof\"", "marks": 1 },
+        { "text": "Animal ref = new Dog(); ref.speak() → calls Dog's speak() (dynamic dispatch / runtime polymorphism)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-inherit-d3",
+      "topic": "inheritance",
+      "topicTitle": "Inheritance",
+      "difficulty": 3,
+      "title": "Abstract classes and the Template Method pattern",
+      "totalMarks": 5,
+      "prompt": "Define an abstract Java class <code>Game</code> with abstract methods <code>initialize()</code>, <code>startPlay()</code>, and <code>endPlay()</code>, and a concrete final method <code>play()</code> that calls all three in order. Implement a <code>Cricket</code> subclass. This is the Template Method pattern — explain how it works.",
+      "markscheme": [
+        { "text": "Abstract class Game with abstract methods and final play(): <code>public final void play() { initialize(); startPlay(); endPlay(); }</code>", "marks": 2 },
+        { "text": "Cricket extends Game, provides concrete implementations of the three methods", "marks": 1 },
+        { "text": "Template Method: defines the skeleton of an algorithm in the base class; subclasses fill in specific steps without changing the overall structure. play() is the template; subclasses customise the abstract steps", "marks": 2 }
+      ]
+    },
+    {
+      "id": "oop-inherit-d4",
+      "topic": "inheritance",
+      "topicTitle": "Inheritance",
+      "difficulty": 4,
+      "title": "Inheritance vs composition",
+      "totalMarks": 6,
+      "prompt": "(i) Explain the adage 'favour composition over inheritance'. Give an example where inheritance seems natural but causes problems.<br>(ii) Show how to redesign the example using composition.<br>(iii) What does it mean that Java only supports single inheritance of classes but multiple inheritance of interfaces?",
+      "markscheme": [
+        { "text": "Inheritance creates tight coupling: subclass depends on superclass internals. Fragile base class problem: changes to superclass can break subclasses. Example: Stack extends Vector in Java — inherits irrelevant Vector methods (add at index, set) that break the stack abstraction", "marks": 2 },
+        { "text": "Composition redesign: Stack has a Vector field (private); exposes only push/pop/peek. Internal implementation hidden; Vector methods not exposed", "marks": 2 },
+        { "text": "Single inheritance of classes: prevents diamond problem for concrete implementations. Multiple inheritance of interfaces: a class can implement many interfaces (pure contracts), enabling flexible type membership without implementation conflicts", "marks": 2 }
+      ]
+    },
+    {
+      "id": "oop-inherit-d5a",
+      "topic": "inheritance",
+      "topicTitle": "Inheritance",
+      "difficulty": 5,
+      "title": "Constructor chaining and initialisation order",
+      "totalMarks": 12,
+      "prompt": "This question concerns Java initialisation order.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Describe the exact order of initialisation when <code>new C()</code> is called, where C extends B extends A. What gets called first, and in what order do instance initialisers and constructors run?",
+          "markscheme": [
+            { "text": "Order: (1) static initialisers of A, B, C (in that order, once per class); (2) A's instance initialisers and constructor body; (3) B's instance initialisers and constructor body; (4) C's instance initialisers and constructor body", "marks": 1 },
+            { "text": "Within each class: instance field initialisers and instance initialiser blocks run in source order, before the constructor body. super() is implicitly inserted as first statement if not explicit", "marks": 1 },
+            { "text": "Trace: new C() → C's constructor calls super() → B's constructor calls super() → A's constructor runs (sets A's fields) → returns to B (sets B's fields) → returns to C (sets C's fields)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "What is the output of the following code?<br><pre><code>class A {\n  A() { print(); }\n  void print() { System.out.println(\"A\"); }\n}\nclass B extends A {\n  int x = 42;\n  B() { super(); }\n  @Override void print() { System.out.println(x); }\n}\nnew B();</code></pre>",
+          "markscheme": [
+            { "text": "Output: 0", "marks": 1 },
+            { "text": "Explanation: new B() → B() calls super() → A() calls print(). But which print()? Dynamic dispatch: runtime type is B, so B.print() is called", "marks": 1 },
+            { "text": "At the time A() runs, B's instance fields haven't been initialised yet (x=42 not yet set); x has its default value 0", "marks": 1 },
+            { "text": "This is why calling overridable methods from constructors is dangerous: subclass fields not yet initialised when the method runs", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 2,
+          "prompt": "What does the <code>final</code> keyword mean when applied to (i) a class, (ii) a method, (iii) a variable?",
+          "markscheme": [
+            { "text": "final class: cannot be subclassed (e.g. String, Integer). final method: cannot be overridden in subclasses", "marks": 1 },
+            { "text": "final variable: can only be assigned once (effectively immutable reference); must be initialised in declaration or constructor", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Describe the Composite pattern. Design a Java class hierarchy for a file system where File and Directory both implement Component. Directory contains a list of Components.",
+          "markscheme": [
+            { "text": "Composite pattern: treats individual objects (leaves) and compositions (branches) uniformly through a common interface", "marks": 1 },
+            { "text": "Component interface: getName(), getSize(); File implements Component (leaf); Directory implements Component (stores List<Component>)", "marks": 1 },
+            { "text": "Directory.getSize(): recursively sums sizes of all children. Client code can call getSize() on any Component without knowing if it's a file or directory — uniformity", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oop-inherit-d5b",
+      "topic": "inheritance",
+      "topicTitle": "Inheritance",
+      "difficulty": 5,
+      "title": "Tripos: inheritance and design",
+      "totalMarks": 13,
+      "prompt": "This question concerns inheritance in object-oriented design.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Design a Java class hierarchy for a simple expression evaluator supporting integers, addition, and multiplication. Use abstract class Expr with subclasses Num, Add, and Mul. Implement eval() in each.",
+          "markscheme": [
+            { "text": "abstract class Expr { abstract int eval(); }", "marks": 1 },
+            { "text": "Num: field int value; eval() returns value. Add: fields Expr left, right; eval() returns left.eval()+right.eval()", "marks": 1 },
+            { "text": "Mul: same structure as Add but with *. Correct Java syntax and constructors", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Extend your expression evaluator to support a print() method that returns the expression as a String (e.g. Add(Mul(2,3),4) → \"2*3+4\"). How do you handle operator precedence in the string representation?",
+          "markscheme": [
+            { "text": "Num.print() = String.valueOf(value). Mul.print() = left.print()+\"*\"+right.print()", "marks": 1 },
+            { "text": "Add.print(): need to add parentheses around Mul sub-expressions? No — Mul has higher precedence. Add(Mul(2,3),4) → \"2*3+4\" without parens. Add sub-expressions of Add need no parens (same precedence, left-assoc)", "marks": 1 },
+            { "text": "Rule: Mul needs to parenthesise Add children: if (child instanceof Add) wrap with parens. Add(Add(1,2),3) → \"1+2+3\" (fine); Mul(Add(1,2),3) → \"(1+2)*3\"", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 4,
+          "prompt": "The Visitor pattern is an alternative to adding methods to each subclass. Describe the Visitor pattern and implement an ExprVisitor interface with methods visitNum, visitAdd, visitMul. Show how eval and print could be implemented as visitors.",
+          "markscheme": [
+            { "text": "Visitor: define operations on an object structure without modifying the classes. ExprVisitor interface: visitNum(Num), visitAdd(Add), visitMul(Mul) — each returns a value (use generic <T>)", "marks": 1 },
+            { "text": "Each Expr subclass has accept(ExprVisitor v): Num.accept(v) calls v.visitNum(this), etc.", "marks": 1 },
+            { "text": "EvalVisitor implements ExprVisitor: visitNum returns value; visitAdd recursively evaluates left and right via accept", "marks": 1 },
+            { "text": "Advantage: adding a new operation (e.g. optimise) requires only a new Visitor class, not modifying all Expr subclasses (OCP). Disadvantage: adding a new Expr subclass requires modifying all Visitor interfaces", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Compare the inheritance-based (eval method in each class) and visitor-based approaches for the expression evaluator. When would you choose each?",
+          "markscheme": [
+            { "text": "Inheritance approach: open for adding new node types (just add a subclass); closed for adding new operations (must modify all classes). Good when: node types stable, operations vary", "marks": 1 },
+            { "text": "Visitor approach: open for adding new operations; closed for new node types. Good when: operations vary frequently, node types stable. The expression problem: can't easily be open for both simultaneously in OOP", "marks": 1 },
+            { "text": "Functional languages (e.g. OCaml) solve this differently: pattern matching handles new operations naturally; new types require changing all pattern match sites — dual trade-off", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oop-poly-d1",
+      "topic": "polymorphism-multiple-inheritance-coupling",
+      "topicTitle": "Polymorphism, Multiple Inheritance, and Coupling",
+      "difficulty": 1,
+      "title": "Runtime polymorphism",
+      "totalMarks": 3,
+      "prompt": "What is runtime polymorphism in Java? Explain with an example involving an Animal array holding Dog and Cat objects, each with a speak() method. What mechanism enables this behaviour?",
+      "markscheme": [
+        { "text": "Runtime polymorphism: the same method call on different objects produces different behaviour at runtime; the method called is determined by the actual type of the object, not the declared type of the reference", "marks": 1 },
+        { "text": "Example: Animal[] animals = {new Dog(), new Cat()}; for(Animal a: animals) a.speak() — calls Dog.speak() and Cat.speak() respectively", "marks": 1 },
+        { "text": "Dynamic dispatch: the JVM uses a virtual method table (vtable) per class to resolve method calls at runtime", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-poly-d2",
+      "topic": "polymorphism-multiple-inheritance-coupling",
+      "topicTitle": "Polymorphism, Multiple Inheritance, and Coupling",
+      "difficulty": 2,
+      "title": "Coupling and cohesion",
+      "totalMarks": 4,
+      "prompt": "Define coupling and cohesion. What is the desired level of each for well-designed software? Give an example of high coupling that should be refactored.",
+      "markscheme": [
+        { "text": "Coupling: degree of dependency between modules. Cohesion: degree to which elements within a module belong together. Goal: low coupling (independent modules), high cohesion (focused modules)", "marks": 2 },
+        { "text": "High coupling example: class OrderProcessor directly instantiates EmailNotifier, DatabaseLogger, and PaymentGateway — changes to any of these require changing OrderProcessor. Fix: inject abstractions (interfaces) via constructor", "marks": 2 }
+      ]
+    },
+    {
+      "id": "oop-poly-d3",
+      "topic": "polymorphism-multiple-inheritance-coupling",
+      "topicTitle": "Polymorphism, Multiple Inheritance, and Coupling",
+      "difficulty": 3,
+      "title": "Java default methods and the diamond problem",
+      "totalMarks": 5,
+      "prompt": "Java 8 introduced default methods on interfaces. Describe the diamond problem that arises when a class implements two interfaces with the same default method. How does Java resolve it? Give a code example.",
+      "markscheme": [
+        { "text": "Diamond problem: if InterfaceA and InterfaceB both have default void greet() {}, and class C implements both, it's ambiguous which greet() to use", "marks": 1 },
+        { "text": "Java resolution rules: (1) class methods win over interface defaults; (2) more specific interface wins (if one interface extends the other); (3) otherwise, class must explicitly override and specify which to use", "marks": 2 },
+        { "text": "Code example: class C implements A, B { @Override public void greet() { A.super.greet(); } } — explicitly delegates to A's default", "marks": 2 }
+      ]
+    },
+    {
+      "id": "oop-poly-d4",
+      "topic": "polymorphism-multiple-inheritance-coupling",
+      "topicTitle": "Polymorphism, Multiple Inheritance, and Coupling",
+      "difficulty": 4,
+      "title": "Type casting and instanceof",
+      "totalMarks": 6,
+      "prompt": "(i) What is upcasting and downcasting in Java? Which is safe and which can throw an exception?<br>(ii) Show an example of incorrect downcasting causing ClassCastException.<br>(iii) Describe the pattern-matching instanceof (Java 16+) and how it improves safety.<br>(iv) What is the difference between compile-time type and runtime type?",
+      "markscheme": [
+        { "text": "Upcasting: Dog → Animal (always safe, implicit). Downcasting: Animal → Dog (requires explicit cast; throws ClassCastException if actual type is wrong)", "marks": 2 },
+        { "text": "Example: Animal a = new Cat(); Dog d = (Dog) a; // ClassCastException at runtime — a is a Cat, not a Dog", "marks": 1 },
+        { "text": "Pattern-matching instanceof (Java 16+): <code>if (a instanceof Dog d) { d.fetch(); }</code> — binds d only if the cast succeeds; cleaner than cast after check", "marks": 2 },
+        { "text": "Compile-time type: the declared type of the variable (used for method resolution at compile time). Runtime type: the actual type of the object created with new (used for dynamic dispatch and instanceof)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-poly-d5a",
+      "topic": "polymorphism-multiple-inheritance-coupling",
+      "topicTitle": "Polymorphism, Multiple Inheritance, and Coupling",
+      "difficulty": 5,
+      "title": "Polymorphism in practice: Strategy pattern",
+      "totalMarks": 12,
+      "prompt": "This question concerns the use of polymorphism.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Describe the Strategy pattern. Implement a sorting strategy system: a Sorter class that takes a SortStrategy interface and uses it to sort an int array. Provide two strategies: BubbleSort and QuickSort.",
+          "markscheme": [
+            { "text": "Strategy: defines a family of algorithms, encapsulates each, makes them interchangeable. Separates algorithm from context", "marks": 1 },
+            { "text": "SortStrategy interface: void sort(int[] arr). Sorter holds a SortStrategy field; sort(int[] arr) delegates to strategy.sort(arr)", "marks": 1 },
+            { "text": "BubbleSort and QuickSort implement SortStrategy; Sorter can switch strategies at runtime", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "How does the Strategy pattern relate to polymorphism and loose coupling? Compare it to using a switch statement to choose algorithm.",
+          "markscheme": [
+            { "text": "Strategy uses polymorphism: Sorter calls strategy.sort() — different behaviour depending on which SortStrategy is injected. No casting or instanceof needed", "marks": 1 },
+            { "text": "Loose coupling: Sorter depends on the SortStrategy interface, not concrete implementations. New algorithms added without modifying Sorter (OCP)", "marks": 1 },
+            { "text": "Switch: requires modifying the switch statement to add new algorithms; violates OCP; Sorter must know all algorithms at compile time. Strategy: open for extension, closed for modification", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Describe parametric polymorphism (generics) vs subtype polymorphism (inheritance). Give an example showing when each is appropriate.",
+          "markscheme": [
+            { "text": "Subtype polymorphism: runtime behaviour depends on object type (dynamic dispatch). Animal.speak() dispatched to Dog.speak() or Cat.speak(). Use when: objects of different types need to be treated uniformly with different behaviours", "marks": 1 },
+            { "text": "Parametric polymorphism (generics): same code works for any type parameter. List<T> works for List<Integer>, List<String> etc. — same structure, different element types. Use when: container/algorithm independent of element type", "marks": 1 },
+            { "text": "Example: List<Animal> — parametric poly for the container; forEach(a -> a.speak()) — subtype poly for the method call. They complement each other", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Explain method hiding (static methods) vs method overriding (instance methods) in Java. What is the output of the following?<br><pre><code>class A { static void s(){System.out.println(\"A.s\");} void i(){System.out.println(\"A.i\");} }\nclass B extends A { static void s(){System.out.println(\"B.s\");} void i(){System.out.println(\"B.i\");} }\nA obj = new B(); obj.s(); obj.i();</code></pre>",
+          "markscheme": [
+            { "text": "obj.s(): static method — resolved at compile time using declared type A. Prints \"A.s\". Static methods are not polymorphic (hidden, not overridden)", "marks": 1 },
+            { "text": "obj.i(): instance method — dynamic dispatch uses runtime type B. Prints \"B.i\"", "marks": 1 },
+            { "text": "Key distinction: overriding is runtime polymorphism; hiding is compile-time selection. @Override does not apply to static methods", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oop-poly-d5b",
+      "topic": "polymorphism-multiple-inheritance-coupling",
+      "topicTitle": "Polymorphism, Multiple Inheritance, and Coupling",
+      "difficulty": 5,
+      "title": "Interface-based design and dependency injection",
+      "totalMarks": 13,
+      "prompt": "This question concerns interface-based programming and coupling.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Describe dependency injection (DI). Show constructor injection for a UserService that depends on a UserRepository interface. How does DI improve testability?",
+          "markscheme": [
+            { "text": "DI: instead of class creating its own dependencies, they are provided (injected) from outside. Inversion of control: caller controls dependencies rather than the object itself", "marks": 1 },
+            { "text": "UserService(UserRepository repo) — repository injected at construction; UserService uses interface methods only", "marks": 1 },
+            { "text": "Testability: inject a mock/stub UserRepository in tests without hitting a real database; test UserService logic in isolation", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Describe the Observer pattern. Implement it with EventSource (publisher) and EventListener (subscriber) interfaces. Show three listeners registered on an EventSource.",
+          "markscheme": [
+            { "text": "Observer: subject maintains a list of observers; notifies all when state changes. Decouples publisher from subscribers", "marks": 1 },
+            { "text": "EventListener interface: void onEvent(Event e). EventSource: addListener, removeListener, notifyListeners(Event e) iterates and calls onEvent", "marks": 2 },
+            { "text": "Three listeners registered; notifyListeners iterates and calls each — all three respond to one event. Java's built-in event system (Swing, PropertyChangeSupport) uses this pattern", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "What is the Proxy pattern? Describe three use cases (lazy loading, access control, remote proxy). Show a simplified access-control proxy for a DatabaseConnection interface.",
+          "markscheme": [
+            { "text": "Proxy: provides a surrogate or placeholder for another object to control access, add behaviour, or defer creation", "marks": 1 },
+            { "text": "Use cases: lazy loading (create expensive object only when first accessed); access control (check permissions before forwarding); remote proxy (represent remote object via network)", "marks": 1 },
+            { "text": "AccessControlProxy implements DatabaseConnection; holds a real DatabaseConnection and a UserRole; execute(query) checks role before calling real.execute(query); throws SecurityException if unauthorised", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Explain the concept of covariance and contravariance in Java. How do they apply to method return types and parameter types when overriding? What is the role of wildcards in generics?",
+          "markscheme": [
+            { "text": "Covariance: subtype can be used where supertype expected. In Java, overriding method may return a subtype (covariant return type). E.g. Animal.clone() returns Animal; Dog.clone() can return Dog", "marks": 1 },
+            { "text": "Contravariance: method parameter types in overriding cannot be narrowed (Java doesn't support contravariant parameters in overriding — would need a different signature, which is overloading). Interfaces can be used contravariantly in general", "marks": 1 },
+            { "text": "Wildcards: List<? extends Animal> — covariant (read only); List<? super Dog> — contravariant (write). Get/Put principle: use extends for reading, super for writing", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oop-gc-d1",
+      "topic": "object-life-cycle-garbage-collection-copying",
+      "topicTitle": "Object Life Cycle, Garbage Collection, and Copying",
+      "difficulty": 1,
+      "title": "Object lifecycle",
+      "totalMarks": 3,
+      "prompt": "Describe the lifecycle of a Java object from creation to garbage collection. When does an object become eligible for GC?",
+      "markscheme": [
+        { "text": "Creation: new allocates object on heap, calls constructor, returns reference. Object is live while reachable from GC roots (local variables, static fields, JNI references)", "marks": 1 },
+        { "text": "Eligible for GC: when no strong references exist — object unreachable from GC roots. Circular references between two unreachable objects: both collected (modern GC uses reachability, not reference counting)", "marks": 1 },
+        { "text": "GC runs periodically; object may have finalize() called before collection (deprecated). finalizer execution is not guaranteed or timely — resource cleanup should use try-with-resources", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-gc-d2",
+      "topic": "object-life-cycle-garbage-collection-copying",
+      "topicTitle": "Object Life Cycle, Garbage Collection, and Copying",
+      "difficulty": 2,
+      "title": "Mark and sweep and generational GC",
+      "totalMarks": 4,
+      "prompt": "Explain the mark-and-sweep garbage collection algorithm. What is generational garbage collection and why is it efficient?",
+      "markscheme": [
+        { "text": "Mark-and-sweep: (1) mark phase — trace all objects reachable from GC roots, marking them live; (2) sweep phase — scan the whole heap, reclaim unmarked (unreachable) objects", "marks": 2 },
+        { "text": "Generational GC: based on the weak generational hypothesis — most objects die young. Divide heap into young (Eden, survivor spaces) and old (tenured) generations", "marks": 1 },
+        { "text": "Efficiency: minor GC (young generation) is fast — small area, most objects collected quickly. Long-lived objects promoted to old gen; major GC (old gen) less frequent. Objects rarely cross generations", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-gc-d3",
+      "topic": "object-life-cycle-garbage-collection-copying",
+      "topicTitle": "Object Life Cycle, Garbage Collection, and Copying",
+      "difficulty": 3,
+      "title": "try-with-resources and AutoCloseable",
+      "totalMarks": 5,
+      "prompt": "Explain Java's try-with-resources statement. What interface must a resource implement? Show the equivalent code using try-finally. Explain why relying on GC for resource cleanup (files, connections) is wrong.",
+      "markscheme": [
+        { "text": "try-with-resources: <code>try (Resource r = new Resource()) { ... }</code> — automatically calls r.close() on exit (even if exception thrown). Resource must implement AutoCloseable (or Closeable)", "marks": 2 },
+        { "text": "Equivalent try-finally: open resource before try; in finally block, check not null and close. try-with-resources is cleaner and handles suppressed exceptions correctly", "marks": 1 },
+        { "text": "GC is non-deterministic — may not run until program exits. File handles, DB connections are limited OS resources; holding them indefinitely causes resource exhaustion. Must close explicitly", "marks": 2 }
+      ]
+    },
+    {
+      "id": "oop-gc-d4",
+      "topic": "object-life-cycle-garbage-collection-copying",
+      "topicTitle": "Object Life Cycle, Garbage Collection, and Copying",
+      "difficulty": 4,
+      "title": "Memory leaks in Java",
+      "totalMarks": 6,
+      "prompt": "(i) Can Java have memory leaks despite GC? Explain with two examples.<br>(ii) What is an interned String? How can incorrect use of String.intern() cause memory issues?<br>(iii) Describe a memory leak caused by listeners not being deregistered.",
+      "markscheme": [
+        { "text": "Yes: memory leaks occur when objects are reachable but never used. Example 1: static List that elements are added to but never removed — all elements remain reachable. Example 2: caches without eviction policy that grow unboundedly", "marks": 2 },
+        { "text": "Interned strings: String.intern() places strings in the string pool (permgen/metaspace); interning many distinct strings fills the pool and triggers OOM. The pool is not GC'd (pre-Java 7)", "marks": 2 },
+        { "text": "Listener leak: add listeners to EventSource without removing them when component is destroyed; EventSource holds strong references to listeners, keeping listeners and all their references alive indefinitely", "marks": 2 }
+      ]
+    },
+    {
+      "id": "oop-gc-d5a",
+      "topic": "object-life-cycle-garbage-collection-copying",
+      "topicTitle": "Object Life Cycle, Garbage Collection, and Copying",
+      "difficulty": 5,
+      "title": "GC algorithms comparison",
+      "totalMarks": 12,
+      "prompt": "This question concerns Java garbage collection algorithms.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Compare the Serial, Parallel, CMS (Concurrent Mark Sweep), and G1 garbage collectors. For each, state its main design goal and primary use case.",
+          "markscheme": [
+            { "text": "Serial: single-threaded stop-the-world; simple; best for single-core or small heaps (client VMs)", "marks": 1 },
+            { "text": "Parallel (Throughput GC): multiple threads for GC; maximises throughput; some long pauses; good for batch processing", "marks": 1 },
+            { "text": "CMS: concurrent marking phase while application runs; low pause times; fragmentation over time. G1: region-based; predictable pause times; replaces CMS for large heaps; default in Java 9+", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Explain compaction as a phase in garbage collection. Why is it important? What is the trade-off between compacting and non-compacting collectors?",
+          "markscheme": [
+            { "text": "Compaction: after reclaiming unreachable objects, slide live objects together to eliminate fragmentation; update all references", "marks": 1 },
+            { "text": "Important: prevents fragmentation (many small free gaps unable to satisfy large allocations); allows pointer-bump allocation (very fast — just increment a pointer)", "marks": 1 },
+            { "text": "Trade-off: compaction requires stop-the-world (cannot move objects while application threads run); non-compacting collectors (CMS) avoid pauses but fragment the heap, requiring expensive free-list allocation", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "What is escape analysis in the JVM? How can it reduce GC pressure?",
+          "markscheme": [
+            { "text": "Escape analysis: JIT determines whether an object's reference 'escapes' the method it was created in — i.e., whether it is stored in a heap-accessible location (field, returned, passed to another thread)", "marks": 1 },
+            { "text": "If object does not escape: JVM can allocate it on the stack (stack allocation) — automatically freed when method returns, no GC involvement", "marks": 1 },
+            { "text": "Also enables scalar replacement: decompose object into individual fields allocated in registers/stack; no heap allocation at all. Reduces GC pressure for short-lived objects common in functional-style Java code", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Describe the GC root types in the JVM. Why do they form the starting points for reachability analysis?",
+          "markscheme": [
+            { "text": "GC roots: objects guaranteed to be live without further analysis. Types: (1) local variables and method parameters on all thread stacks; (2) static fields of loaded classes; (3) JNI references (native code); (4) objects held by JVM internals (e.g. class loaders, finalizer queue)", "marks": 2 },
+            { "text": "Starting from roots guarantees correctness: any object reachable from a root is by definition live (someone could use it). Unreachable from roots = definitely dead. The GC traverses the object graph from roots, marking all reached objects", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oop-gc-d5b",
+      "topic": "object-life-cycle-garbage-collection-copying",
+      "topicTitle": "Object Life Cycle, Garbage Collection, and Copying",
+      "difficulty": 5,
+      "title": "Object serialization and the Prototype pattern",
+      "totalMarks": 13,
+      "prompt": "This question concerns object copying and serialisation.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Describe the Prototype pattern. How does it relate to object cloning? Implement a Shape prototype registry in Java that maps shape names to prototype objects and returns copies on request.",
+          "markscheme": [
+            { "text": "Prototype: create new objects by copying (cloning) a prototype. Avoids expensive creation by reusing a configured prototype", "marks": 1 },
+            { "text": "Registry: Map<String, Shape> prototypes; register(name, shape); get(name): return (Shape) prototypes.get(name).clone()", "marks": 1 },
+            { "text": "Shapes implement Cloneable and override clone(); clients get fresh copies from the registry without knowing the concrete class", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Describe Java serialisation (java.io.Serializable). What fields are excluded from serialisation? How can you customise the process with writeObject/readObject? What security concerns does serialisation raise?",
+          "markscheme": [
+            { "text": "Serialisation: converts object graph to byte stream; deserialistion reverses it. Class must implement Serializable. transient fields excluded; static fields excluded", "marks": 1 },
+            { "text": "Customisation: private void writeObject(ObjectOutputStream s) and readObject(ObjectInputStream s) methods can add custom logic (e.g. encrypt sensitive fields, validate invariants on deserialisation)", "marks": 1 },
+            { "text": "Security: deserialisation of untrusted data is dangerous — attacker-controlled byte stream can instantiate arbitrary classes and call arbitrary methods (gadget chains). Critical vulnerability in Java; avoid deserialising untrusted data; use ObjectInputFilter; prefer JSON/XML with schema validation", "marks": 2 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Explain serialVersionUID. What happens if you serialise an object, change the class, and try to deserialise the old bytes? How should you handle class evolution in serialised objects?",
+          "markscheme": [
+            { "text": "serialVersionUID: a version identifier stored in the serialised stream; compared to the class's UID on deserialisation. If they don't match, InvalidClassException is thrown", "marks": 1 },
+            { "text": "Adding fields: declare compatible serialVersionUID; added fields receive default values on deserialisation from old stream. Removing fields: data silently ignored", "marks": 1 },
+            { "text": "Best practice: explicitly declare serialVersionUID; use readObject to validate/migrate; consider versioned serialisation protocols or replace with schema-based formats (JSON, Protobuf) for better evolution support", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Records (Java 16+) are immutable data classes. How do they differ from regular classes? How do they interact with serialisation and the equals/hashCode contract?",
+          "markscheme": [
+            { "text": "Records: final class; all fields private final; compiler generates constructor, getters, equals, hashCode, toString automatically based on components", "marks": 1 },
+            { "text": "Records implement Serializable (if declared): serialisation uses the canonical constructor on deserialisation (not field-by-field); safer than regular Serializable", "marks": 1 },
+            { "text": "equals/hashCode: generated based on all components; two records with same component values are equal. Cannot be subclassed (implicitly final) — avoids equals contract violations from inheritance", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oop-coll-d1",
+      "topic": "collections-and-comparisons",
+      "topicTitle": "Collections and Comparisons",
+      "difficulty": 1,
+      "title": "Java Collections overview",
+      "totalMarks": 3,
+      "prompt": "Name four Java collection interfaces and a concrete implementation of each. When would you choose ArrayList over LinkedList?",
+      "markscheme": [
+        { "text": "List (ArrayList, LinkedList); Set (HashSet, TreeSet); Map (HashMap, TreeMap); Queue (LinkedList, ArrayDeque)", "marks": 2 },
+        { "text": "ArrayList over LinkedList: random access O(1) vs O(n); better cache locality; uses less memory (no node overhead). LinkedList better for frequent insertions/deletions in the middle", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-coll-d2",
+      "topic": "collections-and-comparisons",
+      "topicTitle": "Collections and Comparisons",
+      "difficulty": 2,
+      "title": "Comparable and Comparator",
+      "totalMarks": 4,
+      "prompt": "Explain the difference between <code>Comparable<T></code> and <code>Comparator<T></code>. When would you use each? Write a Student class implementing Comparable<Student> ordering by GPA. Then write a Comparator that orders by name.",
+      "markscheme": [
+        { "text": "Comparable: natural ordering defined within the class (compareTo). Comparator: external ordering; useful when you don't own the class or need multiple orderings", "marks": 1 },
+        { "text": "Student implements Comparable<Student>: compareTo compares GPA (Double.compare(this.gpa, other.gpa))", "marks": 1 },
+        { "text": "Name comparator: <code>Comparator<Student> byName = Comparator.comparing(s -> s.name);</code> or explicit lambda/anonymous class", "marks": 1 },
+        { "text": "Usage: Collections.sort(list) uses natural order; Collections.sort(list, comparator) uses provided comparator", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-coll-d3",
+      "topic": "collections-and-comparisons",
+      "topicTitle": "Collections and Comparisons",
+      "difficulty": 3,
+      "title": "HashMap internals",
+      "totalMarks": 5,
+      "prompt": "Explain how HashMap works internally in Java. What is the role of hashCode() and equals()? What happens when two keys have the same hash code? What is the default load factor and why does it matter?",
+      "hint": "Think about how keys are stored, what happens at the same bucket, and when rehashing occurs.",
+      "markscheme": [
+        { "text": "HashMap: array of buckets; key mapped to bucket via hashCode() % capacity. equals() used to find exact key within a bucket (handles collisions)", "marks": 2 },
+        { "text": "Collision (same hash): keys stored in a linked list (or balanced tree for Java 8+ when bucket length > 8) at the same bucket. Lookup traverses the chain", "marks": 1 },
+        { "text": "Load factor (default 0.75): when size/capacity > 0.75, rehash (double capacity, reinsert all entries). Too low: wasted space. Too high: long chains, slower lookup. 0.75 balances space/time", "marks": 2 }
+      ]
+    },
+    {
+      "id": "oop-coll-d4",
+      "topic": "collections-and-comparisons",
+      "topicTitle": "Collections and Comparisons",
+      "difficulty": 4,
+      "title": "TreeMap, TreeSet, and ordering",
+      "totalMarks": 6,
+      "prompt": "(i) How does TreeMap differ from HashMap in terms of ordering and performance?<br>(ii) Write code to count word frequencies using a TreeMap, printing results in alphabetical order.<br>(iii) What happens if you put a mutable object as a HashMap key and then mutate it?",
+      "markscheme": [
+        { "text": "TreeMap: sorted by key (natural order or Comparator); O(log n) operations (red-black BST). HashMap: unordered; O(1) amortised operations. Use TreeMap when sorted iteration needed", "marks": 2 },
+        { "text": "Word count: Map<String,Integer> map = new TreeMap<>(); for each word: map.merge(word, 1, Integer::sum); forEach prints in alphabetical order", "marks": 2 },
+        { "text": "Mutable key bug: hash computed at put time; if key's hash changes after mutation, the entry cannot be found at the new bucket. The entry is 'lost' — get() returns null even though the key is 'in' the map. HashMap keys should be immutable", "marks": 2 }
+      ]
+    },
+    {
+      "id": "oop-coll-d5a",
+      "topic": "collections-and-comparisons",
+      "topicTitle": "Collections and Comparisons",
+      "difficulty": 5,
+      "title": "Collections algorithms and complexity",
+      "totalMarks": 12,
+      "prompt": "This question concerns Java collections and algorithms.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Explain the Iterator pattern. How does Java's for-each loop relate to Iterable<T> and Iterator<T>? Implement an Iterable range class Range(int from, int to) that can be used in a for-each loop.",
+          "markscheme": [
+            { "text": "Iterator pattern: provides a way to sequentially access elements of a collection without exposing internal representation. Iterator<T>: hasNext(), next()", "marks": 1 },
+            { "text": "for-each on Iterable: compiler desugars to Iterator loop; Iterable<T>.iterator() returns an Iterator<T>", "marks": 1 },
+            { "text": "Range: implements Iterable<Integer>; iterator() returns a new Iterator that tracks current position from 'from' to 'to'-1", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Describe the time complexity of common operations (add, remove, contains) for ArrayList, LinkedList, HashSet, and TreeSet.",
+          "markscheme": [
+            { "text": "ArrayList: add end O(1) amortised, O(n) worst; remove by index O(n) shift; contains O(n)", "marks": 1 },
+            { "text": "LinkedList: add/remove at ends O(1); add/remove by index O(n) traversal; contains O(n)", "marks": 1 },
+            { "text": "HashSet: add/remove/contains O(1) amortised (O(n) worst case — all in one bucket). TreeSet: all O(log n) — balanced BST", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "What is a PriorityQueue in Java? What ordering does it use by default? Show how to use a custom Comparator to create a max-heap priority queue.",
+          "markscheme": [
+            { "text": "PriorityQueue: heap-based; extractMin is O(log n). Default: natural ordering (Comparable) — min-heap (smallest element at head)", "marks": 1 },
+            { "text": "Max-heap: <code>PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Comparator.reverseOrder());</code>", "marks": 1 },
+            { "text": "Operations: add(e) O(log n); poll() (extract min/max) O(log n); peek() O(1); contains O(n) — not indexed. Does not support O(log n) remove by value or decrease-key", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Java's Collections.sort is stable (since Java 7). Why does stability matter when sorting a list of Student objects first by grade, then by name? Show the sorting code.",
+          "markscheme": [
+            { "text": "Sort by name first, then stable sort by grade: the name ordering is preserved among students with equal grades. Without stability, the secondary name ordering would be lost", "marks": 1 },
+            { "text": "Code: <code>students.sort(Comparator.comparing(Student::getName)); students.sort(Comparator.comparing(Student::getGrade));</code> — stable sort preserves name order within each grade", "marks": 1 },
+            { "text": "Alternatively: <code>students.sort(Comparator.comparing(Student::getGrade).thenComparing(Student::getName));</code> — single sort with compound comparator; cleaner and avoids needing stability", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oop-coll-d5b",
+      "topic": "collections-and-comparisons",
+      "topicTitle": "Collections and Comparisons",
+      "difficulty": 5,
+      "title": "Tripos: data structures in Java",
+      "totalMarks": 13,
+      "prompt": "This question concerns Java data structures.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 4,
+          "prompt": "Implement a generic Stack<T> in Java backed by a resizing array (like ArrayList). Include push, pop, peek, isEmpty, and size. Ensure proper type safety. Explain the unchecked cast required when creating the backing array.",
+          "markscheme": [
+            { "text": "Correct generic class with T[] data; constructor allocates (T[]) new Object[capacity] — unchecked cast required because Java cannot create generic arrays directly", "marks": 2 },
+            { "text": "Correct push with resizing (double capacity when full); pop decrements size (and possibly shrinks array); peek returns top without removing", "marks": 1 },
+            { "text": "Unchecked cast explanation: type erasure — T is erased to Object at runtime; (T[]) new Object[n] is technically unsound but safe as long as the array is not exposed raw. @SuppressWarnings(\"unchecked\") appropriate here", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "What is a LinkedHashMap in Java? How does it differ from HashMap and TreeMap? Give a use case where it is the ideal choice.",
+          "markscheme": [
+            { "text": "LinkedHashMap: HashMap with a doubly-linked list maintaining insertion order (or access order if accessOrder=true). O(1) operations like HashMap but iteration is in insertion order", "marks": 1 },
+            { "text": "Vs HashMap: maintains order. Vs TreeMap: O(1) operations vs O(log n); insertion order not sorted order", "marks": 1 },
+            { "text": "Use case: LRU cache — LinkedHashMap with accessOrder=true; override removeEldestEntry to evict oldest accessed entry when size exceeds limit. Only a few lines of code needed", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Describe ConcurrentHashMap. How does it achieve thread safety without a global lock? Compare to using Collections.synchronizedMap.",
+          "markscheme": [
+            { "text": "ConcurrentHashMap: divides map into segments (Java 7) or uses CAS/lock striping on individual buckets (Java 8). Multiple threads can read/write different segments concurrently", "marks": 1 },
+            { "text": "Vs synchronizedMap: synchronizedMap wraps each operation in a single lock — all threads serialised. ConcurrentHashMap allows concurrent reads (lock-free) and fine-grained writes", "marks": 1 },
+            { "text": "Caveat: compound actions (check-then-act) on ConcurrentHashMap are not atomic unless using its atomic methods (computeIfAbsent, putIfAbsent, merge). Use these to avoid races", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Describe the Deque interface. How can it be used as both a stack and a queue? Give the methods for each use case.",
+          "markscheme": [
+            { "text": "Deque (double-ended queue): supports insertion and removal at both ends. ArrayDeque is the preferred implementation (faster than LinkedList for most uses)", "marks": 1 },
+            { "text": "As stack: push (addFirst), pop (removeFirst), peek (peekFirst) — LIFO. Preferred over java.util.Stack (which is synchronized and has legacy design issues)", "marks": 1 },
+            { "text": "As queue: offer (addLast), poll (removeFirst), peek (peekFirst) — FIFO. Deque unifies both interfaces; choose the usage pattern at the call site", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oop-gen-d1",
+      "topic": "generics",
+      "topicTitle": "Generics",
+      "difficulty": 1,
+      "title": "Generics basics",
+      "totalMarks": 3,
+      "prompt": "What problem do Java generics solve? Write a generic <code>Pair<A, B></code> class with getters. What is type erasure?",
+      "markscheme": [
+        { "text": "Generics solve: eliminate ClassCastExceptions from unsafe casts; provide compile-time type safety for containers without duplication of code for each type", "marks": 1 },
+        { "text": "Pair<A,B>: private final A first; private final B second; constructor; getFirst/getSecond. Type parameters A and B are placeholders", "marks": 1 },
+        { "text": "Type erasure: at runtime, generic type parameters are erased to their bounds (usually Object). A List<String> and List<Integer> are the same List class at runtime. Enables backward compatibility with pre-generics code", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-gen-d2",
+      "topic": "generics",
+      "topicTitle": "Generics",
+      "difficulty": 2,
+      "title": "Bounded type parameters",
+      "totalMarks": 4,
+      "prompt": "Explain bounded type parameters in Java generics. Write a generic method <code>max(T[] arr)</code> that returns the maximum element, using <code>T extends Comparable<T></code>. What does the bound enable?",
+      "markscheme": [
+        { "text": "Bounded type parameter: restricts the type variable to a subtype of a given bound. <T extends Comparable<T>>: T must implement Comparable — allows calling compareTo on T values", "marks": 1 },
+        { "text": "<code>static <T extends Comparable<T>> T max(T[] arr) { T m=arr[0]; for(T x:arr) if(x.compareTo(m)>0) m=x; return m; }</code>", "marks": 2 },
+        { "text": "The bound enables: calling compareTo on T instances (wouldn't compile without it since Object doesn't have compareTo)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-gen-d3",
+      "topic": "generics",
+      "topicTitle": "Generics",
+      "difficulty": 3,
+      "title": "Wildcards: ? extends and ? super",
+      "totalMarks": 5,
+      "prompt": "Explain the difference between <code>List&lt;? extends Number&gt;</code> and <code>List&lt;? super Integer&gt;</code>. For each, state what you can read from and write to the list. Give a use case for each.",
+      "markscheme": [
+        { "text": "<code>? extends Number</code>: upper-bounded wildcard. Can read elements as Number (or Object). Cannot add elements (type is unknown — could be List<Double>, adding Integer would be wrong). Use for: reading from a collection of numbers (summing elements)", "marks": 2 },
+        { "text": "<code>? super Integer</code>: lower-bounded wildcard. Can add Integer (or subtype). Can only read as Object. Use for: writing Integers to a collection (e.g. copying Integers into a List<Number> or List<Object>)", "marks": 2 },
+        { "text": "PECS principle: Producer Extends, Consumer Super — use extends when only reading from collection, super when only writing", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-gen-d4",
+      "topic": "generics",
+      "topicTitle": "Generics",
+      "difficulty": 4,
+      "title": "Generic methods and type inference",
+      "totalMarks": 6,
+      "prompt": "(i) Write a generic static method <code>swap</code> that swaps two elements in an array at given indices.<br>(ii) Write a generic <code>filter(List&lt;T&gt; list, Predicate&lt;T&gt; pred)</code> method returning a new list of matching elements.<br>(iii) Explain why <code>List&lt;Dog&gt;</code> is not a subtype of <code>List&lt;Animal&gt;</code> even though Dog is a subtype of Animal (invariance of generics).",
+      "markscheme": [
+        { "text": "<code>static <T> void swap(T[] arr, int i, int j) { T tmp=arr[i]; arr[i]=arr[j]; arr[j]=tmp; }</code>", "marks": 1 },
+        { "text": "<code>static <T> List<T> filter(List<T> list, Predicate<T> pred) { return list.stream().filter(pred).collect(Collectors.toList()); }</code> or loop version", "marks": 2 },
+        { "text": "Invariance: if List<Dog> were a subtype of List<Animal>, you could write: <code>List<Animal> animals = new ArrayList<Dog>(); animals.add(new Cat());</code> — adding a Cat to a Dog list! This would break type safety. Generics are invariant to prevent this", "marks": 3 }
+      ]
+    },
+    {
+      "id": "oop-gen-d5a",
+      "topic": "generics",
+      "topicTitle": "Generics",
+      "difficulty": 5,
+      "title": "Generic data structures",
+      "totalMarks": 12,
+      "prompt": "This question concerns generic programming in Java.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Implement a generic immutable <code>Optional<T></code> class (simplified Java Optional) with factory methods <code>of(T value)</code> and <code>empty()</code>, and methods <code>isPresent()</code>, <code>get()</code>, <code>orElse(T default)</code>, and <code>map(Function<T,U> f)</code>.",
+          "markscheme": [
+            { "text": "Private constructor; static factory methods; private final T value (null for empty). isPresent, get (throws NoSuchElementException if empty)", "marks": 1 },
+            { "text": "orElse: return value != null ? value : default", "marks": 1 },
+            { "text": "map: <code><U> Optional<U> map(Function<T,U> f) { return value==null ? empty() : of(f.apply(value)); }</code> — type parameter U on method", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Implement a generic <code>Result<T, E extends Exception></code> type representing either a success value or an error. Provide <code>success(T)</code>, <code>failure(E)</code>, <code>isSuccess()</code>, and <code>fold(Function<T,R> onSuccess, Function<E,R> onFailure)</code>.",
+          "markscheme": [
+            { "text": "Two static factory methods; private fields T value and E error; exactly one is non-null", "marks": 1 },
+            { "text": "fold: <code><R> R fold(Function<T,R> s, Function<E,R> f) { return isSuccess() ? s.apply(value) : f.apply(error); }</code>", "marks": 1 },
+            { "text": "Useful for railway-oriented programming: chains of operations that may fail, without exception propagation; all errors handled at the end via fold", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Explain why you cannot do <code>new T[n]</code> in Java generics. How does ArrayList work around this limitation?",
+          "markscheme": [
+            { "text": "Cannot create generic arrays: type erasure means T is erased to Object at runtime; JVM doesn't know the type to allocate; worse, if allowed, you could break heap pollution", "marks": 1 },
+            { "text": "ArrayList workaround: internally stores Object[]; elements cast to E on retrieval. <code>@SuppressWarnings(\"unchecked\") E get(int i) { return (E) elementData[i]; }</code>. The class maintains the invariant that only E objects are stored", "marks": 1 },
+            { "text": "Alternative: use Array.newInstance(Class<T> type, int size) with a passed-in Class<T> token; e.g., T[] arr = (T[]) Array.newInstance(clazz, n). Requires passing the Class<T> to the constructor", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "What is heap pollution in Java generics? Give an example and explain why @SafeVarargs is sometimes needed.",
+          "markscheme": [
+            { "text": "Heap pollution: a variable of parameterised type refers to an object that is not of that type; causes ClassCastException at a seemingly safe cast", "marks": 1 },
+            { "text": "Example: <code>static <T> T[] toArray(T... args) { return args; }</code>; <code>String[] arr = toArray(\"a\",\"b\");</code> — at runtime, args is Object[] (varargs erased); assigning to String[] causes ArrayStoreException/ClassCastException", "marks": 1 },
+            { "text": "@SafeVarargs: annotation on method claiming it doesn't pollute heap through its varargs parameter. Suppresses compiler warning. Only safe if the method doesn't store anything into the varargs array or expose the array reference", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oop-gen-d5b",
+      "topic": "generics",
+      "topicTitle": "Generics",
+      "difficulty": 5,
+      "title": "Tripos: generics and type system",
+      "totalMarks": 13,
+      "prompt": "This question concerns Java's generic type system.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Implement a generic functional interface <code>Function<A,B></code> with method <code>apply(A a)</code>. Add a default method <code>andThen(Function<B,C> f)</code> for composition. Show how to create a pipeline of three functions.",
+          "markscheme": [
+            { "text": "@FunctionalInterface Function<A,B>: B apply(A a);", "marks": 1 },
+            { "text": "andThen: <code>default <C> Function<A,C> andThen(Function<B,C> f) { return a -> f.apply(this.apply(a)); }</code>", "marks": 1 },
+            { "text": "Pipeline: <code>Function<String,Integer> length = String::length; Function<Integer,Boolean> isEven = n -> n%2==0; Function<Boolean,String> display = b -> b ? \"even\" : \"odd\"; Function<String,String> pipeline = length.andThen(isEven).andThen(display);</code>", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Explain the difference between generic methods, generic classes, and generic interfaces. Give an example of each. When would you choose a generic method over a generic class?",
+          "markscheme": [
+            { "text": "Generic class: type parameter on the class; all instances specialised to one type. <code>class Box<T> { T value; }</code>", "marks": 1 },
+            { "text": "Generic interface: type parameter on interface; implementations specialise. <code>interface Repository<T,ID> { T findById(ID id); }</code>", "marks": 1 },
+            { "text": "Generic method: type parameter on the method; each call can use different type. <code>static <T> T identity(T x) { return x; }</code>", "marks": 1 },
+            { "text": "Choose generic method when: operation independent of enclosing class's type (utility method); type parameter only needed for one method; allows type inference at call site without explicit parameterisation", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Compare Java generics (erasure-based) with C++ templates (expansion-based). Give two advantages and two disadvantages of Java's approach.",
+          "markscheme": [
+            { "text": "Java erasure advantages: backward compatibility (generic code works with pre-1.5 code); smaller bytecode (one class, not one per type instantiation); simpler reflection model", "marks": 1 },
+            { "text": "Java erasure disadvantages: cannot create arrays of generic types; no specialisation for primitives (ArrayList<int> impossible — must use Integer); runtime type not available (can't do T instanceof Foo or new T())", "marks": 1 },
+            { "text": "C++ templates: one instantiation per type; specialise for performance; can use primitive types; but larger code size; longer compile times; complex error messages; templates are textual substitution not true generics", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "What are raw types in Java? Why are they still permitted? Give an example showing how raw types can bypass generic type safety.",
+          "markscheme": [
+            { "text": "Raw type: using a generic class without type parameters (e.g. List instead of List<String>). Permitted for backward compatibility with pre-generics Java code", "marks": 1 },
+            { "text": "Bypass: <code>List rawList = new ArrayList<String>(); rawList.add(42); String s = ((List<String>)rawList).get(0); // ClassCastException</code>", "marks": 1 },
+            { "text": "Raw types erase all generic type information; compiler gives unchecked warnings but allows the code. At runtime, casts fail. Best practice: never use raw types in new code; use <?> wildcard for truly unknown types", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oop-except-d1",
+      "topic": "coupling-errors-and-exceptions",
+      "topicTitle": "Coupling, Errors, and Exceptions",
+      "difficulty": 1,
+      "title": "Exception hierarchy",
+      "totalMarks": 3,
+      "prompt": "Draw Java's exception hierarchy showing Throwable, Error, Exception, RuntimeException. Give one example of each concrete category. Which should application code typically catch?",
+      "markscheme": [
+        { "text": "Throwable → Error (e.g. OutOfMemoryError, StackOverflowError) and Exception. Exception → RuntimeException (e.g. NullPointerException) and checked exceptions (e.g. IOException)", "marks": 2 },
+        { "text": "Application code should catch checked exceptions (and specific RuntimeExceptions when recoverable); never catch Error (unrecoverable JVM problems); avoid catching Exception or Throwable broadly as it hides bugs", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-except-d2",
+      "topic": "coupling-errors-and-exceptions",
+      "topicTitle": "Coupling, Errors, and Exceptions",
+      "difficulty": 2,
+      "title": "Multi-catch and finally",
+      "totalMarks": 4,
+      "prompt": "Explain the purpose of <code>finally</code> in Java exception handling. Show multi-catch syntax (Java 7+). What is the difference between finally and try-with-resources? Is finally always executed?",
+      "markscheme": [
+        { "text": "finally: block always executed after try (and any catch), whether or not an exception was thrown. Used for cleanup code (release resources)", "marks": 1 },
+        { "text": "Multi-catch: <code>catch (IOException | SQLException e) { ... }</code> — handles multiple exception types with one handler; e is effectively final", "marks": 1 },
+        { "text": "try-with-resources: syntactic sugar for try-finally that closes AutoCloseable resources; handles suppressed exceptions correctly when both body and close() throw", "marks": 1 },
+        { "text": "finally not executed: if System.exit() is called; JVM crashes; thread is killed. Also: if Thread.stop() (deprecated) is called. Otherwise guaranteed", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-except-d3",
+      "topic": "coupling-errors-and-exceptions",
+      "topicTitle": "Coupling, Errors, and Exceptions",
+      "difficulty": 3,
+      "title": "Custom exceptions and exception chaining",
+      "totalMarks": 5,
+      "prompt": "Design a custom exception hierarchy for a banking application: BankException (checked), InsufficientFundsException (subclass), AccountNotFoundException (subclass). Show exception chaining — catching a database SQLException and wrapping it in AccountNotFoundException.",
+      "markscheme": [
+        { "text": "BankException extends Exception with constructors for message and cause. InsufficientFundsException and AccountNotFoundException extend BankException", "marks": 2 },
+        { "text": "Exception chaining: <code>catch (SQLException e) { throw new AccountNotFoundException(\"Account not found\", e); }</code> — wraps low-level exception; getCause() returns the original", "marks": 2 },
+        { "text": "Benefit: abstraction — callers see BankException not SQL internals; full stack trace preserved for debugging via getCause()", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-except-d4",
+      "topic": "coupling-errors-and-exceptions",
+      "topicTitle": "Coupling, Errors, and Exceptions",
+      "difficulty": 4,
+      "title": "Exception handling patterns and anti-patterns",
+      "totalMarks": 6,
+      "prompt": "Identify the anti-patterns and problems in the following exception handling code, and rewrite it correctly:<br><pre><code>try {\n  doSomething();\n} catch (Exception e) {\n  // do nothing\n}\n\ntry {\n  int x = Integer.parseInt(input);\n} catch (NumberFormatException e) {\n  return -1;\n}\n\ntry {\n  connection.close();\n} catch (Exception e) {\n  throw new RuntimeException(e);\n} finally {\n  connection.close(); // called twice!\n}</code></pre>",
+      "markscheme": [
+        { "text": "Anti-pattern 1: swallowed exception (empty catch). Fix: at minimum log the exception; rethrow or handle appropriately. Silently ignoring exceptions masks bugs", "marks": 2 },
+        { "text": "Anti-pattern 2: using exception for control flow (returning -1 for invalid input). Better: validate input before parsing; return Optional<Integer>; or let the exception propagate if truly unexpected", "marks": 2 },
+        { "text": "Anti-pattern 3: double close — closing in catch and finally. Fix: use try-with-resources, which handles close exactly once and handles suppressed exceptions", "marks": 2 }
+      ]
+    },
+    {
+      "id": "oop-except-d5a",
+      "topic": "coupling-errors-and-exceptions",
+      "topicTitle": "Coupling, Errors, and Exceptions",
+      "difficulty": 5,
+      "title": "Robust error handling in systems",
+      "totalMarks": 12,
+      "prompt": "This question concerns robust error handling.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Describe the difference between fail-fast and fail-safe iterators in Java. Which does ArrayList use? What exception does fail-fast throw, and when?",
+          "markscheme": [
+            { "text": "Fail-fast: detect concurrent modification during iteration (ConcurrentModificationException); tracks modCount; throws on detecting structural change. ArrayList, HashMap use fail-fast iterators", "marks": 1 },
+            { "text": "Fail-safe: iterates over a copy; modifications don't affect ongoing iteration; no exception. CopyOnWriteArrayList, ConcurrentHashMap use fail-safe. Trade-off: snapshot may be stale", "marks": 1 },
+            { "text": "ConcurrentModificationException is a best-effort check — not guaranteed to always detect concurrent modification; should not rely on it for correctness", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Describe the Circuit Breaker pattern for fault tolerance. How does it help with cascading failures? Describe the three states (Closed, Open, Half-Open) and the transitions between them.",
+          "markscheme": [
+            { "text": "Circuit Breaker: wraps calls to a fragile service; if the service fails repeatedly, the circuit 'trips' (opens) and subsequent calls fail fast without hitting the service, allowing it to recover", "marks": 1 },
+            { "text": "Closed: normal operation; calls pass through; failure count tracked. If failures exceed threshold → transition to Open", "marks": 1 },
+            { "text": "Open: all calls fail immediately without calling the service. After a timeout → transition to Half-Open", "marks": 1 },
+            { "text": "Half-Open: allow a limited number of test calls through. If they succeed → back to Closed; if they fail → back to Open", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 2,
+          "prompt": "What is the principle of 'fail early, fail loudly'? How does it relate to assertions in Java (<code>assert</code> keyword)?",
+          "markscheme": [
+            { "text": "Fail early: detect errors as close to their source as possible; don't propagate invalid state. Fail loudly: make failures obvious (throw exception, print diagnostic) rather than silently continuing", "marks": 1 },
+            { "text": "Java assert: <code>assert condition : \"message\";</code> — throws AssertionError if condition is false; enabled with -ea JVM flag. Use for internal invariants, not user input validation. Disabled in production (no overhead)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Compare exception handling to functional error handling with Optional and Either/Result types. Give one advantage and one disadvantage of each approach.",
+          "markscheme": [
+            { "text": "Exceptions: advantage — propagate automatically through call stack; no boilerplate for intermediate callers. Disadvantage — invisible in type signatures (unchecked); can lead to unexpected program termination if not caught", "marks": 1 },
+            { "text": "Optional/Result: advantage — error handling visible in types; compiler forces caller to handle failure. Disadvantage — boilerplate for propagation (must explicitly flatMap/chain through every layer); cannot carry stack traces easily", "marks": 1 },
+            { "text": "Hybrid: use Optional for 'not found' (expected no-value); checked exceptions for recoverable errors; unchecked for programming errors. Java 19+ virtual threads and structured concurrency provide new patterns", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oop-except-d5b",
+      "topic": "coupling-errors-and-exceptions",
+      "topicTitle": "Coupling, Errors, and Exceptions",
+      "difficulty": 5,
+      "title": "Tripos: testing and defensive code",
+      "totalMarks": 13,
+      "prompt": "This question concerns robust software engineering.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Describe unit testing with JUnit 5. Write a test class for a Stack<Integer> class testing push, pop, and the behaviour when popping an empty stack.",
+          "markscheme": [
+            { "text": "JUnit 5: @Test annotation; Assertions.assertEquals, assertThrows, assertTrue; @BeforeEach for setup; @DisplayName for readability", "marks": 1 },
+            { "text": "Tests: push then pop returns same value; push multiple, pop in LIFO order; size decrements on pop", "marks": 1 },
+            { "text": "Empty stack: assertThrows(EmptyStackException.class, () -> stack.pop())", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "What is test-driven development (TDD)? Describe the Red-Green-Refactor cycle. Give the first three test cases you would write for a <code>FizzBuzz(int n)</code> method (returns \"Fizz\" if divisible by 3, \"Buzz\" if by 5, \"FizzBuzz\" if by both, else the number as string).",
+          "markscheme": [
+            { "text": "TDD: write a failing test first; write minimal code to make it pass; refactor. Red: test fails; Green: test passes; Refactor: clean up while keeping tests green", "marks": 1 },
+            { "text": "Test 1: fizzBuzz(1) = \"1\" (not divisible by 3 or 5)", "marks": 1 },
+            { "text": "Test 2: fizzBuzz(3) = \"Fizz\"; Test 3: fizzBuzz(5) = \"Buzz\"; further: fizzBuzz(15) = \"FizzBuzz\"", "marks": 2 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "What is a mock object? How does Mockito enable testing of classes with external dependencies? Give a brief example of mocking a repository to test a service.",
+          "markscheme": [
+            { "text": "Mock: a test double that simulates a dependency's behaviour without real implementation; verify interactions (was method called? with what args?)", "marks": 1 },
+            { "text": "Mockito: @Mock UserRepository mockRepo; when(mockRepo.findById(1)).thenReturn(Optional.of(user)); call service.getUser(1); verify(mockRepo).findById(1)", "marks": 1 },
+            { "text": "Benefit: isolates the unit under test from slow/external dependencies (database, network); tests run fast and deterministically", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "What is code coverage? Name two types of coverage metrics. Why is 100% coverage not sufficient to ensure correctness? What is mutation testing?",
+          "markscheme": [
+            { "text": "Code coverage: percentage of code executed by tests. Metrics: line/statement coverage (each line executed); branch coverage (each if/else branch taken)", "marks": 1 },
+            { "text": "100% coverage not sufficient: tests may execute code without asserting anything (poor assertions); some bugs appear only for specific input values not tested; concurrent bugs not exercised", "marks": 1 },
+            { "text": "Mutation testing: automatically introduce small code changes (mutations e.g. > to >=, + to -); run tests. If no test fails, the mutation 'survives' — indicates a gap in test quality (tests don't detect that change). Measures test effectiveness, not just coverage", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oop-dp-d1",
+      "topic": "design-patterns",
+      "topicTitle": "Design Patterns",
+      "difficulty": 1,
+      "title": "Pattern categories",
+      "totalMarks": 3,
+      "prompt": "Name the three categories of GoF (Gang of Four) design patterns. Give two examples from each category.",
+      "markscheme": [
+        { "text": "Creational: manage object creation. Examples: Singleton, Factory Method, Abstract Factory, Builder, Prototype", "marks": 1 },
+        { "text": "Structural: compose classes/objects. Examples: Adapter, Bridge, Composite, Decorator, Facade, Proxy, Flyweight", "marks": 1 },
+        { "text": "Behavioural: communication between objects. Examples: Observer, Strategy, Template Method, Iterator, Command, State, Chain of Responsibility, Visitor", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-dp-d2",
+      "topic": "design-patterns",
+      "topicTitle": "Design Patterns",
+      "difficulty": 2,
+      "title": "Singleton pattern",
+      "totalMarks": 4,
+      "prompt": "Implement the Singleton pattern in Java (thread-safe). Explain two problems with Singleton and when it is appropriate. Show the double-checked locking implementation.",
+      "markscheme": [
+        { "text": "Double-checked locking: private static volatile Singleton instance; public static Singleton getInstance() { if(instance==null) { synchronized(Singleton.class) { if(instance==null) { instance=new Singleton(); } } } return instance; }", "marks": 2 },
+        { "text": "Problems: global state (hidden dependencies, makes testing hard); difficult to mock; violates SRP (manages own lifecycle). Appropriate: truly global resources (Logger, Configuration, thread pool)", "marks": 2 }
+      ]
+    },
+    {
+      "id": "oop-dp-d3",
+      "topic": "design-patterns",
+      "topicTitle": "Design Patterns",
+      "difficulty": 3,
+      "title": "Decorator pattern",
+      "totalMarks": 5,
+      "prompt": "Describe the Decorator pattern. Implement a coffee ordering system: base Coffee interface with cost() and description(); concrete EspressoBean class; MilkDecorator and SugarDecorator wrappers. Show ordering a double sugar latte.",
+      "markscheme": [
+        { "text": "Decorator: wraps an object to add behaviour dynamically; alternative to subclassing for extending functionality. Each decorator implements the same interface and holds a reference to the wrapped object", "marks": 1 },
+        { "text": "Coffee interface; Espresso implements Coffee; MilkDecorator(Coffee c): cost() = c.cost()+0.5, description() = c.description()+\", milk\"", "marks": 2 },
+        { "text": "Double sugar latte: new SugarDecorator(new SugarDecorator(new MilkDecorator(new Espresso()))). Each layer wraps the previous, adding to cost and description", "marks": 2 }
+      ]
+    },
+    {
+      "id": "oop-dp-d4",
+      "topic": "design-patterns",
+      "topicTitle": "Design Patterns",
+      "difficulty": 4,
+      "title": "Facade and Adapter patterns",
+      "totalMarks": 6,
+      "prompt": "(i) Describe the Facade pattern and give a use case.<br>(ii) Describe the Adapter pattern. Show how to adapt a legacy class <code>OldPrinter</code> (with method <code>legacyPrint(String s)</code>) to a modern <code>Printer</code> interface (with method <code>print(String s)</code>).<br>(iii) What is the difference between Adapter and Facade?",
+      "markscheme": [
+        { "text": "Facade: provides a simplified interface to a complex subsystem. Use case: home theatre system with separate DVD, amplifier, projector — Facade provides watchMovie()/stopMovie() that orchestrates all components", "marks": 2 },
+        { "text": "Adapter: converts interface of one class to another. OldPrinterAdapter implements Printer; holds OldPrinter reference; print(s) calls oldPrinter.legacyPrint(s). Two types: class adapter (extends old class) and object adapter (composes)", "marks": 2 },
+        { "text": "Difference: Adapter makes incompatible interfaces work together (interface conversion). Facade simplifies a complex interface (doesn't change interface, just wraps it)", "marks": 2 }
+      ]
+    },
+    {
+      "id": "oop-dp-d5a",
+      "topic": "design-patterns",
+      "topicTitle": "Design Patterns",
+      "difficulty": 5,
+      "title": "Command and Chain of Responsibility patterns",
+      "totalMarks": 12,
+      "prompt": "This question concerns behavioural design patterns.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Describe the Command pattern. Implement a simple text editor command system with an Undo stack. Commands: InsertCommand and DeleteCommand each implementing Command with execute() and undo().",
+          "markscheme": [
+            { "text": "Command: encapsulates a request as an object; supports undo/redo, queuing, logging. Interface: void execute(); void undo()", "marks": 1 },
+            { "text": "InsertCommand: stores text and position; execute inserts; undo removes. DeleteCommand: stores deleted text; execute removes; undo reinserts", "marks": 1 },
+            { "text": "Editor: Deque<Command> undoStack; invokeCommand(Command c) calls c.execute() and pushes to stack; undo() pops and calls c.undo()", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Describe the Chain of Responsibility pattern. Implement a logging system where handlers for DEBUG, INFO, and ERROR process messages at their level and optionally pass to the next handler.",
+          "markscheme": [
+            { "text": "Chain of Responsibility: pass request along a chain of handlers; each handler decides to process or pass on. Decouples sender from specific receiver", "marks": 1 },
+            { "text": "abstract LogHandler with level, setNext, handle. handle(level, msg): if this.level <= level, process; if next != null, next.handle(level, msg)", "marks": 1 },
+            { "text": "Chain: debug.setNext(info.setNext(error)). DEBUG messages processed by all; ERROR only by ERROR handler. Client calls debug.handle(level, msg)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Describe the State pattern. How does it differ from a switch statement? Implement a TrafficLight with states Red, Green, Yellow and transition logic.",
+          "markscheme": [
+            { "text": "State: allow object to alter behaviour when internal state changes; each state is a class. Vs switch: state transitions encapsulated in state classes (OCP); no large switch/if-else; states can be added without modifying context", "marks": 1 },
+            { "text": "TrafficLight context holds State reference; State interface: next() returns next State, getColor(). RedState.next() = Green, GreenState.next() = Yellow, YellowState.next() = Red", "marks": 1 },
+            { "text": "Correct Java implementation; light.changeState() calls state = state.next(); demonstrating encapsulated transitions", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "How do modern Java features (lambdas, functional interfaces) reduce the need for some traditional design patterns? Give two examples of patterns that can be simplified.",
+          "markscheme": [
+            { "text": "Strategy pattern: traditionally requires a strategy interface and multiple implementing classes. With lambdas: pass lambda directly as Comparator.compare or Runnable — no boilerplate class needed", "marks": 1 },
+            { "text": "Command pattern: Command interface is a functional interface; commands can be lambdas or method references. Undo still needs state (closures capture it)", "marks": 1 },
+            { "text": "Observer pattern: replaced/simplified by reactive streams (RxJava, Project Reactor) or CompletableFuture for asynchronous event handling; lambdas as callbacks. Also: Factory Method replaced by method references (constructor references Foo::new)", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oop-dp-d5b",
+      "topic": "design-patterns",
+      "topicTitle": "Design Patterns",
+      "difficulty": 5,
+      "title": "Tripos: design patterns in practice",
+      "totalMarks": 13,
+      "prompt": "This question concerns applying design patterns to real software.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Design a plugin system for an application using the Factory Method and Strategy patterns. The system should allow adding new file format handlers (CSV, JSON, XML) without modifying existing code.",
+          "markscheme": [
+            { "text": "FileHandler interface: readFile(String path), writeFile(String path, Data data). CsvHandler, JsonHandler, XmlHandler implement FileHandler", "marks": 1 },
+            { "text": "Factory Method: FileHandlerFactory with createHandler(String format): return appropriate handler based on format string. Or registry pattern: Map<String, FileHandler> registered handlers", "marks": 1 },
+            { "text": "Strategy: application holds a FileHandler field; can be swapped at runtime. New format: implement FileHandler and register with factory — no existing code modified (OCP)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Describe the MVC (Model-View-Controller) architecture. How do Observer and Strategy patterns appear in MVC? Give a concrete example.",
+          "markscheme": [
+            { "text": "MVC: Model (data/business logic), View (presentation), Controller (handles input, updates model). Separation of concerns: UI can change without touching business logic", "marks": 1 },
+            { "text": "Observer in MVC: Model notifies registered Views when data changes (Observer pattern). Multiple views (table, chart) can display the same model data, auto-updating", "marks": 1 },
+            { "text": "Strategy in MVC: Controller can swap strategies for different user actions or input sources. Example: same Model displayed by different View strategies (web view vs desktop view)", "marks": 1 },
+            { "text": "Concrete example: stock price model; two views (chart and table) register as observers; controller handles buy/sell actions; model updates and notifies views", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "What is an anti-pattern? Describe two common OOP anti-patterns (God Object and Spaghetti Code) and how to refactor them.",
+          "markscheme": [
+            { "text": "Anti-pattern: a common 'solution' that is actually harmful or counter-productive. God Object: one class knows/does everything; low cohesion, high coupling. Refactor: apply SRP; split into multiple focused classes", "marks": 1.5 },
+            { "text": "Spaghetti code: tangled control flow; deeply nested ifs, no clear structure; business logic mixed with presentation. Refactor: extract methods; apply strategy/template method; separate concerns", "marks": 1.5 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Describe the Flyweight pattern. When should it be used? Give an example from Java's standard library or a game engine.",
+          "markscheme": [
+            { "text": "Flyweight: share instances of commonly-used objects to reduce memory. Intrinsic state (shared) stored in flyweight; extrinsic state (context-specific) passed by client", "marks": 1 },
+            { "text": "Java examples: Integer.valueOf(-128 to 127) returns cached instances; String interning (string pool); Character flyweights. Game: each tree in a forest shares a TreeType flyweight (mesh, texture) with extrinsic position/scale per instance", "marks": 1 },
+            { "text": "Use when: many objects of similar type; high memory usage; most state can be extrinsic. Trade-off: more complex client code (must supply extrinsic state); adds factory indirection", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oop-lambda-d1",
+      "topic": "lambdas-method-references-streams",
+      "topicTitle": "Lambdas, Method References, and Streams",
+      "difficulty": 1,
+      "title": "Lambda syntax",
+      "totalMarks": 3,
+      "prompt": "What is a lambda expression in Java? Write lambda expressions for: (i) a Runnable that prints \"Hello\"; (ii) a Comparator<String> that compares by length; (iii) a Predicate<Integer> that tests if a number is positive.",
+      "markscheme": [
+        { "text": "(i) <code>() -> System.out.println(\"Hello\")</code>", "marks": 1 },
+        { "text": "(ii) <code>(s1, s2) -> Integer.compare(s1.length(), s2.length())</code> or <code>Comparator.comparingInt(String::length)</code>", "marks": 1 },
+        { "text": "(iii) <code>n -> n > 0</code>", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-lambda-d2",
+      "topic": "lambdas-method-references-streams",
+      "topicTitle": "Lambdas, Method References, and Streams",
+      "difficulty": 2,
+      "title": "Method references",
+      "totalMarks": 4,
+      "prompt": "Explain the four kinds of method references in Java. Give an example of each. Which functional interface does each correspond to?",
+      "markscheme": [
+        { "text": "Static method: <code>Integer::parseInt</code> — equivalent to x -> Integer.parseInt(x); corresponds to Function<String, Integer>", "marks": 1 },
+        { "text": "Instance method of particular object: <code>System.out::println</code> — equivalent to x -> System.out.println(x); Consumer<String>", "marks": 1 },
+        { "text": "Instance method of arbitrary object of a type: <code>String::length</code> — equivalent to s -> s.length(); ToIntFunction<String>", "marks": 1 },
+        { "text": "Constructor: <code>ArrayList::new</code> — equivalent to () -> new ArrayList<>(); Supplier<ArrayList>", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-lambda-d3",
+      "topic": "lambdas-method-references-streams",
+      "topicTitle": "Lambdas, Method References, and Streams",
+      "difficulty": 3,
+      "title": "Stream operations",
+      "totalMarks": 5,
+      "prompt": "Given a <code>List&lt;String&gt; names</code> containing [\"Alice\", \"Bob\", \"Charlie\", \"Dave\", \"Eve\"], write stream operations to: (i) filter names longer than 3 characters; (ii) convert all to uppercase; (iii) sort alphabetically; (iv) collect to a List. Combine all four into one stream pipeline.",
+      "markscheme": [
+        { "text": "Individual operations: filter(n -> n.length()>3); map(String::toUpperCase); sorted(); collect(Collectors.toList())", "marks": 2 },
+        { "text": "Combined pipeline: <code>names.stream().filter(n -> n.length()>3).map(String::toUpperCase).sorted().collect(Collectors.toList())</code>", "marks": 2 },
+        { "text": "Result: [\"ALICE\", \"CHARLIE\", \"DAVE\"] — Bob (3 chars) excluded; Eve (3 chars) excluded; sorted alphabetically", "marks": 1 }
+      ]
+    },
+    {
+      "id": "oop-lambda-d4",
+      "topic": "lambdas-method-references-streams",
+      "topicTitle": "Lambdas, Method References, and Streams",
+      "difficulty": 4,
+      "title": "Reduce, flatMap, and collectors",
+      "totalMarks": 6,
+      "prompt": "(i) Explain the difference between <code>map</code> and <code>flatMap</code> on streams. Give an example where flatMap is needed.<br>(ii) Write a stream pipeline that takes a list of sentences (List<String>), splits each into words, counts total word frequency using <code>Collectors.groupingBy</code>.<br>(iii) What is the difference between <code>reduce</code> and <code>collect</code>?",
+      "markscheme": [
+        { "text": "map: 1-to-1 transformation. flatMap: 1-to-many (flattens the resulting streams). Example: sentences.stream().flatMap(s -> Arrays.stream(s.split(\" \"))) — each sentence → stream of words, all flattened into one stream", "marks": 2 },
+        { "text": "Word frequency: <code>sentences.stream().flatMap(s -> Arrays.stream(s.split(\" \"))).collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))</code> → Map<String, Long>", "marks": 2 },
+        { "text": "reduce: combines elements into a single value using an associative binary function (e.g. sum). collect: mutable reduction into a container (e.g. List, Map, StringBuilder) — more efficient for building mutable results", "marks": 2 }
+      ]
+    },
+    {
+      "id": "oop-lambda-d5a",
+      "topic": "lambdas-method-references-streams",
+      "topicTitle": "Lambdas, Method References, and Streams",
+      "difficulty": 5,
+      "title": "Advanced streams and parallel processing",
+      "totalMarks": 12,
+      "prompt": "This question concerns advanced Stream operations.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Describe lazy evaluation in Java streams. How does it differ from eager evaluation? Give an example where laziness avoids unnecessary computation using <code>findFirst()</code> with <code>filter()</code>.",
+          "markscheme": [
+            { "text": "Lazy: intermediate operations (filter, map) don't execute until a terminal operation is called. Elements are processed one at a time through the pipeline", "marks": 1 },
+            { "text": "findFirst(): stops as soon as the first matching element is found — doesn't process remaining elements. Eager would process all elements first", "marks": 1 },
+            { "text": "Example: <code>IntStream.range(0, 1000000).filter(n -> n%2==0).findFirst()</code> — with lazy evaluation, processes only 2 elements (0,1); eager would filter all million", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "What is a parallel stream? When is it beneficial? What are the requirements for operations to be safely parallelised?",
+          "markscheme": [
+            { "text": "Parallel stream: splits data into chunks processed by multiple threads (ForkJoinPool). Use when: large datasets; operations are CPU-intensive and independent", "marks": 1 },
+            { "text": "Requirements: stateless operations (no shared mutable state); associative and non-interfering operations for reduce/collect. Avoid: shared mutation in lambdas, ordering guarantees (use forEachOrdered if needed)", "marks": 1 },
+            { "text": "Not always beneficial: thread overhead dominates for small datasets; I/O-bound operations don't improve; parallel stream's ForkJoinPool is shared — avoid blocking operations", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Write a stream pipeline to process a list of orders, where each Order has fields: customer (String), amount (double), and category (String). Find the top 3 customers by total spend, using Collectors.groupingBy and Collectors.summingDouble.",
+          "markscheme": [
+            { "text": "<code>orders.stream().collect(Collectors.groupingBy(Order::getCustomer, Collectors.summingDouble(Order::getAmount)))</code> → Map<String, Double>", "marks": 1 },
+            { "text": "Sort by value descending: <code>.entrySet().stream().sorted(Map.Entry.<String,Double>comparingByValue().reversed())</code>", "marks": 1 },
+            { "text": "<code>.limit(3).map(Map.Entry::getKey).collect(Collectors.toList())</code> — top 3 customers. Complete pipeline correct", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Describe Optional's stream integration (Java 9+). What does <code>Optional.stream()</code> return? Show how to filter out empty Optionals from a List<Optional<String>> using flatMap.",
+          "markscheme": [
+            { "text": "Optional.stream(): returns a Stream of 0 or 1 elements (empty stream if Optional.empty(), stream of the value otherwise)", "marks": 1 },
+            { "text": "Filter empties: <code>optionals.stream().flatMap(Optional::stream).collect(Collectors.toList())</code> — each Optional contributes 0 or 1 elements; flatMap flattens. Equivalent to: <code>optionals.stream().filter(Optional::isPresent).map(Optional::get)</code>", "marks": 1 },
+            { "text": "Java 9+ approach (Optional::stream) is cleaner and avoids calling .get() which could theoretically throw if logic changes", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oop-lambda-d5b",
+      "topic": "lambdas-method-references-streams",
+      "topicTitle": "Lambdas, Method References, and Streams",
+      "difficulty": 5,
+      "title": "Tripos: functional programming in Java",
+      "totalMarks": 13,
+      "prompt": "This question concerns functional programming features in Java.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Compare Java's Stream API with OCaml's List module functions (map, filter, fold). What are the key design differences? Why does OCaml not need a concept of lazy streams for finite lists?",
+          "markscheme": [
+            { "text": "Both provide map/filter/fold; Java Streams are lazy (pipeline materialised on terminal op) and can represent infinite sequences; OCaml list functions are eager (process all elements immediately)", "marks": 1 },
+            { "text": "Java adds: parallel processing; mutable collections; primitive streams (IntStream); collectors for mutable reduction. OCaml list functions return new lists (immutable); simpler mental model", "marks": 1 },
+            { "text": "OCaml finite lists: already in memory; no benefit from lazy evaluation. Java's laziness is needed because streams can be backed by I/O, infinite sequences, or large datasets that shouldn't be fully materialised", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Implement a simple monad-like pipeline in Java using lambdas. Define a <code>Maybe<T></code> (like Optional) with <code>flatMap(Function<T, Maybe<U>>)</code>. Demonstrate it with a chain of operations that could fail (parse int, then compute square root, then convert to string).",
+          "markscheme": [
+            { "text": "Maybe<T>: holds Optional<T>; static of(T), empty(). flatMap: <code><U> Maybe<U> flatMap(Function<T, Maybe<U>> f) { return value.map(f).orElseGet(Maybe::empty); }</code>", "marks": 2 },
+            { "text": "Pipeline: <code>Maybe.of(input).flatMap(s -> { try { return Maybe.of(Integer.parseInt(s)); } catch(...) { return Maybe.empty(); } }).flatMap(n -> n >= 0 ? Maybe.of(Math.sqrt(n)) : Maybe.empty()).flatMap(d -> Maybe.of(d.toString()))</code>", "marks": 1 },
+            { "text": "Demonstrates monadic composition: each step only runs if previous succeeded; failure propagates cleanly without exceptions in the main chain", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Explain the difference between external and internal iteration. How do Java streams (internal) compare to traditional for loops (external) in terms of parallelisation and abstraction?",
+          "markscheme": [
+            { "text": "External iteration: programmer controls the loop (for/while); specifies how to iterate. Internal iteration: pass a function to the collection; the collection controls the loop", "marks": 1 },
+            { "text": "Parallelisation: external for-loop hard to parallelise (programmer must manage threads). Internal (streams): call .parallel() and the library handles threading — abstraction allows optimisation without code change", "marks": 1 },
+            { "text": "Abstraction level: internal iteration expresses what to do, not how; more declarative; enables chain of operations without intermediate collections; library can optimise ordering/fusion of operations", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "What is a closure in Java (in the context of lambdas)? What limitation does Java impose on captured variables? Why does this restriction exist?",
+          "markscheme": [
+            { "text": "Closure: a lambda captures variables from its enclosing scope. Captured variables must be effectively final (not reassigned after capture)", "marks": 1 },
+            { "text": "Restriction example: <code>int x = 5; Runnable r = () -> System.out.println(x);</code> — legal. <code>x = 6; Runnable r = ...</code> — compile error (x not effectively final)", "marks": 1 },
+            { "text": "Why: lambdas can be executed in different threads or at different times. If x were mutable, reading it later could give a different value — race condition or stale value. Effectively-final restriction ensures the captured value is stable. Contrast: OCaml closures can capture mutable refs explicitly", "marks": 1 }
+          ]
+        }
+      ]
+    }
+  ]
+}

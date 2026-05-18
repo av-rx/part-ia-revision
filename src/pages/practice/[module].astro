@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import PracticeQuestions from '../../components/PracticeQuestions.tsx';
+import { MODULES, type ModuleSlug } from '../../lib/syllabus';
+
+export async function getStaticPaths() {
+  const all = await getCollection('practice-questions');
+  return all.map((entry) => ({
+    params: { module: entry.data.module },
+    props: { data: entry.data },
+  }));
+}
+
+interface Props { data: any; }
+const { data } = Astro.props;
+const module = data.module as ModuleSlug;
+const meta = MODULES[module];
+---
+<BaseLayout title={`${meta?.title ?? data.title} — Practice Questions`} currentModule={module} currentPaper={meta?.paper}>
+  <nav class="text-sm text-ink-500 dark:text-ink-400 mb-4">
+    <a href="/practice" class="hover:underline">Practice</a>
+    <span class="mx-2">/</span>
+    <a href={`/modules/${module}`} class="hover:underline">{meta?.title ?? data.title}</a>
+  </nav>
+  <header class="mb-6">
+    <h1 class="text-3xl font-bold tracking-tight">{data.title}</h1>
+    <p class="text-ink-500 dark:text-ink-400 mt-1">
+      {data.questions.length} questions · difficulty 1 (Recall) → 5 (Tripos)
+    </p>
+  </header>
+  <PracticeQuestions
+    client:load
+    module={module}
+    title={data.title}
+    questions={data.questions}
+  />
+</BaseLayout>

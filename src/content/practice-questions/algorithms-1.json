@@ -1,0 +1,499 @@
+{
+  "module": "algorithms-1",
+  "title": "Algorithms I — Practice Questions",
+  "questions": [
+    {
+      "id": "a1-sort-d1",
+      "topic": "sorting",
+      "topicTitle": "Sorting",
+      "difficulty": 1,
+      "title": "Sorting algorithm complexities",
+      "totalMarks": 4,
+      "prompt": "State the worst-case and average-case time complexities of: (i) insertion sort, (ii) merge sort, (iii) quicksort (first element as pivot), (iv) heapsort.",
+      "markscheme": [
+        { "text": "Insertion sort: worst O(n²), average O(n²)", "marks": 1 },
+        { "text": "Merge sort: worst O(n log n), average O(n log n)", "marks": 1 },
+        { "text": "Quicksort: worst O(n²) (e.g. already-sorted input), average O(n log n)", "marks": 1 },
+        { "text": "Heapsort: worst O(n log n), average O(n log n)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a1-sort-d2",
+      "topic": "sorting",
+      "topicTitle": "Sorting",
+      "difficulty": 2,
+      "title": "Lower bound for comparison-based sorting",
+      "totalMarks": 4,
+      "prompt": "Explain why any comparison-based sorting algorithm must perform Ω(n log n) comparisons in the worst case to sort n distinct elements.",
+      "markscheme": [
+        { "text": "A comparison-based sort can be modelled as a binary decision tree: each internal node is a comparison, each leaf is a possible sorted permutation.", "marks": 1 },
+        { "text": "There are n! possible orderings, so the tree must have at least n! leaves.", "marks": 1 },
+        { "text": "A binary tree with L leaves has height at least ⌈log₂ L⌉; thus height ≥ log₂(n!).", "marks": 1 },
+        { "text": "By Stirling's approximation, log₂(n!) = Ω(n log n), giving the lower bound.", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a1-sort-d3",
+      "topic": "sorting",
+      "topicTitle": "Sorting",
+      "difficulty": 3,
+      "title": "Tracing merge sort",
+      "totalMarks": 5,
+      "prompt": "Trace merge sort on the array [5, 2, 8, 1, 9, 3, 7, 4]. Show each recursive split and every merge step clearly, labelling intermediate arrays. State the final sorted array.",
+      "hint": "Split into halves repeatedly until you reach single elements, then merge pairwise bottom-up.",
+      "markscheme": [
+        { "text": "Correct initial split into [5,2,8,1] and [9,3,7,4]", "marks": 1 },
+        { "text": "Correct recursive splits all the way to single-element lists", "marks": 1 },
+        { "text": "Correct first-level merges (pairs): e.g. [2,5], [1,8], [3,9], [4,7]", "marks": 1 },
+        { "text": "Correct second-level merges: e.g. [1,2,5,8] and [3,4,7,9]", "marks": 1 },
+        { "text": "Final merge: [1,2,3,4,5,7,8,9]", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a1-sort-d4",
+      "topic": "sorting",
+      "topicTitle": "Sorting",
+      "difficulty": 4,
+      "title": "Merge sort vs quicksort trade-offs",
+      "totalMarks": 6,
+      "prompt": "Compare merge sort and quicksort across four dimensions: (i) worst-case time complexity, (ii) average-case time complexity, (iii) auxiliary space, (iv) stability. Then explain which you would choose and why for each of these scenarios: (a) sorting a linked list; (b) sorting a large array of integers in-place.",
+      "hint": "Think about where merging requires extra memory, and what properties linked lists have that make merge sort natural.",
+      "markscheme": [
+        { "text": "Merge sort: O(n log n) worst-case; Quicksort: O(n²) worst-case (sorted/reverse-sorted input)", "marks": 1 },
+        { "text": "Both O(n log n) average-case; quicksort typically has smaller constants due to better cache behaviour", "marks": 1 },
+        { "text": "Merge sort: O(n) extra space for the merge buffer; Quicksort: O(log n) stack space (average)", "marks": 1 },
+        { "text": "Merge sort is stable (equal elements preserve order); standard quicksort is not stable", "marks": 1 },
+        { "text": "Linked list → merge sort: splitting is O(1) with pointer manipulation, merging needs no extra array; O(n) space advantage disappears", "marks": 1 },
+        { "text": "Large integer array in-place → quicksort: avoids O(n) auxiliary allocation, good cache locality, O(n²) worst case avoidable with randomised pivot", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a1-sort-d5a",
+      "topic": "sorting",
+      "topicTitle": "Sorting",
+      "difficulty": 5,
+      "title": "Quicksort: correctness, complexity, and partitioning",
+      "totalMarks": 13,
+      "prompt": "This question is about the quicksort algorithm.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "The following OCaml quicksort has a bug. Identify it and write a corrected version.<br><pre><code>let rec qsort = function\n  | [] -&gt; []\n  | x :: xs -&gt;\n    let smaller = List.filter (fun y -&gt; y &lt; x) xs in\n    let larger  = List.filter (fun y -&gt; y &gt; x) xs in\n    qsort smaller @ [x] @ qsort larger</code></pre>",
+          "markscheme": [
+            { "text": "Bug: elements equal to the pivot x are silently dropped (neither <code>y < x</code> nor <code>y > x</code> captures them)", "marks": 1 },
+            { "text": "Fix: change <code>y > x</code> to <code>y >= x</code> in the larger filter", "marks": 1 },
+            { "text": "Corrected function correctly handles duplicates, e.g. <code>qsort [3;1;3;2] = [1;2;3;3]</code>", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Derive the recurrence for the worst-case time complexity of the corrected <code>qsort</code>. State when the worst case occurs and solve the recurrence.",
+          "markscheme": [
+            { "text": "Worst case: pivot is always the minimum or maximum element (e.g. input already sorted), splitting into sub-problems of size 0 and n−1", "marks": 1 },
+            { "text": "Recurrence: T(n) = T(n−1) + Θ(n), T(0) = 1 (filter costs O(n) at each step)", "marks": 1 },
+            { "text": "Unrolling: T(n) = cn + c(n−1) + ... + c·1 = c·n(n+1)/2 = Θ(n²)", "marks": 1 },
+            { "text": "Worst case is already-sorted (ascending or descending) input with a fixed first-element pivot", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Explain how choosing a random pivot element (rather than the first element) affects the expected time complexity of quicksort. You do not need to give a full proof.",
+          "markscheme": [
+            { "text": "Random pivot means any element is equally likely to be chosen; the probability of consistently bad splits becomes negligible", "marks": 1 },
+            { "text": "Expected number of comparisons is O(n log n); each element is expected to participate in O(log n) comparisons on average", "marks": 1 },
+            { "text": "Worst case is still O(n²) but occurs with exponentially small probability; randomisation avoids adversarial inputs", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "The in-place Lomuto partition scheme uses a pivot and two pointers. Trace the Lomuto partition on the array [3, 6, 8, 10, 1, 2, 1] with pivot = last element (1), and state the position of the pivot after partitioning.",
+          "markscheme": [
+            { "text": "Correct initialisation: i = −1, pivot = 1, scan j from 0 to 5", "marks": 1 },
+            { "text": "Correct swap operations: elements ≤ 1 swapped to the front; only index j=4 and j=6 (the 1s) trigger swaps", "marks": 1 },
+            { "text": "Final array: [1, 1, 8, 10, 6, 2, 3] (or equivalent valid partition); pivot ends at index 1", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a1-sort-d5b",
+      "topic": "sorting",
+      "topicTitle": "Sorting",
+      "difficulty": 5,
+      "title": "Integer sorting and the comparison lower bound",
+      "totalMarks": 12,
+      "prompt": "This question concerns sorting algorithms that exploit structure in keys.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 2,
+          "prompt": "State the Ω(n log n) lower bound for comparison-based sorting and name two algorithms that achieve this bound in the worst case.",
+          "markscheme": [
+            { "text": "Lower bound: any comparison-based sorting algorithm requires Ω(n log n) comparisons in the worst case", "marks": 1 },
+            { "text": "Two algorithms achieving O(n log n) worst case: merge sort and heapsort (not quicksort, which is O(n²) worst case)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Describe counting sort for n integers in the range [0, k]. Give its time and space complexity, and explain why it circumvents the Ω(n log n) lower bound.",
+          "markscheme": [
+            { "text": "Algorithm: allocate count array C[0..k]; iterate input and increment C[a[i]]; iterate C from 0 to k, writing each value i exactly C[i] times to output", "marks": 2 },
+            { "text": "Time O(n + k), space O(n + k)", "marks": 1 },
+            { "text": "Not comparison-based: it exploits the fact that keys are integers in a known range; the Ω(n log n) bound only applies to algorithms that derive all order information from pairwise comparisons", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Radix sort processes n integers of d digits each in base b, using a stable sort as a subroutine. Give the time complexity. Explain why using b = n and sorting integers in the range [0, n²−1] gives O(n) time.",
+          "markscheme": [
+            { "text": "Radix sort: d passes of counting sort, each O(n + b); total O(d(n + b))", "marks": 1 },
+            { "text": "Range [0, n²−1] → numbers have d = 2 digits in base n (since n² = n²)", "marks": 1 },
+            { "text": "With b = n: 2 passes each O(n + n) = O(n); total O(n) — beats comparison-based lower bound", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Give one advantage and one disadvantage of counting/radix sort compared to merge sort for sorting records by a string key.",
+          "markscheme": [
+            { "text": "Advantage: can achieve O(n × L) time (where L is string length) vs O(nL log n) for comparison sort; faster for long fixed-length strings", "marks": 1 },
+            { "text": "Disadvantage: requires keys to be expressible as fixed-length digit sequences; does not work directly with arbitrary comparison functions or variable-length unicode strings", "marks": 1 },
+            { "text": "Also acceptable: radix sort requires O(n + b) extra space; or: counting sort on characters requires an alphabet-sized count array", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a1-strat-d1",
+      "topic": "strategies-for-algorithm-design",
+      "topicTitle": "Strategies for Algorithm Design",
+      "difficulty": 1,
+      "title": "Divide and conquer definition",
+      "totalMarks": 3,
+      "prompt": "Define the divide-and-conquer algorithm design paradigm. Give one classic example of an algorithm that uses this approach.",
+      "markscheme": [
+        { "text": "Divide: split the problem into smaller subproblems of the same type", "marks": 1 },
+        { "text": "Conquer: solve subproblems recursively (base case: small enough to solve directly)", "marks": 1 },
+        { "text": "Combine: merge subproblem solutions into a solution for the original problem. Example: merge sort, binary search, Strassen's matrix multiplication, closest pair of points", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a1-strat-d2",
+      "topic": "strategies-for-algorithm-design",
+      "topicTitle": "Strategies for Algorithm Design",
+      "difficulty": 2,
+      "title": "The Master Theorem",
+      "totalMarks": 4,
+      "prompt": "State the Master Theorem for recurrences of the form T(n) = aT(n/b) + f(n). Identify the three cases and state the resulting complexity for each. You may assume a ≥ 1, b > 1.",
+      "markscheme": [
+        { "text": "Compare f(n) with n^(log_b a). Case 1: f(n) = O(n^(log_b a − ε)) for some ε > 0 → T(n) = Θ(n^(log_b a))", "marks": 1 },
+        { "text": "Case 2: f(n) = Θ(n^(log_b a)) → T(n) = Θ(n^(log_b a) log n)", "marks": 1 },
+        { "text": "Case 3: f(n) = Ω(n^(log_b a + ε)) for some ε > 0, and regularity condition af(n/b) ≤ cf(n) → T(n) = Θ(f(n))", "marks": 1 },
+        { "text": "Merge sort example: T(n) = 2T(n/2) + n → a=2, b=2, log_b a=1, f(n)=n=Θ(n¹) → Case 2 → T(n)=Θ(n log n)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a1-strat-d3",
+      "topic": "strategies-for-algorithm-design",
+      "topicTitle": "Strategies for Algorithm Design",
+      "difficulty": 3,
+      "title": "Applying the Master Theorem",
+      "totalMarks": 5,
+      "prompt": "Use the Master Theorem (or a recursion tree) to solve each of the following recurrences. State which case applies and give a tight bound.<br>(i) T(n) = 4T(n/2) + n<br>(ii) T(n) = 4T(n/2) + n²<br>(iii) T(n) = 4T(n/2) + n³<br>(iv) T(n) = T(n/2) + 1<br>(v) T(n) = 2T(n/3) + n",
+      "hint": "For each, compute log_b(a) and compare to the exponent of f(n).",
+      "markscheme": [
+        { "text": "(i) a=4, b=2, log_b a=2; f(n)=n=O(n^(2-1)) → Case 1 → T(n)=Θ(n²)", "marks": 1 },
+        { "text": "(ii) a=4, b=2, log_b a=2; f(n)=n²=Θ(n²) → Case 2 → T(n)=Θ(n² log n)", "marks": 1 },
+        { "text": "(iii) a=4, b=2, log_b a=2; f(n)=n³=Ω(n^(2+1)) → Case 3 → T(n)=Θ(n³)", "marks": 1 },
+        { "text": "(iv) a=1, b=2, log_b a=0; f(n)=1=Θ(n⁰) → Case 2 → T(n)=Θ(log n)", "marks": 1 },
+        { "text": "(v) a=2, b=3, log_b a=log_3 2 ≈ 0.63; f(n)=n=Ω(n^(0.63+ε)) → Case 3 → T(n)=Θ(n)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a1-strat-d4",
+      "topic": "strategies-for-algorithm-design",
+      "topicTitle": "Strategies for Algorithm Design",
+      "difficulty": 4,
+      "title": "Dynamic programming vs greedy",
+      "totalMarks": 7,
+      "prompt": "Consider the coin change problem: given coin denominations [1, 5, 10, 25] (cents) and a target amount n cents, find the minimum number of coins summing to n.<br>(i) Show that a greedy algorithm (always pick the largest coin ≤ remaining amount) gives the optimal solution for these denominations. Test on n = 41.<br>(ii) Give a set of coin denominations for which the greedy algorithm fails, and show a counterexample.<br>(iii) Describe a dynamic programming solution. What is its time complexity?",
+      "hint": "For (ii), think about denominations where choosing a large coin forces you into a suboptimal subproblem.",
+      "markscheme": [
+        { "text": "(i) Greedy on 41: 25 + 10 + 5 + 1 = 4 coins. This is optimal: any solution needs ≥ 1 coin ≥ 25, leaving 16 = 10+5+1 optimally", "marks": 2 },
+        { "text": "(ii) Denominations {1, 3, 4}, target 6: greedy gives 4+1+1 = 3 coins; optimal is 3+3 = 2 coins", "marks": 2 },
+        { "text": "(iii) DP: let dp[i] = min coins to make i. dp[0]=0; dp[i] = 1 + min over coin c of dp[i−c] for c ≤ i", "marks": 2 },
+        { "text": "Time complexity: O(n × |denominations|) — n subproblems, each taking O(|denominations|) to solve", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a1-strat-d5a",
+      "topic": "strategies-for-algorithm-design",
+      "topicTitle": "Strategies for Algorithm Design",
+      "difficulty": 5,
+      "title": "Divide and conquer: maximum subarray",
+      "totalMarks": 12,
+      "prompt": "This question concerns the maximum subarray problem: given an array A[1..n] of integers (possibly negative), find contiguous indices i ≤ j that maximise the sum A[i] + ... + A[j].",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 2,
+          "prompt": "Give an example array of length 6 that contains both positive and negative integers, and state the maximum subarray and its sum.",
+          "markscheme": [
+            { "text": "Any valid array, e.g. [−2, 1, −3, 4, −1, 2, 1, −5, 4]... or for length 6: e.g. [−2, 3, −1, 4, −2, 1]; max subarray [3,−1,4] sums to 6", "marks": 1 },
+            { "text": "Correctly identified maximum subarray and sum for the given example", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 5,
+          "prompt": "Describe a divide-and-conquer algorithm for this problem. Your description should identify the three cases for where the maximum subarray can lie, explain how to handle the crossing case efficiently, and give the recurrence.",
+          "markscheme": [
+            { "text": "Split at midpoint. Three cases: max subarray lies entirely in left half, entirely in right half, or crosses the midpoint", "marks": 1 },
+            { "text": "Left and right cases: recurse on each half", "marks": 1 },
+            { "text": "Crossing case: find maximum suffix of left half and maximum prefix of right half in O(n) total; their sum is the crossing maximum", "marks": 2 },
+            { "text": "Recurrence: T(n) = 2T(n/2) + Θ(n); by Master Theorem Case 2, T(n) = Θ(n log n)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Kadane's algorithm solves this problem in O(n) time using a single pass. Describe the algorithm and explain why it is correct.",
+          "markscheme": [
+            { "text": "Maintain current_sum = max subarray sum ending at current position; max_sum = overall best. At each element: current_sum = max(A[i], current_sum + A[i]); update max_sum", "marks": 2 },
+            { "text": "Correctness: at each step, current_sum is the maximum subarray sum ending at index i. Either A[i] alone is better (reset), or extending the previous best subarray is better. Optimal substructure: the best subarray ending at i either contains i only, or extends the best ending at i−1", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 2,
+          "prompt": "Compare the divide-and-conquer and Kadane's algorithm approaches in terms of time complexity and practical considerations.",
+          "markscheme": [
+            { "text": "D&C: Θ(n log n); Kadane's: Θ(n) — Kadane's is strictly better asymptotically", "marks": 1 },
+            { "text": "Kadane's requires only O(1) extra space; D&C requires O(log n) stack frames. However, D&C generalises more easily (e.g., to 2D maximum subarray problems)", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a1-strat-d5b",
+      "topic": "strategies-for-algorithm-design",
+      "topicTitle": "Strategies for Algorithm Design",
+      "difficulty": 5,
+      "title": "Dynamic programming: longest common subsequence",
+      "totalMarks": 13,
+      "prompt": "This question concerns the Longest Common Subsequence (LCS) problem.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 2,
+          "prompt": "Define a subsequence of a string. State the LCS problem formally. Give the LCS of the strings ABCBDAB and BDCAB.",
+          "markscheme": [
+            { "text": "A subsequence is a sequence derived by deleting zero or more elements without changing relative order (need not be contiguous)", "marks": 1 },
+            { "text": "LCS of ABCBDAB and BDCAB is BCAB or BDAB (length 4); both are acceptable", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 5,
+          "prompt": "Define the DP subproblem for LCS. Write the recurrence relation for dp[i][j] where X = x₁...xₘ and Y = y₁...yₙ. Explain the base cases.",
+          "markscheme": [
+            { "text": "dp[i][j] = length of LCS of X[1..i] and Y[1..j]", "marks": 1 },
+            { "text": "Base case: dp[0][j] = dp[i][0] = 0 for all i, j (empty string has LCS 0 with anything)", "marks": 1 },
+            { "text": "If x_i = y_j: dp[i][j] = dp[i−1][j−1] + 1", "marks": 1 },
+            { "text": "If x_i ≠ y_j: dp[i][j] = max(dp[i−1][j], dp[i][j−1])", "marks": 1 },
+            { "text": "Intuition: if last characters match, they must be in the LCS; otherwise skip one of the last characters", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "What is the time and space complexity of the standard DP algorithm? Describe a space optimisation that reduces space to O(min(m, n)).",
+          "markscheme": [
+            { "text": "Time O(mn), space O(mn) for the full DP table", "marks": 1 },
+            { "text": "Observation: dp[i][j] only depends on dp[i−1][j−1], dp[i−1][j], dp[i][j−1] — i.e., only two rows at a time", "marks": 1 },
+            { "text": "Keep only two rows (current and previous); reduce space to O(n). WLOG, make n ≤ m to get O(min(m,n))", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Explain the difference between dynamic programming and divide and conquer. What property of the LCS problem makes DP necessary rather than simple D&C?",
+          "markscheme": [
+            { "text": "Both use recursion. D&C: subproblems are disjoint and solved independently. DP: subproblems overlap; memoisation avoids redundant recomputation", "marks": 1 },
+            { "text": "LCS has overlapping subproblems: dp[i][j] is needed by multiple larger subproblems dp[i+1][j], dp[i][j+1], etc.", "marks": 1 },
+            { "text": "Also: optimal substructure — optimal solution to LCS(X,Y) is built from optimal solutions to smaller LCS subproblems", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a1-ds-d1",
+      "topic": "data-structures",
+      "topicTitle": "Data Structures",
+      "difficulty": 1,
+      "title": "BST operations and complexity",
+      "totalMarks": 3,
+      "prompt": "For a binary search tree (BST) with n nodes, state the worst-case and average-case time complexities of: (i) search, (ii) insert, (iii) delete.",
+      "markscheme": [
+        { "text": "Worst-case: O(n) for all three (degenerate tree — equivalent to a linked list, e.g. inserting sorted keys)", "marks": 1 },
+        { "text": "Average-case: O(log n) for all three (balanced tree, or random insertion order)", "marks": 1 },
+        { "text": "The BST property: left subtree keys < node key < right subtree keys; this allows O(height) operations", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a1-ds-d2",
+      "topic": "data-structures",
+      "topicTitle": "Data Structures",
+      "difficulty": 2,
+      "title": "Hash tables and collision resolution",
+      "totalMarks": 4,
+      "prompt": "Explain how a hash table works. Describe two strategies for handling collisions and compare their average-case lookup complexity, assuming a load factor α = n/m where n is the number of elements and m the number of buckets.",
+      "markscheme": [
+        { "text": "A hash table maps keys to array indices via a hash function h(k); elements stored at h(k) (or probed positions)", "marks": 1 },
+        { "text": "Chaining: each bucket holds a linked list of all elements hashing to it. Average lookup: O(1 + α) — constant hash computation plus traversing a chain of expected length α", "marks": 1 },
+        { "text": "Open addressing (e.g. linear probing): on collision, probe next slot. Average lookup under uniform hashing: O(1/(1−α)) for successful/unsuccessful search as α → 1", "marks": 1 },
+        { "text": "Chaining degrades gracefully with α > 1; open addressing requires α < 1 and performance degrades sharply near full load. Chaining uses extra pointer memory; open addressing has better cache behaviour", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a1-ds-d3",
+      "topic": "data-structures",
+      "topicTitle": "Data Structures",
+      "difficulty": 3,
+      "title": "BST insertion and in-order traversal",
+      "totalMarks": 5,
+      "prompt": "Starting from an empty BST, insert the following keys in order: 5, 3, 7, 1, 4, 6, 8. Draw the resulting tree. Then perform an in-order traversal and state the output sequence. Finally, show what the tree looks like after deleting node 5 (using the in-order successor strategy).",
+      "hint": "In-order traversal visits left subtree, then root, then right subtree. The in-order successor of a node is the smallest node in its right subtree.",
+      "markscheme": [
+        { "text": "Correct tree structure: 5 is root; left subtree rooted at 3 (children 1, 4); right subtree rooted at 7 (children 6, 8)", "marks": 2 },
+        { "text": "In-order traversal: 1, 3, 4, 5, 6, 7, 8 (sorted order — a key property of BSTs)", "marks": 1 },
+        { "text": "Delete 5: in-order successor is 6 (smallest in right subtree). Replace 5's key with 6, delete 6 from right subtree", "marks": 1 },
+        { "text": "Resulting tree: root is 6; left subtree rooted at 3 (children 1, 4); right subtree rooted at 7 (right child 8, no left child)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a1-ds-d4",
+      "topic": "data-structures",
+      "topicTitle": "Data Structures",
+      "difficulty": 4,
+      "title": "Heap operations and heapsort",
+      "totalMarks": 6,
+      "prompt": "(i) Define the max-heap property. State the time complexity of: buildMaxHeap, extractMax, and insert.<br>(ii) Explain how heapsort works and give its time and space complexity.<br>(iii) Given the array [4, 10, 3, 5, 1], show each step of building a max-heap using the linear-time buildHeap procedure (heapifying from the last internal node upward).",
+      "hint": "buildHeap starts from index ⌊n/2⌋ and calls siftDown towards the leaves.",
+      "markscheme": [
+        { "text": "Max-heap: for every node i, A[parent(i)] ≥ A[i]. buildMaxHeap: O(n); extractMax: O(log n); insert: O(log n)", "marks": 2 },
+        { "text": "Heapsort: build max-heap O(n), then n times extract max (swap root with last, sift down, reduce heap size) each O(log n). Total O(n log n). In-place: O(1) auxiliary space", "marks": 2 },
+        { "text": "buildHeap on [4,10,3,5,1]: last internal node = index 1 (0-indexed) or index 2 (1-indexed). Siftdown(index 2): 3 has no children needing swap. Siftdown(index 1): 10 > children, no swap. Siftdown(index 0): 4 vs 10 and 3 → swap 4 with 10 → [10,4,3,5,1]; siftdown 4 vs children 5,1 → swap with 5 → [10,5,3,4,1]", "marks": 2 }
+      ]
+    },
+    {
+      "id": "a1-ds-d5a",
+      "topic": "data-structures",
+      "topicTitle": "Data Structures",
+      "difficulty": 5,
+      "title": "Balanced BSTs: AVL trees",
+      "totalMarks": 13,
+      "prompt": "This question concerns AVL trees, a type of self-balancing binary search tree.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 2,
+          "prompt": "Define the AVL balance property. State the maximum height of an AVL tree with n nodes.",
+          "markscheme": [
+            { "text": "AVL property: for every node, |height(left subtree) − height(right subtree)| ≤ 1", "marks": 1 },
+            { "text": "Maximum height O(log n): specifically h ≤ 1.44 log₂(n+2) − 0.328 (or simply O(log n) accepted)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Describe the four rotation cases used to restore the AVL property after an insertion (LL, RR, LR, RL). For each, state when it applies and what rotation(s) are performed.",
+          "markscheme": [
+            { "text": "LL (left-left): inserted into left child's left subtree → single right rotation at the unbalanced node", "marks": 1 },
+            { "text": "RR (right-right): inserted into right child's right subtree → single left rotation", "marks": 1 },
+            { "text": "LR (left-right): inserted into left child's right subtree → left rotation on left child, then right rotation on node", "marks": 1 },
+            { "text": "RL (right-left): inserted into right child's left subtree → right rotation on right child, then left rotation on node", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 4,
+          "prompt": "Insert the keys 10, 20, 30, 40, 50, 25 in order into an initially empty AVL tree. Show the tree after each insertion, including any rotations performed.",
+          "markscheme": [
+            { "text": "After 10, 20: valid AVL tree (height difference 1)", "marks": 1 },
+            { "text": "After 30: imbalance at 10 (right-right case) → left rotation → 20 becomes root with children 10 and 30", "marks": 1 },
+            { "text": "After 40, 50: imbalance at 30 (RR) → left rotation at 30 → 40 has children 30 and 50; tree: 20(10, 40(30,50))", "marks": 1 },
+            { "text": "After 25: insert as left child of 30; imbalance at 40 (RL case) → right rotation at 30 (gives 25(nil,30)), then left rotation at 40... wait, let me reconsider. 25 < 30 so goes left of 30. Node 40: left=30(left=25), right=50. Balance factor of 40 = height(left)−height(right) = 2−1 = 1? Actually height of 30's subtree = 2 (30 has left child 25), height of 50 = 1. So 40 has BF = 2−1 = 1, still balanced. Recheck 20: left=10 (h=1), right=40 (h=3). BF = 1−3 = −2. RR case? No: right child 40's BF = (2−1) = 1 (left-heavy) → RL case at 20. Right rotation at 40: 30 becomes root of right subtree with left=25, right=40(nil, 50). Then left rotation at 20: 30 becomes root with left=20(10,25), right=40(nil,50)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "State the time complexity of search, insert, and delete in an AVL tree. Explain why these are guaranteed O(log n) in the worst case.",
+          "markscheme": [
+            { "text": "Search, insert, delete: all O(log n) worst case", "marks": 1 },
+            { "text": "AVL property guarantees height O(log n): at any node, the two subtrees differ in height by at most 1, so the minimum number of nodes at height h satisfies N(h) = N(h−1) + N(h−2) + 1 ≥ 2^(h/2), giving h ≤ 2 log₂ n", "marks": 1 },
+            { "text": "Each rotation is O(1); at most O(log n) rotations needed after insert/delete (only one for AVL insert; O(log n) for delete)", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a1-ds-d5b",
+      "topic": "data-structures",
+      "topicTitle": "Data Structures",
+      "difficulty": 5,
+      "title": "Priority queues and amortised analysis",
+      "totalMarks": 12,
+      "prompt": "This question concerns priority queues and their implementations.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 2,
+          "prompt": "Define a priority queue. Give two operations it must support. State the time complexity of each operation using a binary heap.",
+          "markscheme": [
+            { "text": "Priority queue: abstract data type where each element has a priority; supports at minimum insert and extract-min (or extract-max)", "marks": 1 },
+            { "text": "Binary heap: insert O(log n) (sift up); extract-min O(log n) (swap with last, sift down); also peek O(1)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "A binary heap is often stored as an array. For a 1-indexed array representation, give the formulae for the parent, left child, and right child of node at index i. Explain why buildHeap runs in O(n) time rather than O(n log n).",
+          "markscheme": [
+            { "text": "parent(i) = ⌊i/2⌋; left(i) = 2i; right(i) = 2i+1", "marks": 1 },
+            { "text": "buildHeap calls siftDown on each non-leaf node from ⌊n/2⌋ down to 1", "marks": 1 },
+            { "text": "Key insight: most nodes are near the bottom and require only a small siftDown. Nodes at height h do at most h swaps; there are at most ⌈n/2^(h+1)⌉ nodes at height h", "marks": 1 },
+            { "text": "Total work: Σ_{h=0}^{log n} ⌈n/2^(h+1)⌉ · h = O(n) · Σ h/2^h = O(n) (the sum Σ h/2^h converges to 2)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Explain the concept of amortised analysis. Use the accounting method to show that in a dynamic array (doubling strategy), the amortised cost of append is O(1) even though occasional resizes cost O(n).",
+          "markscheme": [
+            { "text": "Amortised analysis: spread the cost of expensive operations over many cheap ones; gives a bound on the average cost per operation in a sequence, not any single operation", "marks": 1 },
+            { "text": "Accounting method: charge each append $3 (amortised). $1 pays for the append itself; $2 is saved as 'credit'. When a resize occurs (doubling n→2n), there are n credits saved (one per element appended since last resize) — enough to pay for the O(n) copy", "marks": 1 },
+            { "text": "Formally: n appends before a resize; each contributed $2 credit; resize costs $2n to copy → credits exactly cover the cost. Amortised cost per append = O(1)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Compare a binary heap and a balanced BST as implementations of a priority queue. Give one operation where the BST is strictly better, and one where the heap is strictly better.",
+          "markscheme": [
+            { "text": "BST strictly better: search for an arbitrary key by value is O(log n); a heap cannot search for a key by value faster than O(n)", "marks": 1 },
+            { "text": "Heap strictly better: findMin (peek) is O(1) for a min-heap; a BST requires O(log n) to find the minimum (traverse to leftmost node)", "marks": 1 },
+            { "text": "Both support insert and extract-min in O(log n); heap has better constant factors due to simpler structure and cache-friendly array storage", "marks": 1 }
+          ]
+        }
+      ]
+    }
+  ]
+}
