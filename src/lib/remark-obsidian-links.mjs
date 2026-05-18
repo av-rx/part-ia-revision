@@ -117,6 +117,16 @@ export function remarkObsidianLinks() {
           newNodes.push({ type: 'text', value: value.slice(last, match.start) });
         }
         if (match.kind === 'wiki') {
+          // [[file.excalidraw]] — Obsidian sometimes omits the ! for diagram embeds
+          const wikiKey = match.raw.split('|')[0].trim();
+          if (wikiKey.toLowerCase().endsWith('.excalidraw')) {
+            const resolved = resolveEmbed(wikiKey, embed);
+            if (resolved?.kind === 'image') {
+              newNodes.push({ type: 'image', url: resolved.url, alt: resolved.alt ?? wikiKey, data: { hProperties: { loading: 'lazy', class: 'embed-image' } } });
+            } else {
+              newNodes.push({ type: 'html', value: `<span class="embed-broken" title="Unresolved embed: ${escapeHtml(wikiKey)}">⟦${escapeHtml(wikiKey)}⟧</span>` });
+            }
+          } else {
           const { href, display } = resolveWiki(match.raw, wiki);
           if (href) {
             newNodes.push({
@@ -130,6 +140,7 @@ export function remarkObsidianLinks() {
               type: 'html',
               value: `<span class="wikilink wikilink-broken" title="Unresolved link: ${escapeHtml(match.raw)}">${escapeHtml(display)}</span>`,
             });
+          }
           }
         } else {
           const resolved = resolveEmbed(match.raw, embed);
