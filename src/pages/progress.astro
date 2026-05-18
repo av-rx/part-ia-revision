@@ -1,6 +1,15 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProgressMap from '../components/ProgressMap.tsx';
+import { getCollection } from 'astro:content';
+
+const practiceEntries = await getCollection('practice-questions');
+const practiceModules: Record<string, string[]> = {};
+for (const entry of practiceEntries) {
+  if (entry.data.questions.length > 0) {
+    practiceModules[entry.data.module] = entry.data.questions.map((q: { id: string }) => q.id);
+  }
+}
 ---
 <BaseLayout title="Progress">
   <header class="mb-8">
@@ -10,5 +19,5 @@ import ProgressMap from '../components/ProgressMap.tsx';
     </p>
   </header>
 
-  <ProgressMap client:load />
+  <ProgressMap client:load practiceModules={practiceModules} />
 </BaseLayout>
