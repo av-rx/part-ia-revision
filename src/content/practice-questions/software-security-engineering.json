@@ -1,1 +1,569 @@
-{ "module": "software-security-engineering", "title": "Software Security Engineering — Practice Questions", "questions": [] }
+{
+  "module": "software-security-engineering",
+  "title": "Software and Security Engineering — Practice Questions",
+  "questions": [
+    {
+      "id": "sse-mindset-d1",
+      "topic": "engineering-mindset-and-the-cost-of-failure",
+      "topicTitle": "Engineering Mindset and the Cost of Failure",
+      "difficulty": 1,
+      "title": "Software failure costs",
+      "totalMarks": 3,
+      "prompt": "Why is software failure expensive? Give three categories of cost that arise when software fails in production. Name one famous software disaster and the type of failure involved.",
+      "markscheme": [
+        { "text": "Categories: (1) direct financial loss (revenue, refunds, fines); (2) reputational damage (customer churn, brand harm); (3) recovery cost (debugging, patching, incident response, engineering time)", "marks": 2 },
+        { "text": "Any valid example: Therac-25 (medical radiation overdoses — software safety failure); Ariane 5 explosion (integer overflow — software correctness failure); Knight Capital ($440M in 45 minutes — deployment failure); Log4Shell (supply chain vulnerability)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "sse-mindset-d2",
+      "topic": "engineering-mindset-and-the-cost-of-failure",
+      "topicTitle": "Engineering Mindset and the Cost of Failure",
+      "difficulty": 2,
+      "title": "Cost of fixing bugs across the development lifecycle",
+      "totalMarks": 4,
+      "prompt": "Explain why the cost of fixing a bug increases dramatically the later it is discovered in the software development lifecycle. Give approximate relative costs at requirements, design, coding, testing, and production stages. What does this imply about where to invest quality effort?",
+      "markscheme": [
+        { "text": "The later a bug is found, the more work must be undone and redone. A requirements bug discovered in production may require changing architecture, rewriting code, redoing tests, retraining users, and patching in production — touching every later phase", "marks": 1 },
+        { "text": "Approximate relative cost (IBM/Boehm studies): requirements=1x; design=2-5x; coding=10x; testing=20-50x; production=100x (or more for safety-critical). Numbers vary but the exponential trend is consistent", "marks": 2 },
+        { "text": "Implication: invest heavily in requirements clarity, design reviews, and early testing. Find bugs cheaply in reviews and unit tests rather than expensively in production. 'Shift left' on quality", "marks": 1 }
+      ]
+    },
+    {
+      "id": "sse-mindset-d3",
+      "topic": "engineering-mindset-and-the-cost-of-failure",
+      "topicTitle": "Engineering Mindset and the Cost of Failure",
+      "difficulty": 3,
+      "title": "Engineering mindset: properties of reliable software",
+      "totalMarks": 5,
+      "prompt": "A software engineer says: 'My code works on my machine, that's enough.' Critique this statement. List four properties of reliable software (beyond 'works on my machine') and explain why each matters.",
+      "markscheme": [
+        { "text": "Critique: 'works on my machine' only demonstrates correct function in one controlled environment. Reliability requires working across: different environments (OS, hardware, configurations); different inputs (edge cases, malformed data); concurrent usage; over time (under load, after restarts)", "marks": 1 },
+        { "text": "Correctness: produces the right output for all valid inputs, including edge cases and boundaries", "marks": 1 },
+        { "text": "Robustness: handles invalid inputs and unexpected conditions gracefully without crashing", "marks": 1 },
+        { "text": "Performance/efficiency: meets response time and resource requirements under expected load", "marks": 1 },
+        { "text": "Maintainability: can be understood and modified safely by someone other than the original author. Also valid: security, testability, observability", "marks": 1 }
+      ]
+    },
+    {
+      "id": "sse-mindset-d5a",
+      "topic": "engineering-mindset-and-the-cost-of-failure",
+      "topicTitle": "Engineering Mindset and the Cost of Failure",
+      "difficulty": 5,
+      "title": "Analysing a software failure: case study",
+      "totalMarks": 12,
+      "prompt": "This question concerns the engineering mindset applied to software failures.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Describe the Therac-25 radiation therapy machine accidents (1985-1987). Identify three engineering failures that contributed to the accidents.",
+          "markscheme": [
+            { "text": "Therac-25: software-controlled radiation therapy machine. When operated quickly, a race condition could set high-power mode without the physical safety hardware being in position. At least 6 patients received lethal radiation overdoses", "marks": 1 },
+            { "text": "Failure 1: software reused from Therac-20 but with hardware interlocks removed (assumed software was safe enough). Failure 2: race condition in the UI — operator typing quickly caused the machine to enter an incorrect state", "marks": 1 },
+            { "text": "Failure 3: error messages were cryptic/unhelpful ('Malfunction 54') so operators ignored and overrode them. Failure 4: no independent safety review of the software. Failure 5: management dismissed early reports of accidents as user error", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "What is 'defensive programming'? How would it have helped in the Therac-25 case? Give three principles of defensive programming.",
+          "markscheme": [
+            { "text": "Defensive programming: writing code that anticipates and handles incorrect inputs, unexpected states, and edge cases rather than assuming everything will work correctly", "marks": 1 },
+            { "text": "Therac-25: defensive programming would have added hardware-level interlocks as a redundant safety layer regardless of software state; validated preconditions before enabling high-power mode; surfaced clear error messages when invalid state detected", "marks": 1 },
+            { "text": "Three principles: (1) Validate all inputs at system boundaries; (2) Assert invariants at critical points; (3) Fail safely — if unsure, default to the safe state (low power, not high power); (4) Use redundancy for safety-critical decisions", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Describe blameless post-mortems as a technique for learning from failures. What is the key cultural shift it requires? How does it differ from traditional 'root cause analysis'?",
+          "markscheme": [
+            { "text": "Blameless post-mortem: a structured retrospective after an incident focused on understanding what happened and improving systems, not finding fault with individuals. Document: timeline, contributing factors, impact, lessons learned, action items", "marks": 1 },
+            { "text": "Cultural shift: assume people acted with best intentions given the information they had at the time. Blame leads to hiding mistakes; blamelessness creates psychological safety to report problems honestly", "marks": 1 },
+            { "text": "Vs traditional RCA: RCA often stops at 'human error' as the root cause — person fired or blamed. Blameless asks 'why did the system allow a human to make this mistake?' — leads to systemic improvements (better alerts, safeguards, training, processes)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "The concept of 'technical debt' suggests that cutting corners today creates future costs. Apply this to a real-world scenario: a startup needs to launch in 2 weeks. What technical debt is acceptable and what isn't?",
+          "markscheme": [
+            { "text": "Acceptable (prudent deliberate debt): skipping performance optimisation; not building admin UI; minimal test coverage for non-critical paths; temporary hardcoded configurations. These can be repaid after launch when you have more information about what actually matters", "marks": 1 },
+            { "text": "Not acceptable: skipping input validation (security vulnerability); no authentication; storing passwords in plaintext; no error handling in payment flow; no backup strategy for user data. These create catastrophic risk that outweighs time-to-market benefits", "marks": 1 },
+            { "text": "Framework: debt is acceptable if (1) it can be repaid quickly; (2) it doesn't create security or data integrity risk; (3) it's documented and tracked. Lehman's Law: unaddressed debt compounds — the system must be adapted or becomes progressively less satisfactory", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sse-req-d1",
+      "topic": "requirements-and-specifications",
+      "topicTitle": "Requirements and Specifications",
+      "difficulty": 1,
+      "title": "Requirements types",
+      "totalMarks": 3,
+      "prompt": "Distinguish functional requirements, non-functional requirements, and domain requirements. Give one example of each for an online banking system.",
+      "markscheme": [
+        { "text": "Functional: what the system does. Example: users can transfer funds between accounts, view transaction history, set up standing orders", "marks": 1 },
+        { "text": "Non-functional: how well the system does it (quality attributes). Example: the system must respond to any request within 2 seconds under normal load; must achieve 99.9% uptime", "marks": 1 },
+        { "text": "Domain requirements: constraints from the application domain, often regulatory. Example: transactions must comply with PCI-DSS; fraud detection must flag unusual patterns; customer data retained for 7 years per financial regulations", "marks": 1 }
+      ]
+    },
+    {
+      "id": "sse-req-d2",
+      "topic": "requirements-and-specifications",
+      "topicTitle": "Requirements and Specifications",
+      "difficulty": 2,
+      "title": "Good requirements properties",
+      "totalMarks": 4,
+      "prompt": "List five properties that a good software requirement should have (the 'SMART'-style attributes). For each, identify whether the following requirement violates it and explain why: 'The system should be fast and easy to use, and users should probably be able to log in.'",
+      "markscheme": [
+        { "text": "Good requirements: (1) Specific/Unambiguous — one interpretation only; (2) Measurable/Verifiable — can be tested; (3) Complete — fully specified; (4) Consistent — doesn't contradict other requirements; (5) Feasible — technically achievable in the project constraints. Also valid: Traceable, Necessary", "marks": 2 },
+        { "text": "The given requirement violates: Unambiguous ('fast' = how fast? 'easy to use' = measured how?); Measurable (can't test if met without metrics); Complete ('probably' = is login a requirement or not?)", "marks": 2 }
+      ]
+    },
+    {
+      "id": "sse-req-d3",
+      "topic": "requirements-and-specifications",
+      "topicTitle": "Requirements and Specifications",
+      "difficulty": 3,
+      "title": "Requirements elicitation and specification",
+      "totalMarks": 5,
+      "prompt": "Describe three techniques for eliciting requirements from stakeholders. What is a use case? Write a use case for 'User withdraws cash from ATM', including actor, preconditions, main flow, and alternative flows.",
+      "markscheme": [
+        { "text": "Three techniques: (1) Interviews — one-on-one questioning of stakeholders; (2) Workshops — group sessions to elicit and negotiate requirements; (3) Observation/ethnographic studies — watch users work to discover implicit needs. Also: document analysis, prototyping, surveys", "marks": 1 },
+        { "text": "Use case: describes how an actor interacts with a system to achieve a goal. Structured narrative of system-user interaction", "marks": 1 },
+        { "text": "ATM use case: Actor: Bank Customer. Preconditions: customer has a valid card and PIN. Main flow: (1) insert card; (2) enter PIN; (3) select 'Withdraw'; (4) enter amount; (5) machine dispenses cash and receipt; (6) card returned", "marks": 2 },
+        { "text": "Alternative flows: wrong PIN (3 attempts then card retained); insufficient funds → error message; network failure → card returned with message; amount exceeds daily limit → error with remaining limit shown", "marks": 1 }
+      ]
+    },
+    {
+      "id": "sse-req-d5a",
+      "topic": "requirements-and-specifications",
+      "topicTitle": "Requirements and Specifications",
+      "difficulty": 5,
+      "title": "Requirements for a safety-critical system",
+      "totalMarks": 13,
+      "prompt": "This question concerns requirements engineering for a safety-critical system.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "What is formal specification? Give an example of a formal notation used in software engineering. What are the advantages and disadvantages compared to natural language requirements?",
+          "markscheme": [
+            { "text": "Formal specification: using mathematical notation to describe system behaviour precisely. Eliminates ambiguity through formal semantics. Examples: Z notation, VDM, TLA+, Alloy, pre/post-condition contracts in Hoare logic", "marks": 1 },
+            { "text": "Advantages: unambiguous; mechanically verifiable (model checkers can find contradictions); precise enough for automated code generation or formal proof", "marks": 1 },
+            { "text": "Disadvantages: expensive to write; requires specialist training; hard for non-technical stakeholders to review; not all requirements translate naturally to formal notation; may give false confidence if the formal model doesn't match reality", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Describe requirements traceability. Why is it important? Give an example showing forward and backward traceability through requirement → design → code → test.",
+          "markscheme": [
+            { "text": "Requirements traceability: the ability to trace a requirement to its origin and follow it through all development artefacts to the final system. Maintains a 'thread' from stakeholder need to deployed feature", "marks": 1 },
+            { "text": "Importance: ensures all requirements are implemented (forward); ensures all code/tests exist for a reason (backward); impact analysis when requirements change; compliance evidence for regulated systems", "marks": 1 },
+            { "text": "Example: REQ-042: 'System shall encrypt all stored passwords using bcrypt'. → Design: AuthService uses bcrypt library. → Code: UserRepository.savePassword(). → Test: AuthServiceTest.testPasswordHashedWithBcrypt(). Each artefact links to REQ-042", "marks": 2 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "What is requirements volatility? Describe two strategies for managing changing requirements in a software project.",
+          "markscheme": [
+            { "text": "Requirements volatility: the tendency of requirements to change during the project lifecycle, due to changing user needs, market conditions, regulations, or new technical understanding", "marks": 1 },
+            { "text": "Strategy 1: iterative/agile development — accept change as normal; work in short sprints; requirements prioritised in backlog; each sprint delivers working software. Changes affect only upcoming sprints, not completed ones", "marks": 1 },
+            { "text": "Strategy 2: requirements baseline + change control process — formal approval needed for changes after baseline; impact assessed (cost/schedule/risk); accepted changes managed through a change control board. Used in safety-critical (aerospace, medical) where change creates regulatory overhead", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "A requirements analyst says: 'The system shall be secure.' Identify what is wrong with this requirement and rewrite it as three testable requirements for a web application.",
+          "markscheme": [
+            { "text": "Problem: 'secure' is ambiguous (secure against what threats? measured how?), unmeasurable (no acceptance criteria), and untestable (can't write a test for 'is it secure?')", "marks": 1 },
+            { "text": "Better requirements (any 3): (1) All passwords shall be stored using bcrypt with a cost factor ≥12; (2) All HTTP requests shall be served over TLS 1.2 or higher; (3) The application shall not be vulnerable to OWASP Top 10 vulnerabilities as verified by automated SAST scan; (4) Failed login attempts from a single IP shall be rate-limited to 5 per minute", "marks": 2 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sse-process-d1",
+      "topic": "engineering-process",
+      "topicTitle": "Engineering Process",
+      "difficulty": 1,
+      "title": "Software process models",
+      "totalMarks": 3,
+      "prompt": "Name three software process models. For each, give one sentence describing its key characteristic and one scenario where it is appropriate.",
+      "markscheme": [
+        { "text": "Waterfall: sequential phases (requirements → design → implementation → testing → deployment); appropriate when requirements are well-understood and stable (e.g. embedded systems with fixed spec)", "marks": 1 },
+        { "text": "Agile/Scrum: iterative sprints, adapts to changing requirements; appropriate for products with evolving requirements and frequent customer feedback needed (e.g. web/mobile apps)", "marks": 1 },
+        { "text": "Spiral: iterative with risk analysis at each stage; appropriate for large complex projects with significant uncertainty and high risk (e.g. defence systems, NASA missions)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "sse-process-d2",
+      "topic": "engineering-process",
+      "topicTitle": "Engineering Process",
+      "difficulty": 2,
+      "title": "Agile Manifesto and Scrum",
+      "totalMarks": 4,
+      "prompt": "State the four values of the Agile Manifesto. Explain the Scrum sprint cycle: what happens in sprint planning, daily stand-up, sprint review, and retrospective?",
+      "markscheme": [
+        { "text": "Manifesto values: (1) Individuals and interactions over processes and tools; (2) Working software over comprehensive documentation; (3) Customer collaboration over contract negotiation; (4) Responding to change over following a plan", "marks": 2 },
+        { "text": "Sprint planning: why is this Sprint valuable? What can be done this Sprint? How will we do it? Daily stand-up: what did I do yesterday? Today? Any blockers? (synchronisation, not status report)", "marks": 1 },
+        { "text": "Sprint review: present increment to stakeholders, gather feedback, update backlog. Retrospective: what went well? What to improve? How to do it? Team process improvement", "marks": 1 }
+      ]
+    },
+    {
+      "id": "sse-process-d3",
+      "topic": "engineering-process",
+      "topicTitle": "Engineering Process",
+      "difficulty": 3,
+      "title": "Waterfall vs Agile trade-offs",
+      "totalMarks": 5,
+      "prompt": "Compare Waterfall and Agile/Scrum development processes on: (i) handling changing requirements; (ii) customer involvement; (iii) documentation; (iv) risk management. For each dimension, explain which approach is stronger and why.",
+      "markscheme": [
+        { "text": "(i) Requirements change: Waterfall — requirements frozen at phase 1; changes are costly (butterfly effect through all phases). Agile — embraces change; new requirements go in next sprint's backlog. Agile wins for volatile requirements", "marks": 1 },
+        { "text": "(ii) Customer involvement: Waterfall — customer consulted at requirements and acceptance phases only. Agile — customer part of team; sprint reviews every 2-4 weeks. Agile wins for customer satisfaction and avoiding 'building the wrong thing'", "marks": 1 },
+        { "text": "(iii) Documentation: Waterfall — extensive upfront documentation (specs, UML diagrams). Agile — 'just enough' documentation; working software is primary artefact. Waterfall wins for compliance, maintenance of complex systems, regulatory evidence", "marks": 1 },
+        { "text": "(iv) Risk management: Waterfall — risk of discovering fundamental problems late (integration testing, phase 4). Agile — risks surfaced early through incremental delivery; at-risk items can be tackled first. Agile wins for most software projects", "marks": 1 },
+        { "text": "Context: Waterfall appropriate for hardware/safety-critical with fixed requirements; Agile for most software products with evolving needs. Hybrid (SAFe, iterative waterfall) often used in practice", "marks": 1 }
+      ]
+    },
+    {
+      "id": "sse-process-d5a",
+      "topic": "engineering-process",
+      "topicTitle": "Engineering Process",
+      "difficulty": 5,
+      "title": "DevOps, CI/CD, and deployment strategies",
+      "totalMarks": 13,
+      "prompt": "This question concerns software engineering process and continuous delivery.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Explain the DevOps philosophy. What is the 'conflict' it resolves between development and operations teams? Describe the distinction between Continuous Integration (CI), Continuous Delivery (CDE), and Continuous Deployment (CDP).",
+          "markscheme": [
+            { "text": "DevOps: merges development and operations. Conflict: developers rewarded for change (shipping features); ops rewarded for stability (uptime). DevOps: 'you build it, you run it' — same team responsible for shipping and running", "marks": 1 },
+            { "text": "CI: every code push triggers automated build + tests; code merged to main branch daily. Guarantees main branch always passes tests", "marks": 1 },
+            { "text": "CDE: code is always in a deployable state; releasing to production is a manual business decision. CDP: every passing build automatically deployed to production — no human gate. CDP requires very high test coverage and confidence", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Describe Blue-Green deployment and Canary releases. What problem does each solve? Give a scenario where you would choose Canary over Blue-Green.",
+          "markscheme": [
+            { "text": "Blue-Green: maintain two identical production environments (Blue=current, Green=new). Switch traffic from Blue to Green when Green is ready. Instant rollback by switching back. Solves: zero-downtime deployments and fast rollback", "marks": 2 },
+            { "text": "Canary: deploy new version to a small % of users (e.g. 5%), monitor error rates and metrics, gradually increase to 100% if stable; auto-rollback on error spike. Solves: real-world validation with limited blast radius", "marks": 1 },
+            { "text": "Choose Canary: when deploying a significant change (new algorithm, pricing model) where you want to measure real-user impact before full rollout. Blue-Green is 0% or 100%; Canary allows gradual rollout with data. Also Canary when Blue-Green is too expensive (doubling infrastructure)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Explain feature flags (feature toggles). How do they decouple deployment from release? Give a scenario where they provide value beyond simple on/off switching.",
+          "markscheme": [
+            { "text": "Feature flags: boolean conditions in code controlling whether a new feature is visible/active. Merged into production but inactive — the code is deployed, but the feature is not released", "marks": 1 },
+            { "text": "Deployment vs release: deployment = code on servers; release = feature visible to users. With flags, you can deploy daily and release when the marketing campaign is ready, regulatory approval granted, or confidence in quality achieved", "marks": 1 },
+            { "text": "Advanced scenarios: A/B testing (show different variants to different users simultaneously); gradual rollout (flag enabled for 1%, 10%, 100% of users); kill switch (emergency shutoff without code rollback); beta testing (enable for employees or opted-in users only)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Describe the four Golden Signals of site reliability. What are SLIs, SLOs, and Error Budgets? How does an error budget change engineering behaviour?",
+          "markscheme": [
+            { "text": "Four Golden Signals: Latency (time to serve a request), Traffic (demand on system), Errors (rate of failing requests), Saturation (how 'full' the service is — CPU, memory, disk)", "marks": 1 },
+            { "text": "SLI: a quantitative measure of service level (e.g. 95th percentile latency). SLO: a target for an SLI (e.g. 95th percentile latency < 200ms, 99.9% of the time). Error budget: 100% − SLO = the allowed failure (e.g. 0.1% of requests may fail)", "marks": 1 },
+            { "text": "Error budget changes behaviour: when budget is available → teams can deploy risky features (burn some budget). When budget exhausted → all feature work stops, focus on reliability. Creates shared incentive between dev and ops: spend budget wisely, don't waste it carelessly", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sse-qa-d1",
+      "topic": "quality-assurance-and-reliable-delivery",
+      "topicTitle": "Quality Assurance and Reliable Delivery",
+      "difficulty": 1,
+      "title": "Testing pyramid",
+      "totalMarks": 3,
+      "prompt": "Describe the testing pyramid. What types of tests are at each level? Why should there be many unit tests and few end-to-end tests (not the reverse)?",
+      "markscheme": [
+        { "text": "Testing pyramid: base = unit tests (many, fast, isolated); middle = integration tests (some, moderate speed); top = end-to-end tests (few, slow, expensive). The 'ice cream cone' anti-pattern inverts this", "marks": 1 },
+        { "text": "Many unit tests: fast (<10ms each), run on every commit, test functions in isolation, pinpoint failures exactly, easy to write. Cheap to run (thousands in seconds)", "marks": 1 },
+        { "text": "Few E2E tests: slow (seconds per test), brittle (dependent on full environment), hard to diagnose failures, expensive to maintain. Only cover happy paths and critical flows. Provides confidence but doesn't scale as primary testing strategy", "marks": 1 }
+      ]
+    },
+    {
+      "id": "sse-qa-d2",
+      "topic": "quality-assurance-and-reliable-delivery",
+      "topicTitle": "Quality Assurance and Reliable Delivery",
+      "difficulty": 2,
+      "title": "Code coverage and mutation testing",
+      "totalMarks": 4,
+      "prompt": "Explain code coverage as a metric. What does 100% line coverage guarantee — and what doesn't it guarantee? Describe mutation testing and explain how it addresses the shortcomings of coverage.",
+      "markscheme": [
+        { "text": "Code coverage: percentage of source code executed by the test suite. Types: line, branch, statement, path coverage. Identifies untested code", "marks": 1 },
+        { "text": "100% line coverage guarantees every line was executed at least once. Does NOT guarantee: correct behaviour (tests may execute code without asserting anything); all edge cases tested; all branches covered (need branch coverage); correct handling of concurrent scenarios", "marks": 2 },
+        { "text": "Mutation testing: automatically introduce small bugs (mutants) into source code (e.g. > to ≥, + to −, delete return statement). Run tests. If tests pass: mutant 'survived' — tests don't catch that specific defect. Mutation score = killed mutants / total mutants. High score → tests verify behaviour, not just execute lines", "marks": 1 }
+      ]
+    },
+    {
+      "id": "sse-qa-d3",
+      "topic": "quality-assurance-and-reliable-delivery",
+      "topicTitle": "Quality Assurance and Reliable Delivery",
+      "difficulty": 3,
+      "title": "Test-Driven Development",
+      "totalMarks": 5,
+      "prompt": "Describe Test-Driven Development (TDD). Explain the Red-Green-Refactor cycle in detail. What are the claimed benefits of TDD? Give one criticism.",
+      "hint": "Think about what 'write the test first' forces the developer to do before writing any implementation code.",
+      "markscheme": [
+        { "text": "TDD: write a failing test for new functionality before writing the implementation. Forces specification of expected behaviour before coding. Red-Green-Refactor: (1) Red: write a test for the next small piece of behaviour — it must fail (no implementation yet); (2) Green: write the minimum code to make it pass; (3) Refactor: clean up code (rename, extract, simplify) with confidence the test still passes", "marks": 2 },
+        { "text": "Benefits: forces clarity of intent (must define expected behaviour before coding); 100% coverage by default; tests are documentation (show how code is used); enables confident refactoring; design tends to be more modular (hard-to-test code is usually poorly designed)", "marks": 2 },
+        { "text": "Criticism: slower to start; test suite grows large (maintenance cost); TDD tests 'what code does' not 'what it should do' (if tests are written by same developer who wrote the spec, same misunderstandings apply)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "sse-qa-d5a",
+      "topic": "quality-assurance-and-reliable-delivery",
+      "topicTitle": "Quality Assurance and Reliable Delivery",
+      "difficulty": 5,
+      "title": "Building a testing strategy",
+      "totalMarks": 13,
+      "prompt": "This question concerns software quality assurance.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Describe unit testing with mocks/stubs. What is the difference between a stub and a mock? Write a Python-style pseudocode example testing a payment processing function using a mock payment gateway.",
+          "markscheme": [
+            { "text": "Stub: returns hardcoded values, used to provide controlled inputs. Mock: records interactions and can verify they occurred (was a method called? with what arguments?). A mock is both a stub and a spy", "marks": 1 },
+            { "text": "Example: mock_gateway = MagicMock(); mock_gateway.charge.return_value = True (stub); result = process_payment(mock_gateway, 100); assert result == 'Success'", "marks": 1 },
+            { "text": "mock_gateway.charge.assert_called_once_with(100) (mock verification). This tests process_payment in isolation without hitting a real payment API — fast, deterministic, no money charged", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Describe Google's 'xFood' release strategy (Fishfood → Teamfood → Dogfood). What principle does it embody, and how does it reduce production risk?",
+          "markscheme": [
+            { "text": "Fishfood: immediate dev team (20-30 people), highly unstable, fast iteration. Teamfood: wider department (50-100), more stable. Dogfood: all employees (hundreds-thousands), next Release Candidate, signal closest to real users", "marks": 1 },
+            { "text": "Principle: progressive internal testing — expand user base in concentric circles, each circle providing higher-quality feedback and catching more diverse bugs before public release", "marks": 1 },
+            { "text": "Reduces production risk: annoyance bugs and UX friction caught internally before external users see them; real usage patterns surface issues stress tests miss; employees are motivated testers (they feel the pain of broken tools); each stage is a quality gate before the next", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 4,
+          "prompt": "Describe the anatomy of a CI/CD pipeline. For each stage in the pipeline (commit, build, unit tests, lint/scan, integration tests, deploy staging, deploy prod), explain what is verified and what 'quality gate' it enforces.",
+          "markscheme": [
+            { "text": "Commit: change is submitted for review (PR), peer review checks logic and style. Build: compiles/packages code — verifies it's syntactically correct and all imports resolve", "marks": 1 },
+            { "text": "Unit tests: fast automated tests verify individual functions/classes. Lint/scan: code style (linter) and security scanning (SAST tool checks for known vulnerability patterns). Each is a gate — failure blocks progress", "marks": 1 },
+            { "text": "Integration tests: test components working together (API against real DB, etc.) — catches contract violations. Deploy staging: deploy to staging environment for UAT and smoke tests — identical-to-prod environment", "marks": 1 },
+            { "text": "Deploy prod: only reached if all gates pass. 'Fast feedback' principle: failures detected as early as possible (commit stage catches the most, cheapest to fix; prod failures are rarest but most expensive)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "What is chaos engineering? Describe the Netflix Chaos Monkey. What is the difference between Chaos Monkey and Chaos Gorilla/Kong? What philosophy does chaos engineering embody?",
+          "markscheme": [
+            { "text": "Chaos engineering: deliberately injecting failures into a production system to test its resilience. Based on 'if failure is inevitable, make it frequent and learn from it'", "marks": 1 },
+            { "text": "Chaos Monkey: randomly kills individual production server instances during business hours. Forces engineers to build self-recovering, stateless services. Chaos Gorilla: kills an entire availability zone. Chaos Kong: kills an entire AWS region", "marks": 1 },
+            { "text": "Philosophy: traditional ops focuses on preventing failure (high MTBF — Mean Time Between Failures). Modern SRE assumes failure, focuses on MTTR (Mean Time To Recovery). By practising failure, teams build muscle memory and automated recovery. 'Build the immune system by giving the system diseases'", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sse-evol-d1",
+      "topic": "software-evolution",
+      "topicTitle": "Software Evolution",
+      "difficulty": 1,
+      "title": "Lehman's Laws",
+      "totalMarks": 3,
+      "prompt": "State three of Lehman's Laws of Software Evolution for E-type (Evolutionary) systems. What do these laws imply for software maintenance budgets?",
+      "markscheme": [
+        { "text": "Continuing Change: a system must be continually adapted or it becomes progressively less satisfactory to its users", "marks": 1 },
+        { "text": "Increasing Complexity: as a system evolves, its complexity grows unless work is done to reduce it. Self-Regulation: global evolution processes are self-regulating with statistically determinable trends", "marks": 1 },
+        { "text": "Implication: maintenance is not optional — it is the majority of software cost (estimated 80%). Budgets must plan for continuous evolution, not just initial development. Software that stops being maintained becomes legacy code that eventually must be replaced at high cost", "marks": 1 }
+      ]
+    },
+    {
+      "id": "sse-evol-d2",
+      "topic": "software-evolution",
+      "topicTitle": "Software Evolution",
+      "difficulty": 2,
+      "title": "Types of maintenance and technical debt",
+      "totalMarks": 4,
+      "prompt": "Describe the four types of software maintenance (Corrective, Adaptive, Perfective, Preventive) with approximate percentage breakdown and an example of each. Explain the Technical Debt quadrant (Deliberate vs Inadvertent, Reckless vs Prudent).",
+      "markscheme": [
+        { "text": "Corrective (20%): fixing bugs — e.g. fixing a crash on iOS 17. Adaptive (25%): updating for new environment — e.g. migrating from Python 2 to 3, moving from on-prem to cloud. Perfective (50%): improving without changing behaviour — e.g. refactoring for readability, improving query performance. Preventive (5%): fixing latent bugs before they surface", "marks": 2 },
+        { "text": "Tech Debt quadrant: Reckless/Deliberate: 'no time for design' — irresponsible shortcuts. Prudent/Deliberate: 'must ship now, fix later' — valid business decision if tracked. Reckless/Inadvertent: 'what's a test?' — lack of knowledge. Prudent/Inadvertent: 'now we know better' — learned a better approach during development", "marks": 2 }
+      ]
+    },
+    {
+      "id": "sse-evol-d3",
+      "topic": "software-evolution",
+      "topicTitle": "Software Evolution",
+      "difficulty": 3,
+      "title": "API versioning and SemVer",
+      "totalMarks": 5,
+      "prompt": "Explain Semantic Versioning (SemVer). What constitutes a MAJOR, MINOR, or PATCH change? Give one example of each. What is Hyrum's Law and why does it make API evolution difficult?",
+      "markscheme": [
+        { "text": "SemVer: MAJOR.MINOR.PATCH. MAJOR: breaking change (removes/renames API, changes parameter type). MINOR: new backwards-compatible feature (adds new optional parameter). PATCH: backwards-compatible bug fix (fixes incorrect calculation)", "marks": 2 },
+        { "text": "Examples: removing a function → MAJOR (2.1.4 → 3.0.0); adding a new endpoint → MINOR (2.1.4 → 2.2.0); fixing null pointer exception → PATCH (2.1.4 → 2.1.5)", "marks": 1 },
+        { "text": "Hyrum's Law: 'With a sufficient number of users, all observable behaviours of your system will be depended on by somebody.' Even undocumented bugs become features someone relies on. Example: Windows 95 special-cased SimCity to mask a memory bug because too many users had the game. Makes API evolution hard: any change may break someone", "marks": 2 }
+      ]
+    },
+    {
+      "id": "sse-evol-d5a",
+      "topic": "software-evolution",
+      "topicTitle": "Software Evolution",
+      "difficulty": 5,
+      "title": "Legacy code, refactoring, and the Strangler Fig",
+      "totalMarks": 13,
+      "prompt": "This question concerns software evolution strategies.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "What is Michael Feathers' definition of legacy code? Describe characterisation tests (golden master tests). When would you use them and what do they test for?",
+          "markscheme": [
+            { "text": "Feathers: legacy code = code without tests (or more broadly: code we are afraid to modify). Not necessarily old; may be yesterday's code if it has no tests", "marks": 1 },
+            { "text": "Characterisation tests: tests that capture the current (possibly incorrect) behaviour of existing code. Record actual output for given input; assert it stays identical. Testing for consistency, not correctness", "marks": 1 },
+            { "text": "Use when: inheriting undocumented code; refactoring code with no tests (write chartest first, then refactor — any behaviour change breaks the test, alerting you). Limitation: they codify bugs too — the test will pass even if the code has a bug that was present before", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Describe the Strangler Fig pattern for replacing a legacy monolith. What is the alternative ('Big Bang rewrite') and what are its risks? Cite the Netscape case study.",
+          "markscheme": [
+            { "text": "Strangler Fig: (1) create a facade/proxy in front of the legacy system; (2) implement new functionality as a separate service; (3) route specific traffic to new service, rest to legacy; (4) gradually migrate until legacy has no traffic, then remove it. Low risk, continuous delivery throughout", "marks": 1 },
+            { "text": "Big Bang rewrite: throw away the existing codebase and rewrite from scratch. Risks: no new features shipped for months/years; new code has new bugs; market opportunity lost; rewrite often recreates the same problems", "marks": 1 },
+            { "text": "Netscape case study: 1997 — Netscape Navigator dominated the browser market. Decided to rewrite entirely (Netscape 5). Rewrite took 3 years; no new features shipped. Microsoft IE took 90% of market. Netscape went bankrupt. Rule: never do a Big Bang rewrite of a successful product", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 4,
+          "prompt": "Explain refactoring. What is the key prerequisite before refactoring? Describe four code smells and for each give the refactoring operation that addresses it.",
+          "markscheme": [
+            { "text": "Refactoring: restructuring code without changing external behaviour. Prerequisite: comprehensive automated test suite — tests must pass before and after to ensure behaviour is preserved", "marks": 1 },
+            { "text": "Long Method (can't describe in one sentence) → Extract Method: split into smaller named functions. God Object (knows/does too much) → Extract Class: apply SRP", "marks": 1 },
+            { "text": "Duplicate Code (same logic in multiple places) → Extract Method + DRY (Don't Repeat Yourself). Magic Numbers (literals with unexplained meaning) → Introduce Explaining Variable/Constant", "marks": 1 },
+            { "text": "Feature Envy (method more interested in another class's data) → Move Method: relocate the method to the class whose data it uses. Data Clumps (same group of variables always passed together) → Introduce Parameter Object", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Describe the 'software supply chain' and the risks it poses. What is a SBOM and why did Log4Shell (2021) demonstrate its importance?",
+          "markscheme": [
+            { "text": "Software supply chain: the set of all third-party components, libraries, build tools, and services that go into a software product. Modern apps depend on hundreds of transitive dependencies", "marks": 1 },
+            { "text": "Risks: vulnerability in any dependency affects all users of that dependency; developers may not know what they depend on (transitive dependencies); malicious packages can be injected (supply chain attacks like SolarWinds)", "marks": 1 },
+            { "text": "SBOM (Software Bill of Materials): formal, machine-readable record of all components in a build. Log4Shell: a critical vulnerability in log4j (Java logging library, embedded in thousands of products). Companies spent weeks manually searching for log4j usage because no SBOM existed. With SBOM: instant answer to 'are we affected?'", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sse-ai-d1",
+      "topic": "software-engineering-in-the-ai-era",
+      "topicTitle": "Software Engineering in the AI Era",
+      "difficulty": 1,
+      "title": "AI coding tools",
+      "totalMarks": 3,
+      "prompt": "Describe three ways AI tools assist software developers beyond simple autocomplete. For each, give a concrete example of the tool's capability.",
+      "markscheme": [
+        { "text": "Semantic code understanding: AI understands intent across files. Example: comment '// Calculate Haversine distance' → AI writes the full formula, imports the right library, handles edge cases — not just word completion", "marks": 1 },
+        { "text": "Test generation: AI generates unit tests including edge cases. Example: given a function, AI generates tests for nulls, empty strings, max integers, and typical values automatically", "marks": 1 },
+        { "text": "Root cause analysis / debugging: paste stack trace + state → AI identifies mismatched API formats, data type errors, or race conditions across multiple services. Also valid: boilerplate generation, refactoring, legacy code explanation", "marks": 1 }
+      ]
+    },
+    {
+      "id": "sse-ai-d2",
+      "topic": "software-engineering-in-the-ai-era",
+      "topicTitle": "Software Engineering in the AI Era",
+      "difficulty": 2,
+      "title": "Risks of AI-generated code",
+      "totalMarks": 4,
+      "prompt": "Describe three risks of relying on AI-generated code in professional software development. For each risk, give a mitigation strategy.",
+      "markscheme": [
+        { "text": "Hallucinations: AI invents libraries or API methods that don't exist. Mitigation: always compile/run AI-generated code; verify imports exist; use a verifier model in a Critic Architecture to check AI output", "marks": 1 },
+        { "text": "Technical debt of ignorance: submitting code you don't understand means you can't maintain it. Mitigation: review every line before committing; insist on understanding the logic, not just that it passes tests; pair with AI, don't delegate to it", "marks": 1 },
+        { "text": "Security vulnerabilities: AI trained on old codebases may suggest patterns with known CVEs (SQL injection, outdated crypto). Mitigation: run SAST tools on AI-generated code; security-specific model fine-tuning; code review focused on security implications", "marks": 1 },
+        { "text": "Also valid: bias towards popular/suboptimal solutions; non-determinism (same prompt, different output); over-reliance eroding fundamental skills. One mark for any valid risk + mitigation", "marks": 1 }
+      ]
+    },
+    {
+      "id": "sse-ai-d3",
+      "topic": "software-engineering-in-the-ai-era",
+      "topicTitle": "Software Engineering in the AI Era",
+      "difficulty": 3,
+      "title": "Traditional vs AI-augmented development",
+      "totalMarks": 5,
+      "prompt": "(i) What is the fundamental difference between 'Building WITH AI' and 'Building FOR AI'? Give an example of each.<br>(ii) Why is coding AI advancing faster than AI for creative writing or medical advice? What does 'ground truth' mean in this context?<br>(iii) Explain the 'Junior Developer Gap' — what is it and why does it matter for the software industry?",
+      "markscheme": [
+        { "text": "(i) With AI: AI assists the development process but the final product contains no AI at runtime (e.g. using Copilot to write a Java app). For AI: the LLM is a core component of the running system (e.g. a legal assistant where the LLM generates responses at runtime). Different engineering challenges: For AI must handle latency, cost, non-determinism, and evaluation", "marks": 2 },
+        { "text": "(ii) Code has ground truth: does it compile? Do tests pass? AI can run its own generated code and learn from immediate, objective feedback. Medical advice/legal opinions have no 'compiler' — correctness requires expensive expert evaluation. This tight feedback loop makes coding AI improve faster", "marks": 1 },
+        { "text": "(iii) Junior developer tasks (small bugs, boilerplate, routine CRUD) are exactly what AI handles best. The training ladder is breaking — how do juniors gain the experience to become senior architects if AI does entry-level work? The industry faces a skills pipeline problem in 10 years", "marks": 2 }
+      ]
+    },
+    {
+      "id": "sse-ai-d5a",
+      "topic": "software-engineering-in-the-ai-era",
+      "topicTitle": "Software Engineering in the AI Era",
+      "difficulty": 5,
+      "title": "Building AI-powered systems: architectural challenges",
+      "totalMarks": 13,
+      "prompt": "This question concerns the engineering challenges of building software systems with AI components.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Describe three architectural challenges unique to systems where an LLM is a core runtime component (Building FOR AI). For each, propose a mitigation.",
+          "markscheme": [
+            { "text": "Latency: LLM generation takes 2-10 seconds vs DB query at 10ms. Mitigation: streaming responses (show output as generated); async processing patterns; response caching for repeated queries", "marks": 1 },
+            { "text": "Cost: traditional APIs have near-zero marginal cost once hosted; LLM APIs charge per token. A viral app can go bankrupt. Mitigation: rate limiting; tiered access (free users get slower/smaller model); aggressive caching; prompt optimisation to reduce token count", "marks": 1 },
+            { "text": "Provider lock-in: OpenAI and Gemini APIs differ; switching is painful. Mitigation: abstraction layer (a common interface your code calls; the implementation switches between providers); test against multiple providers", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "What is Jevons Paradox applied to AI-assisted software engineering? What does it suggest about employment in software engineering? Describe how the required skillset of a software engineer is shifting.",
+          "markscheme": [
+            { "text": "Jevons Paradox (1865): making a resource more efficient increases total consumption, not decreases it. Steam engines became 4x more efficient → total coal consumption increased (more uses became viable at lower cost)", "marks": 1 },
+            { "text": "Applied to SWE: 10x cheaper software development ≠ 1/10th the engineers. Instead, 100x more software gets built. Demand for software engineers likely increases, not decreases, even as AI handles more coding tasks", "marks": 1 },
+            { "text": "Shifting skillset: commodity skill (knowing syntax, boilerplate) → AI handles. Valuable skills: domain knowledge (what to build); system design (how to architect it for scale/reliability); human communication (understanding user needs, stakeholder management); AI orchestration (directing AI tools to do 10x work while maintaining quality)", "marks": 2 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Describe the Critic Architecture for AI code generation. How does it reduce hallucinations? What is the analogy to traditional software engineering practices?",
+          "markscheme": [
+            { "text": "Critic Architecture: use two models in adversarial pairing. Generator model writes code. Verifier/Critic model reviews generated code for bugs, security flaws, style violations, logical errors", "marks": 1 },
+            { "text": "Reduces hallucinations: the critic independently assesses correctness without the generator's biases; catches invented APIs, insecure patterns, logic errors the generator missed. Two independent passes significantly reduce error rate", "marks": 1 },
+            { "text": "Analogy: traditional pair programming (one codes, one reviews); code review in PRs; four-eyes principle in financial systems. The critic pattern automates peer review — same principle, different mechanism", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "The notes conclude: 'AI changes the tools, not the goals.' Evaluate this statement. What engineering goals remain unchanged regardless of AI tooling, and why?",
+          "markscheme": [
+            { "text": "Goals unchanged: Reliability (does it work consistently under all conditions?), Maintainability (can a developer understand and modify it in 2 years?), Security (is user data protected?), Value (does it solve a real problem?). These are not implementation concerns — they are quality requirements", "marks": 1 },
+            { "text": "Why unchanged: users still need reliable, secure, maintainable software. AI doesn't change physics of networking, doesn't change regulations, doesn't change the need for users to trust the system. AI-generated code must meet the same standards as hand-written code", "marks": 1 },
+            { "text": "Where AI changes things: speed of generation, reduced cost of boilerplate, new categories of tools (AI assistants, agentic coding). But a fast-generated insecure system is worse than a slowly written secure one. The engineering values remain the north star", "marks": 1 }
+          ]
+        }
+      ]
+    }
+  ]
+}

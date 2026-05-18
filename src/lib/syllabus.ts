@@ -148,6 +148,10 @@ export const MODULES: Record<ModuleSlug, ModuleMeta> = {
       T(1, "1 - Conditional Probabilities and Bayes' Theorem", "Conditional Probabilities and Bayes' Theorem"),
       T(2, '2 - Random Variables, Probability Mass Function, Expectation', 'Random Variables, PMF, Expectation'),
       T(3, '3 - Expectation Properties, Variance, Discrete Distributions', 'Expectation Properties, Variance, Discrete Distributions'),
+      T(4, '4 - More Discrete Distributions - Poisson, Geometric, Negative Binomial, Hypergeometric', 'More Discrete Distributions', 'more-discrete-distributions'),
+      T(5, '5 - Continuous Random Variables', 'Continuous Random Variables'),
+      T(6, '6 - Marginals and Joint Distributions', 'Marginals and Joint Distributions'),
+      T(7, '7 - Independence, Covariance and Correlation', 'Independence, Covariance and Correlation'),
     ],
   },
 
@@ -252,6 +256,10 @@ export const MODULES: Record<ModuleSlug, ModuleMeta> = {
     topics: [
       T(1, '1 - Engineering Mindset and The Cost of Failure', 'Engineering Mindset and the Cost of Failure'),
       T(2, '2 - Requirements and Specifications', 'Requirements and Specifications'),
+      T(3, '3 - Engineering Process', 'Engineering Process'),
+      T(4, '4 - Quality Assurance and Reliable Delivery', 'Quality Assurance and Reliable Delivery'),
+      T(5, '5 - Software Evolution', 'Software Evolution'),
+      T(6, '6 - Software Engineering in the AI Era', 'Software Engineering in the AI Era'),
     ],
     supplements: [
       'testing-strategies',
@@ -336,6 +344,8 @@ export const MODULES: Record<ModuleSlug, ModuleMeta> = {
       T(1, '1 - Introduction to Interaction Design, User-Centred Design Approach, User Research - Methods', 'Intro to IxD, UCD, User Research Methods'),
       T(2, '2 - User Research - Data Analysis, Keeping the User in Mind', 'User Research Data Analysis, Keeping the User in Mind'),
       T(3, '3 - Requirements Analysis and Development, Exploring the Design Space', 'Requirements Analysis and Design Space'),
+      T(4, '4 - Cognitive Aspects for Design, Interactive Aspects for Design', 'Cognitive and Interactive Aspects for Design', 'cognitive-and-interactive-aspects-for-design'),
+      T(5, '5 - Designing Content, Tools for Interaction Design', 'Designing Content and Tools for IxD', 'designing-content-and-tools-for-ixd'),
     ],
     supplements: [
       'prototyping-low-and-high-fidelity',

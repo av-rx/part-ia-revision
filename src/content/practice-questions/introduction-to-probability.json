@@ -497,5 +497,649 @@
         }
       ]
     }
+    ,
+    {
+      "id": "prob-more-d1",
+      "topic": "more-discrete-distributions",
+      "topicTitle": "More Discrete Distributions",
+      "difficulty": 1,
+      "title": "Distribution identification",
+      "totalMarks": 4,
+      "prompt": "For each scenario, name the most appropriate discrete distribution and state its key parameter(s):<br>(i) Number of phone calls arriving at a switchboard in a 1-hour period, given calls arrive at a constant average rate of 12 per hour.<br>(ii) Number of fair coin flips until the first head.<br>(iii) A batch of 20 components contains 4 defective. You pick 5 at random without replacement. Number of defectives chosen.<br>(iv) Number of failures before achieving the 3rd success in repeated Bernoulli trials with success probability 0.3.",
+      "markscheme": [
+        { "text": "(i) Poisson(λ=12) — events occurring at a constant rate in fixed time interval, independently", "marks": 1 },
+        { "text": "(ii) Geometric(p=0.5) — number of trials until first success", "marks": 1 },
+        { "text": "(iii) Hypergeometric(N=20, K=4, n=5) — sampling without replacement from a finite population with known defective count", "marks": 1 },
+        { "text": "(iv) Negative Binomial NB(r=3, p=0.3) — number of failures before the r-th success", "marks": 1 }
+      ]
+    },
+    {
+      "id": "prob-more-d2",
+      "topic": "more-discrete-distributions",
+      "topicTitle": "More Discrete Distributions",
+      "difficulty": 2,
+      "title": "Poisson and Geometric properties",
+      "totalMarks": 4,
+      "prompt": "For a Poisson(λ) random variable X: (i) state its PMF, mean, and variance; (ii) state one key property that distinguishes it from the Binomial distribution. For a Geometric(p) random variable Y (number of trials until first success): (iii) state its PMF and mean; (iv) state and prove the memoryless property.",
+      "markscheme": [
+        { "text": "(i) P(X=k) = e^{−λ}λ^k/k! for k=0,1,2,...; E[X]=λ; Var(X)=λ — mean equals variance", "marks": 1 },
+        { "text": "(ii) Poisson models rare events in continuous time/space; mean=variance; arises as Binomial limit when n→∞, p→0, np=λ. Binomial has finite n trials; Poisson is unbounded", "marks": 1 },
+        { "text": "(iii) P(Y=k) = (1−p)^{k−1}p for k=1,2,...; E[Y]=1/p", "marks": 1 },
+        { "text": "(iv) Memoryless: P(Y>m+n | Y>m) = P(Y>n). Proof: P(Y>m)=(1−p)^m. Ratio: (1−p)^{m+n}/(1−p)^m = (1−p)^n = P(Y>n) ✓", "marks": 1 }
+      ]
+    },
+    {
+      "id": "prob-more-d3",
+      "topic": "more-discrete-distributions",
+      "topicTitle": "More Discrete Distributions",
+      "difficulty": 3,
+      "title": "Hypergeometric calculation",
+      "totalMarks": 5,
+      "prompt": "A standard deck has 52 cards: 13 hearts, 13 spades, 13 diamonds, 13 clubs. You draw 5 cards without replacement. Let X = number of hearts drawn.<br>(i) State the distribution of X and its parameters.<br>(ii) Write the PMF formula and compute P(X=2).<br>(iii) Find E[X].<br>(iv) In what limit does the Hypergeometric distribution approximate a Binomial, and why?",
+      "hint": "For the Hypergeometric(N,K,n): P(X=k) = C(K,k)C(N-K,n-k)/C(N,n).",
+      "markscheme": [
+        { "text": "(i) X ~ Hypergeometric(N=52, K=13, n=5) — drawing without replacement from population of 52, 13 successes", "marks": 1 },
+        { "text": "(ii) P(X=k) = C(13,k)C(39,5−k)/C(52,5). P(X=2) = C(13,2)C(39,3)/C(52,5) = 78×9139/2598960 ≈ 0.274", "marks": 2 },
+        { "text": "(iii) E[X] = n·K/N = 5·13/52 = 5/4 = 1.25", "marks": 1 },
+        { "text": "(iv) When N is very large relative to n (population much larger than sample), sampling without replacement ≈ sampling with replacement. Hypergeometric → Binomial(n, K/N) as N→∞ with K/N fixed", "marks": 1 }
+      ]
+    },
+    {
+      "id": "prob-more-d4",
+      "topic": "more-discrete-distributions",
+      "topicTitle": "More Discrete Distributions",
+      "difficulty": 4,
+      "title": "Negative Binomial and generating functions",
+      "totalMarks": 6,
+      "prompt": "(i) Derive the PMF of the Negative Binomial distribution NB(r, p) — the number of failures before the r-th success. Show it generalises the Geometric (r=1).<br>(ii) Find E[X] for NB(r,p) using the result that X = G₁ + G₂ + ... + Gᵣ where each Gᵢ ~ Geometric₀(p) (number of failures before each successive success). Where Geometric₀ means number of failures, so E[Gᵢ] = (1−p)/p.<br>(iii) A basketball player makes each free throw independently with probability 0.7. What is the probability that their 5th success comes on the 8th attempt?",
+      "hint": "For part (iii): need exactly 4 successes in first 7 attempts, then a success on attempt 8.",
+      "markscheme": [
+        { "text": "(i) NB(r,p): X = number of failures before r-th success. In x+r total trials, need exactly r-1 successes in first x+r-1 trials, then a success. P(X=x) = C(x+r-1, r-1)·p^r·(1−p)^x for x=0,1,2,... For r=1: P(X=x)=p(1−p)^x (Geometric₀) ✓", "marks": 2 },
+        { "text": "(ii) X = Σ Gᵢ where Gᵢ ~ Geometric₀(p). E[X] = Σ E[Gᵢ] = r·(1−p)/p (by linearity)", "marks": 2 },
+        { "text": "(iii) P(5th success on 8th attempt) = C(7,4)·(0.7)^4·(0.3)^3·0.7 = C(7,4)·(0.7)^5·(0.3)^3 = 35·0.16807·0.027 ≈ 0.0953", "marks": 2 }
+      ]
+    },
+    {
+      "id": "prob-more-d5a",
+      "topic": "more-discrete-distributions",
+      "topicTitle": "More Discrete Distributions",
+      "difficulty": 5,
+      "title": "Comparing discrete distributions",
+      "totalMarks": 12,
+      "prompt": "This question concerns discrete probability distributions.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "A typist makes typing errors at a rate of 2 per page on average. (i) State the appropriate model and justify it. (ii) Find the probability of no errors on a given page. (iii) Find the probability of more than 3 errors.",
+          "markscheme": [
+            { "text": "Poisson(λ=2): errors are rare events occurring at a constant average rate, independently. Appropriate when errors don't 'cluster' (each keystroke independent)", "marks": 1 },
+            { "text": "P(X=0) = e^{−2} ≈ 0.135", "marks": 1 },
+            { "text": "P(X>3) = 1 − P(X≤3) = 1 − e^{−2}(1 + 2 + 2 + 4/3) = 1 − e^{−2}·(19/3) ≈ 1 − 0.857 = 0.143", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "A website receives hits according to a Poisson process at rate λ = 5 per minute. (i) What is the probability of at least 3 hits in a 30-second interval? (ii) If hits arrive at rate λ per minute, what is the distribution of hits in t minutes? (iii) Hits arrive from two independent sources at rates λ₁=3 and λ₂=4 per minute. What is the distribution of total hits?",
+          "markscheme": [
+            { "text": "(i) In 30 seconds, rate = 5/2 = 2.5. P(X≥3) = 1 − P(X≤2) = 1 − e^{−2.5}(1 + 2.5 + 3.125) ≈ 1 − 0.543 = 0.457", "marks": 1 },
+            { "text": "(ii) Poisson(λt) — scaling property: sum of t independent Poisson(λ) is Poisson(λt)", "marks": 1 },
+            { "text": "(iii) Poisson(λ₁+λ₂) = Poisson(7) — sum of independent Poissons is Poisson with summed rates", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "An urn contains 10 balls: 6 red, 4 blue. Three balls are drawn without replacement. Let X = number of red balls drawn. Compute E[X] and Var(X) using the Hypergeometric formulas (E[X] = nK/N, Var(X) = nK(N-K)(N-n) / [N²(N-1)]).",
+          "markscheme": [
+            { "text": "N=10, K=6, n=3. E[X] = 3·6/10 = 1.8", "marks": 1 },
+            { "text": "Var(X) = 3·6·4·7/(10²·9) = 504/900 = 0.56", "marks": 1 },
+            { "text": "Compare to Binomial(n=3, p=0.6): E=1.8 (same), Var=3·0.6·0.4=0.72 > 0.56. Hypergeometric has smaller variance (finite population correction factor (N−n)/(N−1) = 7/9 < 1)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Give a real-world scenario modelled by each of the four distributions covered in this topic: Poisson, Geometric, Negative Binomial, Hypergeometric. For each, briefly justify why the distribution applies.",
+          "markscheme": [
+            { "text": "Poisson: radioactive decay counts per second, customer arrivals per hour, typos per page — events occur independently at constant rate", "marks": 1 },
+            { "text": "Geometric: number of job applications until first offer, number of coin flips until first head — independent trials, first success model, memoryless", "marks": 1 },
+            { "text": "Negative Binomial: number of sales calls before closing r deals, number of failures before r-th success in clinical trial. Hypergeometric: quality control (defectives in a sample from a batch without replacement), exit polls (number of Labour voters in a sample from a known-proportion electorate)", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prob-more-d5b",
+      "topic": "more-discrete-distributions",
+      "topicTitle": "More Discrete Distributions",
+      "difficulty": 5,
+      "title": "Tripos: Poisson processes and approximations",
+      "totalMarks": 13,
+      "prompt": "This question concerns Poisson approximations and related distributions.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "State precisely the conditions under which Binomial(n,p) is well-approximated by Poisson(λ). Demonstrate the approximation: compute P(X=0) and P(X=2) exactly for Binomial(100, 0.02) and compare to Poisson(2).",
+          "markscheme": [
+            { "text": "Conditions: n large, p small, np = λ moderate (typically n≥20, p≤0.05)", "marks": 1 },
+            { "text": "Binomial: P(X=0)=(0.98)^100≈0.1326; Poisson: e^{−2}≈0.1353. Binomial: P(X=2)=C(100,2)(0.02)^2(0.98)^98≈0.2734; Poisson: e^{−2}·2/1≈0.2707. Close agreement", "marks": 1 },
+            { "text": "Formal proof sketch: C(n,k)p^k(1−p)^{n−k} → e^{−λ}λ^k/k! as n→∞, p=λ/n", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "A rare disease affects 1 in 500 people. In a sample of 2000 people, what is the probability that exactly 3 are affected? Use the Poisson approximation. State the exact distribution and explain why the approximation is appropriate.",
+          "markscheme": [
+            { "text": "Exact: Binomial(2000, 1/500) = Binomial(2000, 0.002). λ = np = 4. Poisson(4) is appropriate: n=2000 large, p=0.002 small", "marks": 1 },
+            { "text": "P(X=3) = e^{−4}·4³/3! = e^{−4}·64/6 ≈ 0.01832·10.667 ≈ 0.1954", "marks": 2 },
+            { "text": "Could also use exact Binomial: C(2000,3)·(0.002)³·(0.998)^1997 ≈ same answer to 3 d.p.", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "A Geometric(p) distribution counts the trial number of the first success. Show that the sum of r independent Geometric₀(p) random variables (each counting failures before success) has a Negative Binomial distribution. State the distribution clearly.",
+          "markscheme": [
+            { "text": "Let X₁,...,Xᵣ be i.i.d. Geometric₀(p) (failures before success). X = X₁+...+Xᵣ = total failures before r-th success", "marks": 1 },
+            { "text": "P(X₁=k₁,...,Xᵣ=kᵣ) = ∏ p(1-p)^{kᵢ}. Marginal P(X=x) = C(x+r-1,r-1)p^r(1-p)^x — number of ways to arrange r-1 successes among x+r-1 trials (last is always a success)", "marks": 1 },
+            { "text": "This is NB(r,p). E[X] = r(1-p)/p, Var(X) = r(1-p)/p²", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "A Poisson process with rate λ has inter-arrival times that are Exponentially distributed. State this result and briefly explain the connection between the Geometric distribution (discrete memoryless) and the Exponential distribution (continuous memoryless).",
+          "markscheme": [
+            { "text": "In a Poisson process, inter-arrival times T₁, T₂,... are i.i.d. Exponential(λ). The number of arrivals in [0,t] is Poisson(λt)", "marks": 1 },
+            { "text": "Both Geometric and Exponential are the unique memoryless distributions in their respective domains (discrete vs continuous). Geometric: P(X>m+n|X>m)=P(X>n). Exponential: P(T>s+t|T>s)=P(T>t)", "marks": 1 },
+            { "text": "Connection: Geometric is the discrete analogue of Exponential. If you discretise a Poisson process by checking at intervals Δt, the waiting time (in discrete steps) is Geometric(p=λΔt). As Δt→0, Geometric→Exponential", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prob-cont-d1",
+      "topic": "continuous-random-variables",
+      "topicTitle": "Continuous Random Variables",
+      "difficulty": 1,
+      "title": "PDF and CDF basics",
+      "totalMarks": 3,
+      "prompt": "Define the probability density function (PDF) f(x) of a continuous random variable X. What conditions must f satisfy? Define the cumulative distribution function (CDF) F(x) and state how to recover f from F.",
+      "markscheme": [
+        { "text": "PDF: f(x) ≥ 0 for all x; ∫_{−∞}^{∞} f(x)dx = 1. P(a ≤ X ≤ b) = ∫_a^b f(x)dx", "marks": 1 },
+        { "text": "CDF: F(x) = P(X ≤ x) = ∫_{−∞}^x f(t)dt. Properties: non-decreasing, F(−∞)=0, F(∞)=1, right-continuous", "marks": 1 },
+        { "text": "Recover PDF from CDF: f(x) = F'(x) wherever the derivative exists. Note: for continuous RVs, P(X=x)=0 for any specific x", "marks": 1 }
+      ]
+    },
+    {
+      "id": "prob-cont-d2",
+      "topic": "continuous-random-variables",
+      "topicTitle": "Continuous Random Variables",
+      "difficulty": 2,
+      "title": "Uniform and Exponential distributions",
+      "totalMarks": 4,
+      "prompt": "For the Uniform distribution U(a,b): state the PDF, mean, and variance. For the Exponential distribution Exp(λ): state the PDF, mean, variance, and the memoryless property. Explain why the Exponential is the continuous analogue of the Geometric distribution.",
+      "markscheme": [
+        { "text": "U(a,b): f(x) = 1/(b−a) for a≤x≤b, 0 otherwise. E[X] = (a+b)/2, Var(X) = (b−a)²/12", "marks": 1 },
+        { "text": "Exp(λ): f(x) = λe^{−λx} for x≥0. E[X] = 1/λ, Var(X) = 1/λ²", "marks": 1 },
+        { "text": "Memoryless: P(X>s+t|X>s) = P(X>t) for all s,t≥0. Proof: P(X>s+t)/P(X>s) = e^{−λ(s+t)}/e^{−λs} = e^{−λt} = P(X>t) ✓", "marks": 1 },
+        { "text": "Geometric is the unique discrete memoryless distribution; Exponential is the unique continuous one. Both model waiting time for the first event; the Exponential arises in the continuous-time limit of a Bernoulli process", "marks": 1 }
+      ]
+    },
+    {
+      "id": "prob-cont-d3",
+      "topic": "continuous-random-variables",
+      "topicTitle": "Continuous Random Variables",
+      "difficulty": 3,
+      "title": "Normal distribution and standardisation",
+      "totalMarks": 5,
+      "prompt": "The Normal distribution N(μ, σ²) has PDF f(x) = (1/√(2πσ²)) exp(−(x−μ)²/(2σ²)).<br>(i) State E[X] and Var(X).<br>(ii) If X ~ N(70, 100), find P(60 < X < 80) using standardisation Z=(X−μ)/σ and the fact that P(−1 < Z < 1) ≈ 0.683.<br>(iii) If X ~ N(50, 25), find the value c such that P(X ≤ c) = 0.975, given Φ(1.96) = 0.975.<br>(iv) Why is the Normal distribution central to statistics?",
+      "hint": "Standardise: Z = (X−μ)/σ ~ N(0,1). Then use the standard normal table.",
+      "markscheme": [
+        { "text": "(i) E[X] = μ, Var(X) = σ²", "marks": 1 },
+        { "text": "(ii) σ=10. Z₁=(60-70)/10=-1, Z₂=(80-70)/10=1. P(-1<Z<1)=0.683", "marks": 1 },
+        { "text": "(iii) Z = (c-50)/5. P(Z ≤ 1.96) = 0.975 → c = 50 + 5×1.96 = 59.8", "marks": 2 },
+        { "text": "(iv) Central Limit Theorem: sums of independent RVs tend to Normal regardless of underlying distribution. Many natural phenomena approximately Normal. Normal is closed under linear combinations", "marks": 1 }
+      ]
+    },
+    {
+      "id": "prob-cont-d4",
+      "topic": "continuous-random-variables",
+      "topicTitle": "Continuous Random Variables",
+      "difficulty": 4,
+      "title": "Transformations of continuous RVs",
+      "totalMarks": 6,
+      "prompt": "(i) If X ~ U(0,1), find the PDF of Y = −(1/λ)ln(X) and show Y ~ Exp(λ).<br>(ii) If X ~ N(0,1), find the PDF of Y = X². (You may use the fact that P(Y ≤ y) = P(−√y ≤ X ≤ √y).)<br>(iii) State the result: if X ~ Exp(λ), what is P(X > t + s | X > t)? This is used in queueing theory to argue that service times have no 'memory'.",
+      "hint": "For (i): use the inverse transform method — if F_Y(y) = 1 − e^{−λy}, differentiate to get the PDF.",
+      "markscheme": [
+        { "text": "(i) F_Y(y) = P(Y≤y) = P(−ln(X)/λ≤y) = P(X≥e^{−λy}) = 1−e^{−λy} for y≥0 → f_Y(y)=λe^{−λy} → Y~Exp(λ) ✓", "marks": 2 },
+        { "text": "(ii) F_Y(y) = P(X²≤y) = P(−√y≤X≤√y) = Φ(√y)−Φ(−√y) = 2Φ(√y)−1. f_Y(y)=F'_Y(y) = 2φ(√y)·(1/(2√y)) = φ(√y)/√y = (1/√(2πy))e^{−y/2} for y>0 — this is the chi-squared(1) distribution", "marks": 2 },
+        { "text": "(iii) P(X>t+s|X>t) = e^{−λ(t+s)}/e^{−λt} = e^{−λs} = P(X>s). Memoryless: remaining service time has the same distribution regardless of how long service has already taken", "marks": 2 }
+      ]
+    },
+    {
+      "id": "prob-cont-d5a",
+      "topic": "continuous-random-variables",
+      "topicTitle": "Continuous Random Variables",
+      "difficulty": 5,
+      "title": "Continuous distributions: Cambridge Tripos style",
+      "totalMarks": 13,
+      "prompt": "This question concerns continuous random variables.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "A random variable X has PDF f(x) = cx² for 0 ≤ x ≤ 3, and 0 otherwise. (i) Find c. (ii) Find E[X] and Var(X). (iii) Find P(1 < X < 2).",
+          "markscheme": [
+            { "text": "(i) ∫₀³ cx²dx = c·[x³/3]₀³ = 9c = 1 → c = 1/9", "marks": 1 },
+            { "text": "(ii) E[X] = (1/9)∫₀³ x³dx = (1/9)·81/4 = 9/4 = 2.25. E[X²] = (1/9)∫₀³ x⁴dx = (1/9)·243/5 = 27/5. Var(X) = 27/5 − (9/4)² = 5.4 − 5.0625 = 0.3375", "marks": 1 },
+            { "text": "(iii) P(1<X<2) = (1/9)∫₁² x²dx = (1/9)[x³/3]₁² = (1/9)·(8/3 − 1/3) = (1/9)·7/3 = 7/27 ≈ 0.259", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "The waiting time at a bus stop is uniformly distributed on [0, T] minutes. (i) Find the probability a passenger waits more than T/2. (ii) Find the expected waiting time given the passenger waits more than T/3. (iii) If two passengers arrive independently, find the probability that one waits more than twice as long as the other.",
+          "markscheme": [
+            { "text": "(i) P(X > T/2) = 1/2 (symmetry of uniform distribution)", "marks": 1 },
+            { "text": "(ii) Given X > T/3: X is uniform on (T/3, T). E[X | X > T/3] = (T/3 + T)/2 = 2T/3", "marks": 1 },
+            { "text": "(iii) P(X₁ > 2X₂) + P(X₂ > 2X₁) by symmetry = 2P(X₁ > 2X₂). Integrate over unit square: ∫₀^{T/2} ∫₀^{x/2} (1/T²) dy dx = ∫₀^{T/2} x/(2T²) dx = T²/(4·2T²)·... Let T=1: ∫₀^{0.5} x/2 dx = [x²/4]₀^{0.5} = 1/16. Total = 2/16 = 1/8", "marks": 2 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "State the Central Limit Theorem for the sample mean. A factory produces items with weight X ~ Exp(1/50) (mean 50g, SD 50g). A box contains 100 items. Use the CLT to approximate P(total weight > 5100g).",
+          "markscheme": [
+            { "text": "CLT: X̄_n = (X₁+...+X_n)/n → N(μ, σ²/n) in distribution. Sum S_n → N(nμ, nσ²)", "marks": 1 },
+            { "text": "S₁₀₀ ≈ N(100·50, 100·50²) = N(5000, 250000). SD(S₁₀₀) = 500", "marks": 1 },
+            { "text": "P(S₁₀₀ > 5100) = P(Z > (5100−5000)/500) = P(Z > 0.2) ≈ 1−Φ(0.2) ≈ 1−0.579 = 0.421", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "A standard result is that if X ~ N(0,1) and Y ~ N(0,1) independently, then X + Y ~ N(0,2). Verify this using the moment generating function (MGF). State the MGF of N(μ, σ²) and use it.",
+          "markscheme": [
+            { "text": "MGF of N(μ,σ²): M_X(t) = exp(μt + σ²t²/2). For N(0,1): M(t) = exp(t²/2)", "marks": 1 },
+            { "text": "X+Y independent: M_{X+Y}(t) = M_X(t)·M_Y(t) = exp(t²/2)·exp(t²/2) = exp(t²)", "marks": 1 },
+            { "text": "exp(t²) = exp(0·t + 2·t²/2) is the MGF of N(0,2). Since MGFs determine distributions uniquely, X+Y ~ N(0,2) ✓", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prob-cont-d5b",
+      "topic": "continuous-random-variables",
+      "topicTitle": "Continuous Random Variables",
+      "difficulty": 5,
+      "title": "Exponential distribution and applications",
+      "totalMarks": 12,
+      "prompt": "This question concerns the Exponential distribution in applications.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Components in a system have lifetimes T₁, T₂, ..., T_n that are i.i.d. Exp(λ). For a series system (fails when any component fails), find the distribution of the system lifetime T = min(T₁,...,T_n) and state E[T].",
+          "markscheme": [
+            { "text": "P(T > t) = P(T₁>t, ..., T_n>t) = P(T₁>t)^n = e^{−nλt} (by independence)", "marks": 1 },
+            { "text": "T ~ Exp(nλ) — the minimum of n i.i.d. Exp(λ) is Exp(nλ)", "marks": 1 },
+            { "text": "E[T] = 1/(nλ) — the more components, the shorter the expected system lifetime", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "For a parallel system (fails when all components fail), find P(T_sys > t) where T_sys = max(T₁,...,T_n). Derive E[T_sys] for n=2 using E[max(T₁,T₂)] = E[T₁] + E[T₂] − E[min(T₁,T₂)].",
+          "markscheme": [
+            { "text": "P(T_sys > t) = 1 − P(T_sys ≤ t) = 1 − P(T₁≤t)^n = 1 − (1−e^{−λt})^n", "marks": 1 },
+            { "text": "E[max(T₁,T₂)] = E[T₁]+E[T₂]−E[min(T₁,T₂)] = 1/λ + 1/λ − 1/(2λ) = 3/(2λ)", "marks": 1 },
+            { "text": "With 2 parallel components, expected lifetime = 3/(2λ) > 1/λ (single component) — redundancy improves reliability", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "A random variable X has CDF F(x). If U ~ U(0,1), show that X = F^{−1}(U) has CDF F (the inverse transform method). Why is this useful for simulation?",
+          "markscheme": [
+            { "text": "P(F^{−1}(U) ≤ x) = P(U ≤ F(x)) = F(x) (since U ~ U(0,1) and F is non-decreasing, F(U) ≤ F(x) iff U ≤ F(x))", "marks": 2 },
+            { "text": "Simulation: can generate X from any distribution by (1) generating U ~ U(0,1), then (2) computing X = F^{−1}(U). Only need to implement F^{−1}. Used to simulate Exponential: X = −(1/λ)log(U)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Why does the Normal distribution arise so frequently in nature? Give two examples from different fields and explain the underlying mechanism via the CLT.",
+          "markscheme": [
+            { "text": "CLT: sum/average of many independent random variables (even non-Normal ones) converges to Normal. Appears whenever a quantity is influenced by many small independent factors", "marks": 1 },
+            { "text": "Example 1: human height — determined by many genetic and environmental factors, each contributing a small random increment → approximately Normal. Example 2: measurement errors — sum of many small instrument and human errors → Normal (motivation for Gauss's method of least squares)", "marks": 1 },
+            { "text": "Also: financial returns (sum of many small price changes), thermal noise in electronics (sum of many electron collisions). The key assumption is independence and similar magnitudes of contributions", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prob-joint-d1",
+      "topic": "marginals-and-joint-distributions",
+      "topicTitle": "Marginals and Joint Distributions",
+      "difficulty": 1,
+      "title": "Joint distribution definitions",
+      "totalMarks": 3,
+      "prompt": "Define the joint PMF for two discrete random variables X and Y. Define the marginal PMF of X. State the relationship between the joint PMF and the marginals. Give a 2×2 example joint distribution table.",
+      "markscheme": [
+        { "text": "Joint PMF: p_{X,Y}(x,y) = P(X=x, Y=y). Must satisfy: p(x,y) ≥ 0 and Σ_{x,y} p(x,y) = 1", "marks": 1 },
+        { "text": "Marginal PMF of X: p_X(x) = Σ_y p_{X,Y}(x,y). Marginalize by summing over the other variable (marginalise out Y)", "marks": 1 },
+        { "text": "Example: X ∈ {0,1}, Y ∈ {0,1}. p(0,0)=0.3, p(0,1)=0.2, p(1,0)=0.1, p(1,1)=0.4. Marginal P_X(0)=0.5, P_X(1)=0.5. Marginal P_Y(0)=0.4, P_Y(1)=0.6", "marks": 1 }
+      ]
+    },
+    {
+      "id": "prob-joint-d2",
+      "topic": "marginals-and-joint-distributions",
+      "topicTitle": "Marginals and Joint Distributions",
+      "difficulty": 2,
+      "title": "Joint to marginal and conditional",
+      "totalMarks": 4,
+      "prompt": "Two discrete random variables X (values 1,2) and Y (values 1,2,3) have joint PMF given by: p(1,1)=0.1, p(1,2)=0.2, p(1,3)=0.1, p(2,1)=0.2, p(2,2)=0.3, p(2,3)=0.1.<br>(i) Find the marginal PMFs of X and Y.<br>(ii) Find P(X=2 | Y=2).<br>(iii) Are X and Y independent? Justify briefly.",
+      "markscheme": [
+        { "text": "Marginal P_X: P(X=1) = 0.4, P(X=2) = 0.6. Marginal P_Y: P(Y=1)=0.3, P(Y=2)=0.5, P(Y=3)=0.2", "marks": 1 },
+        { "text": "P(X=2|Y=2) = P(X=2,Y=2)/P(Y=2) = 0.3/0.5 = 0.6", "marks": 1 },
+        { "text": "Check independence: P(X=1,Y=1)=0.1; P(X=1)·P(Y=1) = 0.4×0.3 = 0.12 ≠ 0.1 → NOT independent", "marks": 2 }
+      ]
+    },
+    {
+      "id": "prob-joint-d3",
+      "topic": "marginals-and-joint-distributions",
+      "topicTitle": "Marginals and Joint Distributions",
+      "difficulty": 3,
+      "title": "Continuous joint distribution",
+      "totalMarks": 5,
+      "prompt": "Two continuous random variables X and Y have joint PDF f(x,y) = 6xy for 0 ≤ x ≤ 1, 0 ≤ y ≤ 1 (and 0 otherwise, but note this doesn't integrate to 1 — use f(x,y) = 6x for 0≤x≤1, 0≤y≤x instead).<br>Actually use: f(x,y) = 2 for 0 ≤ y ≤ x ≤ 1. Find: (i) the marginal PDF of X; (ii) the marginal PDF of Y; (iii) P(X > 0.5).",
+      "hint": "For the marginal of X: integrate over the range of y (0 to x). For the marginal of Y: integrate over the range of x (y to 1).",
+      "markscheme": [
+        { "text": "(i) f_X(x) = ∫₀^x 2 dy = 2x for 0≤x≤1. Verify: ∫₀¹ 2x dx = 1 ✓", "marks": 1 },
+        { "text": "(ii) f_Y(y) = ∫_y^1 2 dx = 2(1−y) for 0≤y≤1. Verify: ∫₀¹ 2(1−y) dy = 1 ✓", "marks": 2 },
+        { "text": "(iii) P(X > 0.5) = ∫_{0.5}^1 2x dx = [x²]_{0.5}^1 = 1 − 0.25 = 0.75", "marks": 2 }
+      ]
+    },
+    {
+      "id": "prob-joint-d4",
+      "topic": "marginals-and-joint-distributions",
+      "topicTitle": "Marginals and Joint Distributions",
+      "difficulty": 4,
+      "title": "Conditional distributions and expectations",
+      "totalMarks": 6,
+      "prompt": "Given the joint PDF f(x,y) = 2 for 0≤y≤x≤1 from above:<br>(i) Find the conditional PDF of Y given X=x.<br>(ii) Find E[Y | X=x].<br>(iii) Using the tower property E[Y] = E[E[Y|X]], verify that E[Y] = 1/3.<br>(iv) Check by computing E[Y] directly from the marginal f_Y(y) = 2(1−y).",
+      "markscheme": [
+        { "text": "(i) f_{Y|X=x}(y) = f(x,y)/f_X(x) = 2/(2x) = 1/x for 0≤y≤x. This is U(0,x)", "marks": 2 },
+        { "text": "(ii) E[Y|X=x] = x/2 (mean of U(0,x))", "marks": 1 },
+        { "text": "(iii) E[Y] = E[E[Y|X]] = E[X/2] = (1/2)E[X] = (1/2)∫₀¹ x·2x dx = (1/2)·2∫₀¹x²dx = (1/2)·2/3 = 1/3", "marks": 2 },
+        { "text": "(iv) Direct: E[Y] = ∫₀¹ y·2(1-y) dy = 2∫₀¹(y-y²)dy = 2[1/2-1/3] = 2·1/6 = 1/3 ✓", "marks": 1 }
+      ]
+    },
+    {
+      "id": "prob-joint-d5a",
+      "topic": "marginals-and-joint-distributions",
+      "topicTitle": "Marginals and Joint Distributions",
+      "difficulty": 5,
+      "title": "Joint distributions: Tripos style",
+      "totalMarks": 13,
+      "prompt": "This question concerns joint distributions of two random variables.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "X and Y are jointly distributed with joint PMF p(x,y) = c(x+y) for x ∈ {1,2} and y ∈ {1,2}. (i) Find c. (ii) Find marginals P_X and P_Y. (iii) Are X and Y independent?",
+          "markscheme": [
+            { "text": "Sum: c(2+3+3+4)=12c=1 → c=1/12", "marks": 1 },
+            { "text": "P_X(1)=p(1,1)+p(1,2)=(2+3)/12=5/12; P_X(2)=7/12. P_Y(1)=5/12; P_Y(2)=7/12 (symmetric)", "marks": 1 },
+            { "text": "P(X=1,Y=1)=2/12=1/6. P_X(1)P_Y(1)=25/144 ≠ 1/6=24/144. Not independent", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "X ~ U(0,1) and Y = X² (deterministic function of X). (i) Find the CDF and PDF of Y. (ii) Find E[Y] two ways: via the PDF of Y and via LOTUS. (iii) Does the pair (X,Y) have a joint PDF? Explain.",
+          "markscheme": [
+            { "text": "(i) F_Y(y) = P(X²≤y) = P(X≤√y) = √y for 0≤y≤1. f_Y(y) = 1/(2√y) for 0<y≤1", "marks": 1 },
+            { "text": "(ii) Via f_Y: E[Y]=∫₀¹ y·(1/(2√y))dy = ∫₀¹ √y/2 dy = [y^{3/2}/3]₀¹ = 1/3. Via LOTUS: E[X²]=∫₀¹ x²dx = 1/3 ✓", "marks": 2 },
+            { "text": "(iii) No — (X,Y) does not have a joint PDF. All probability mass lies on the curve y=x² in ℝ², which has measure zero. The pair is perfectly dependent (Y is a function of X)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "The joint PDF of (X,Y) is f(x,y) = e^{−x−y} for x,y ≥ 0. (i) Show X and Y are independent. (ii) Find P(X+Y ≤ 1).",
+          "markscheme": [
+            { "text": "(i) f(x,y) = e^{−x}·e^{−y} = f_X(x)·f_Y(y) where f_X(x)=e^{−x} and f_Y(y)=e^{−y} (both Exp(1)). Joint density factorises → independent", "marks": 1 },
+            { "text": "(ii) P(X+Y≤1) = ∫₀¹∫₀^{1−x} e^{−x−y} dy dx. Inner: ∫₀^{1−x} e^{−y}dy = 1−e^{−(1−x)}", "marks": 1 },
+            { "text": "P = ∫₀¹ e^{−x}(1−e^{−(1−x)})dx = ∫₀¹(e^{−x}−e^{−1})dx = [−e^{−x}]₀¹ − e^{−1} = (1−e^{−1})−e^{−1} = 1−2e^{−1} ≈ 0.264", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "Define the joint CDF F(a,b) = P(X≤a, Y≤b). How do you recover the joint PDF from F? What is the marginal CDF F_X(a) in terms of F?",
+          "markscheme": [
+            { "text": "f(x,y) = ∂²F/∂x∂y (mixed second partial derivative, where it exists)", "marks": 1 },
+            { "text": "F_X(a) = P(X≤a) = P(X≤a, Y<∞) = lim_{b→∞} F(a,b) = F(a,∞)", "marks": 1 },
+            { "text": "Similarly F_Y(b) = F(∞,b). Independence iff F(a,b) = F_X(a)·F_Y(b) for all a,b", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prob-joint-d5b",
+      "topic": "marginals-and-joint-distributions",
+      "topicTitle": "Marginals and Joint Distributions",
+      "difficulty": 5,
+      "title": "Bivariate Normal and sums of RVs",
+      "totalMarks": 12,
+      "prompt": "This question concerns distributions of sums of random variables.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "If X ~ N(μ₁,σ₁²) and Y ~ N(μ₂,σ₂²) are independent, what is the distribution of X+Y? State the result and briefly justify using moment generating functions.",
+          "markscheme": [
+            { "text": "X+Y ~ N(μ₁+μ₂, σ₁²+σ₂²)", "marks": 1 },
+            { "text": "MGF of X: e^{μ₁t+σ₁²t²/2}. MGF of Y: e^{μ₂t+σ₂²t²/2}. Product: e^{(μ₁+μ₂)t+(σ₁²+σ₂²)t²/2}", "marks": 1 },
+            { "text": "This is the MGF of N(μ₁+μ₂, σ₁²+σ₂²). MGFs uniquely determine distributions → result follows", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "The convolution formula: for independent X and Y with PDFs f_X and f_Y, show that the PDF of Z=X+Y is f_Z(z) = ∫ f_X(x)f_Y(z−x)dx. Apply this to find the PDF of the sum of two independent U(0,1) random variables.",
+          "markscheme": [
+            { "text": "F_Z(z)=P(X+Y≤z)=∫∫_{x+y≤z}f_X(x)f_Y(y)dxdy=∫f_X(x)(∫_{−∞}^{z−x}f_Y(y)dy)dx=∫f_X(x)F_Y(z−x)dx. Differentiate: f_Z = ∫f_X(x)f_Y(z−x)dx", "marks": 1 },
+            { "text": "U(0,1)+U(0,1): f_Z(z)=∫₀¹ f_X(x)·𝟏_{0≤z−x≤1}dx. For 0≤z≤1: integrate x from 0 to z → f_Z(z)=z", "marks": 1 },
+            { "text": "For 1<z≤2: integrate x from z−1 to 1 → f_Z(z)=2−z. Triangular distribution on [0,2]", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "In a portfolio, two stock returns X ~ N(0.05, 0.01) and Y ~ N(0.03, 0.04) have correlation ρ = 0.3. The portfolio return is R = 0.5X + 0.5Y. Find E[R] and Var(R).",
+          "markscheme": [
+            { "text": "E[R] = 0.5E[X] + 0.5E[Y] = 0.5×0.05 + 0.5×0.03 = 0.04", "marks": 1 },
+            { "text": "Var(R) = 0.25Var(X) + 0.25Var(Y) + 2×0.5×0.5×Cov(X,Y)", "marks": 1 },
+            { "text": "Cov(X,Y) = ρ·σ_X·σ_Y = 0.3×0.1×0.2 = 0.006. Var(R) = 0.25×0.01 + 0.25×0.04 + 0.5×0.006 = 0.0025+0.01+0.003 = 0.0155", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "State the law of total expectation and law of total variance. Use them to find E[Y] and Var(Y) where Y|X=x ~ Poisson(x) and X ~ Exp(1).",
+          "markscheme": [
+            { "text": "E[Y] = E[E[Y|X]] = E[X] = 1/1 = 1 (since E[Y|X=x]=x and E[X]=1)", "marks": 1 },
+            { "text": "Law of total variance: Var(Y) = E[Var(Y|X)] + Var(E[Y|X]) = E[X] + Var(X) (since Var(Poisson(x))=x, Var(X)=1/λ²=1)", "marks": 1 },
+            { "text": "Var(Y) = 1 + 1 = 2", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prob-indep-d1",
+      "topic": "independence-covariance-and-correlation",
+      "topicTitle": "Independence, Covariance and Correlation",
+      "difficulty": 1,
+      "title": "Covariance definition and formula",
+      "totalMarks": 3,
+      "prompt": "Define Cov(X,Y). State the alternative formula Cov(X,Y) = E[XY] − E[X]E[Y]. What does a positive/negative/zero covariance imply? What is Cov(X,X)?",
+      "markscheme": [
+        { "text": "Cov(X,Y) = E[(X−E[X])(Y−E[Y])]. Alternative: Cov(X,Y) = E[XY] − E[X]E[Y]", "marks": 1 },
+        { "text": "Positive: X above mean tends to coincide with Y above mean (they move together). Negative: opposite directions. Zero: uncorrelated (no linear relationship)", "marks": 1 },
+        { "text": "Cov(X,X) = E[(X−E[X])²] = Var(X)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "prob-indep-d2",
+      "topic": "independence-covariance-and-correlation",
+      "topicTitle": "Independence, Covariance and Correlation",
+      "difficulty": 2,
+      "title": "Correlation coefficient and its bounds",
+      "totalMarks": 4,
+      "prompt": "(i) Define the correlation coefficient ρ(X,Y) and state why it is preferred over covariance for comparing relationships. (ii) Prove that ρ(X,Y) ≥ −1 using the fact that Var(X/σ_X + Y/σ_Y) ≥ 0. (iii) State the condition under which ρ = 1 or ρ = −1.",
+      "markscheme": [
+        { "text": "ρ(X,Y) = Cov(X,Y)/(σ_X σ_Y). Preferred: dimensionless and scale-invariant — ρ(αX, βY) = ρ(X,Y) for α,β>0", "marks": 1 },
+        { "text": "0 ≤ Var(X/σ_X + Y/σ_Y) = 1 + 1 + 2ρ = 2(1+ρ) → ρ ≥ −1. Similarly 0 ≤ Var(X/σ_X − Y/σ_Y) = 2(1−ρ) → ρ ≤ 1", "marks": 2 },
+        { "text": "ρ=1 iff Y = aX+b with a>0 (perfect positive linear relationship). ρ=−1 iff Y = aX+b with a<0", "marks": 1 }
+      ]
+    },
+    {
+      "id": "prob-indep-d3",
+      "topic": "independence-covariance-and-correlation",
+      "topicTitle": "Independence, Covariance and Correlation",
+      "difficulty": 3,
+      "title": "Independence vs uncorrelated: counterexample",
+      "totalMarks": 5,
+      "prompt": "(i) Prove that if X and Y are independent, then Cov(X,Y) = 0 (discrete case).<br>(ii) Show the converse is false using the counterexample X uniform on {−1,0,1} and Y = 1 if X=0, Y=0 otherwise. Show Cov(X,Y)=0 but X,Y are not independent.<br>(iii) What does this tell us about the limitations of covariance/correlation?",
+      "markscheme": [
+        { "text": "(i) E[XY] = Σ_{x,y} xy·P(X=x,Y=y) = Σ_{x,y} xy·P(X=x)P(Y=y) = (Σ_x x·P(X=x))(Σ_y y·P(Y=y)) = E[X]E[Y] → Cov=0", "marks": 2 },
+        { "text": "(ii) XY=0 always (either X=0 giving Y=1 but XY=0, or X≠0 giving Y=0). E[XY]=0. E[X]=0 by symmetry. Cov=0−0=0. But P(X=0,Y=1)=1/3 while P(X=0)P(Y=1)=(1/3)(1/3)=1/9≠1/3. Not independent", "marks": 2 },
+        { "text": "(iii) Covariance/correlation only detects linear dependence. Nonlinear (or higher-order) dependence — where Y depends on X but via a nonlinear function — is invisible to ρ", "marks": 1 }
+      ]
+    },
+    {
+      "id": "prob-indep-d4",
+      "topic": "independence-covariance-and-correlation",
+      "topicTitle": "Independence, Covariance and Correlation",
+      "difficulty": 4,
+      "title": "Variance of sums and the Buffon's Needle problem",
+      "totalMarks": 6,
+      "prompt": "(i) State the general formula for Var(X+Y). Use it to show that if X ~ Bernoulli(p) and Y ~ Bernoulli(q) are independent and Z = X+Y, then Var(Z) = p(1-p) + q(1-q).<br>(ii) Buffon's Needle: a needle of length L ≤ D is dropped randomly on a floor with parallel lines distance D apart. Let X be the distance from the needle's centre to the nearest line (X ~ U[0,D/2]) and θ be the angle with the lines (θ ~ U[0,π/2]), independent. Show P(needle crosses a line) = 2L/(πD).<br>State how this could estimate π.",
+      "hint": "For (ii): the needle crosses a line iff X < (L/2)cos(θ). Integrate the joint density over the crossing region.",
+      "markscheme": [
+        { "text": "(i) Var(X+Y) = Var(X)+Var(Y)+2Cov(X,Y). Independent → Cov=0 → Var(Z)=p(1-p)+q(1-q)", "marks": 1 },
+        { "text": "(ii) Joint density: f_X(x)=2/D on [0,D/2], f_θ(θ)=2/π on [0,π/2]. Joint: f(x,θ)=4/(πD)", "marks": 1 },
+        { "text": "P(X<(L/2)cosθ) = ∫₀^{π/2}∫₀^{(L/2)cosθ} (4/(πD)) dx dθ = (4/(πD))∫₀^{π/2}(L/2)cosθ dθ = (4/(πD))·(L/2)·[sinθ]₀^{π/2} = (4/(πD))·(L/2)·1 = 2L/(πD)", "marks": 3 },
+        { "text": "Estimate π: throw n needles, count k crossings. p̂ = k/n ≈ 2L/(πD) → π ≈ 2Ln/(kD). This is a Monte Carlo method", "marks": 1 }
+      ]
+    },
+    {
+      "id": "prob-indep-d5a",
+      "topic": "independence-covariance-and-correlation",
+      "topicTitle": "Independence, Covariance and Correlation",
+      "difficulty": 5,
+      "title": "Covariance in portfolio and random sums",
+      "totalMarks": 12,
+      "prompt": "This question concerns covariance and its applications.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Prove the bilinearity of covariance: (i) Cov(aX+b, Y) = a·Cov(X,Y); (ii) Cov(X+Y, Z) = Cov(X,Z)+Cov(Y,Z). Use these to show Var(X−Y) = Var(X)+Var(Y)−2Cov(X,Y).",
+          "markscheme": [
+            { "text": "(i) Cov(aX+b,Y) = E[(aX+b−E[aX+b])(Y−E[Y])] = E[a(X−E[X])(Y−E[Y])] = a·Cov(X,Y)", "marks": 1 },
+            { "text": "(ii) Cov(X+Y,Z) = E[(X+Y−E[X+Y])(Z−E[Z])] = E[(X−E[X]+Y−E[Y])(Z−E[Z])] = Cov(X,Z)+Cov(Y,Z)", "marks": 1 },
+            { "text": "Var(X−Y) = Cov(X−Y,X−Y) = Cov(X,X)−Cov(X,Y)−Cov(Y,X)+Cov(Y,Y) = Var(X)+Var(Y)−2Cov(X,Y)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "A portfolio consists of n stocks with returns X₁,...,Xₙ, each with mean μ and variance σ², and pairwise covariance ρσ² (correlation ρ). The portfolio return is R = (1/n)∑Xᵢ. Find E[R] and Var(R). What happens as n→∞ for ρ>0?",
+          "markscheme": [
+            { "text": "E[R] = μ (by linearity)", "marks": 1 },
+            { "text": "Var(R) = (1/n²)[n·σ² + n(n−1)·ρσ²] = σ²/n + (n−1)ρσ²/n = σ²(1−ρ)/n + ρσ²", "marks": 1 },
+            { "text": "As n→∞: Var(R) → ρσ². The 'systematic risk' ρσ² cannot be diversified away; only the 'idiosyncratic risk' (1−ρ)σ²/n vanishes. Key insight in Modern Portfolio Theory", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "X₁,...,Xₙ are i.i.d. Bernoulli(p). Define S = X₁+...+Xₙ. (i) Compute Cov(Xᵢ, S). (ii) Compute Corr(Xᵢ, S) = ρ(Xᵢ,S). (iii) Does ρ(Xᵢ,S) increase or decrease as n increases? Interpret.",
+          "markscheme": [
+            { "text": "(i) Cov(Xᵢ,S) = Cov(Xᵢ, Xᵢ+Σ_{j≠i}Xⱼ) = Var(Xᵢ) + 0 = p(1−p) (by independence of Xⱼ for j≠i)", "marks": 1 },
+            { "text": "(ii) σ(Xᵢ)=√(p(1−p)); σ(S)=√(np(1−p)). ρ(Xᵢ,S) = p(1−p)/(√(p(1−p))·√(np(1−p))) = 1/√n", "marks": 1 },
+            { "text": "(iii) Decreases as n grows (1/√n→0). Each individual component becomes less correlated with the total as n grows — consistent with law of large numbers", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "State Cauchy-Schwarz inequality for random variables: |E[XY]|² ≤ E[X²]E[Y²]. Use it to prove |ρ(X,Y)| ≤ 1 directly.",
+          "markscheme": [
+            { "text": "Cauchy-Schwarz: for any RVs X,Y, |E[XY]|² ≤ E[X²]E[Y²]", "marks": 1 },
+            { "text": "Apply to centred variables X−μ_X and Y−μ_Y: |Cov(X,Y)|² = |E[(X−μ_X)(Y−μ_Y)]|² ≤ E[(X−μ_X)²]E[(Y−μ_Y)²] = Var(X)Var(Y)", "marks": 1 },
+            { "text": "|Cov(X,Y)| ≤ √(Var(X))√(Var(Y)) = σ_X σ_Y → |ρ| = |Cov(X,Y)|/(σ_X σ_Y) ≤ 1 ✓. Equality iff Y−μ_Y = c(X−μ_X) a.s. (perfect linear relationship)", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prob-indep-d5b",
+      "topic": "independence-covariance-and-correlation",
+      "topicTitle": "Independence, Covariance and Correlation",
+      "difficulty": 5,
+      "title": "Tripos: Buffon, covariance structure, and CLT",
+      "totalMarks": 13,
+      "prompt": "This question concerns independence and correlation.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Recall Buffon's needle: P(crossing) = 2L/(πD). An experiment drops n=1000 needles (L=D=1) and observes k crossings. Estimate π. Find the standard error of your π estimate in terms of n and the true crossing probability p=2/π.",
+          "markscheme": [
+            { "text": "p̂ = k/n. π estimate: π̂ = 2/p̂ = 2n/k", "marks": 1 },
+            { "text": "By delta method: Var(π̂) ≈ (dπ̂/dp)²·Var(p̂). dπ̂/dp = −2/p². Var(p̂)=p(1−p)/n", "marks": 1 },
+            { "text": "SE(π̂) ≈ (2/p²)·√(p(1−p)/n). With p=2/π≈0.637: SE ≈ (π²/2)·√((2/π)(1−2/π)/n) ≈ 1.16/√n. For n=1000: SE≈0.037", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Two random variables X and Y are said to be conditionally independent given Z if P(X∈A, Y∈B | Z=z) = P(X∈A|Z=z)P(Y∈B|Z=z) for all A,B,z. Give an example where X and Y are (i) independent but not conditionally independent given Z; (ii) dependent but conditionally independent given Z.",
+          "markscheme": [
+            { "text": "(i) X=fair coin flip, Y=fair coin flip (independent). Z=X⊕Y (XOR). Given Z=0, knowing X determines Y → not conditionally independent given Z", "marks": 2 },
+            { "text": "(ii) X=symptom A, Y=symptom B (both caused by disease Z). Marginally X and Y are correlated (both more common when sick). Given Z (disease status known), X and Y become independent (naive Bayes assumption). This is the hidden common cause structure", "marks": 2 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "The sample variance S² = (1/(n-1))Σ(Xᵢ − X̄)² is an unbiased estimator of σ². (i) Compute E[Σ(Xᵢ−X̄)²] by writing Xᵢ−X̄ = (Xᵢ−μ)−(X̄−μ). (ii) Why is the denominator n-1 rather than n?",
+          "markscheme": [
+            { "text": "Σ(Xᵢ−X̄)² = Σ(Xᵢ−μ)² − n(X̄−μ)². E[Σ(Xᵢ−μ)²]=nσ². E[n(X̄−μ)²]=n·Var(X̄)=n·σ²/n=σ²", "marks": 1 },
+            { "text": "E[Σ(Xᵢ−X̄)²] = nσ²−σ² = (n-1)σ²", "marks": 1 },
+            { "text": "Denominator n-1: ensures E[S²]=σ² (unbiasedness). Using n would give biased estimator. The n-1 corrects for 'losing one degree of freedom' by estimating μ with X̄", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "The correlation coefficient ρ̂ = Σ(Xᵢ−X̄)(Yᵢ−Ȳ) / √(Σ(Xᵢ−X̄)²·Σ(Yᵢ−Ȳ)²) is the sample correlation. (i) Why is −1 ≤ ρ̂ ≤ 1? (ii) A study finds ρ̂ = 0.9 between ice cream sales and drowning rates. Is there a causal relationship? (iii) What statistical concept explains this?",
+          "markscheme": [
+            { "text": "(i) By Cauchy-Schwarz on vectors: |Σ(Xᵢ−X̄)(Yᵢ−Ȳ)| ≤ √(Σ(Xᵢ−X̄)²)·√(Σ(Yᵢ−Ȳ)²) → |ρ̂| ≤ 1", "marks": 1 },
+            { "text": "(ii) No causal relationship — correlation does not imply causation", "marks": 1 },
+            { "text": "(iii) Confounding variable: hot weather (summer) causes both more ice cream sales AND more swimming → more drownings. The common cause (temperature/season) creates apparent correlation between two otherwise unrelated variables", "marks": 1 }
+          ]
+        }
+      ]
+    }
   ]
 }

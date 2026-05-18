@@ -1,1 +1,553 @@
-{ "module": "interaction-design", "title": "Interaction Design — Practice Questions", "questions": [] }
+{
+  "module": "interaction-design",
+  "title": "Interaction Design — Practice Questions",
+  "questions": [
+    {
+      "id": "ixd-uxd-d1",
+      "topic": "intro-to-ixd-ucd-user-research-methods",
+      "topicTitle": "Intro to IxD, UCD, User Research Methods",
+      "difficulty": 1,
+      "title": "UCD definition and principles",
+      "totalMarks": 3,
+      "prompt": "Define User-Centred Design (UCD). State three core principles of UCD and explain why placing users at the centre improves software quality.",
+      "markscheme": [
+        { "text": "UCD: a design philosophy and process where user needs, wants, and limitations are given extensive attention at each stage of design. Users are consulted throughout, not just at the end", "marks": 1 },
+        { "text": "Three principles (any three): (1) early focus on users and tasks; (2) empirical measurement — testing with real users; (3) iterative design — design, test, refine, repeat; (4) multi-disciplinary team", "marks": 1 },
+        { "text": "Improves quality: discovers usability problems early (cheaper to fix); ensures product solves real user problems (not assumed ones); reduces costly late-stage redesign; increases user adoption and satisfaction", "marks": 1 }
+      ]
+    },
+    {
+      "id": "ixd-uxd-d2",
+      "topic": "intro-to-ixd-ucd-user-research-methods",
+      "topicTitle": "Intro to IxD, UCD, User Research Methods",
+      "difficulty": 2,
+      "title": "User research methods",
+      "totalMarks": 4,
+      "prompt": "Describe four user research methods used in interaction design. For each, state whether it is qualitative or quantitative, and give one advantage and one limitation.",
+      "markscheme": [
+        { "text": "Interviews: qualitative; rich detailed data about motivations; time-consuming, small sample, potential interviewer bias", "marks": 1 },
+        { "text": "Surveys/questionnaires: quantitative; large sample, quick; surface-level, can't probe unexpected responses", "marks": 1 },
+        { "text": "Observational studies/contextual inquiry: qualitative; reveals actual behaviour (not self-reported); time-intensive, observer effect", "marks": 1 },
+        { "text": "Usability testing: mix; direct evidence of real problems; may be artificial lab setting, small n. Also valid: diary studies, focus groups, analytics", "marks": 1 }
+      ]
+    },
+    {
+      "id": "ixd-uxd-d3",
+      "topic": "intro-to-ixd-ucd-user-research-methods",
+      "topicTitle": "Intro to IxD, UCD, User Research Methods",
+      "difficulty": 3,
+      "title": "Personas and scenarios",
+      "totalMarks": 5,
+      "prompt": "Explain the concepts of personas and scenarios in UCD. Describe how personas are created from user research data. Design a persona for a mobile banking app user and write one scenario showing how they would use the app.",
+      "markscheme": [
+        { "text": "Persona: a fictional but research-grounded archetype representing a key user group, with goals, behaviours, demographics, pain points. Not a real person but embodies patterns from real users", "marks": 1 },
+        { "text": "Creation: gather data via interviews/surveys/observations; identify patterns and clusters; synthesise into 3-5 distinct archetypes; give each a name, photo, narrative", "marks": 1 },
+        { "text": "Scenario: a narrative describing a persona completing a specific task in context. Shows how the system fits into their life and reveals design requirements", "marks": 1 },
+        { "text": "Example persona: Sarah, 28, junior doctor, time-poor, uses phone between ward rounds, needs quick balance checks and fast transfers. Frustrated by long login flows", "marks": 1 },
+        { "text": "Scenario: Sarah has 5 minutes between rounds. She needs to pay rent. She opens the app, uses biometric login (1s), finds payees in Recent list, transfers £800, gets confirmation, closes app. Requirement: biometric auth and recents list are critical", "marks": 1 }
+      ]
+    },
+    {
+      "id": "ixd-uxd-d4",
+      "topic": "intro-to-ixd-ucd-user-research-methods",
+      "topicTitle": "Intro to IxD, UCD, User Research Methods",
+      "difficulty": 4,
+      "title": "Iterative design process",
+      "totalMarks": 6,
+      "prompt": "(i) Describe the iterative design cycle in UCD (at least four stages).<br>(ii) What is the difference between formative and summative evaluation?<br>(iii) A design team has completed two iterations of a mobile app and found that users struggle to find the settings menu. Describe the steps they should take in the next iteration.",
+      "markscheme": [
+        { "text": "Iterative cycle: (1) Understand/Research — gather user needs; (2) Specify requirements — functional and user goals; (3) Design — create concepts, wireframes, prototypes; (4) Evaluate — test with users; (5) Iterate — refine based on findings. Cycle repeats until quality threshold met", "marks": 2 },
+        { "text": "Formative: evaluation during design to improve it (e.g. usability testing of prototype). Summative: evaluation at the end to measure final quality (e.g. task completion rate on released product)", "marks": 2 },
+        { "text": "Next iteration: (1) Analyse findings — where exactly do users fail? (hamburger menu not recognised? placed unexpectedly?); (2) Explore solutions (relocate to bottom nav, add label, use gear icon with text); (3) Prototype the revised placement; (4) Usability test with 5 new users; (5) Measure if finding-time improves", "marks": 2 }
+      ]
+    },
+    {
+      "id": "ixd-uxd-d5a",
+      "topic": "intro-to-ixd-ucd-user-research-methods",
+      "topicTitle": "Intro to IxD, UCD, User Research Methods",
+      "difficulty": 5,
+      "title": "Designing a UCD process for a new product",
+      "totalMarks": 12,
+      "prompt": "This question concerns the user-centred design process.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "A company wants to build a revision app for A-level students. Describe the user research phase: what methods would you use, what questions would you ask, and what would you hope to learn?",
+          "markscheme": [
+            { "text": "Methods: semi-structured interviews with 8-10 students; diary study (1 week of revision tracking); contextual observation of a revision session", "marks": 1 },
+            { "text": "Questions: What subjects do you find hardest? How do you currently revise? What tools do you use? When and where do you revise? What frustrates you most?", "marks": 1 },
+            { "text": "Hope to learn: current pain points in revision, device preferences, time patterns, learning styles, what features would genuinely help vs nice-to-have", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "What is a 'jobs-to-be-done' framework? How does it differ from a feature list? Apply it to the revision app.",
+          "markscheme": [
+            { "text": "JTBD: frames user needs as 'jobs' the product is hired to do — functional (help me learn faster), emotional (make me feel confident before exams), social (show I'm a diligent student). Focus on outcomes, not features", "marks": 1 },
+            { "text": "Vs feature list: a feature list is 'what the product does'; JTBD is 'what the user is trying to achieve'. Feature list leads to building things users don't need; JTBD leads to questioning why a feature exists", "marks": 1 },
+            { "text": "Revision app JTBD: 'Help me learn a topic in 20 minutes'; 'Reassure me I've covered enough to pass'; 'Help me identify gaps I didn't know I had'. These drive feature decisions (timed sessions, progress tracking, adaptive testing)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Describe affinity diagramming as a technique for analysing qualitative user research data. Walk through the process.",
+          "markscheme": [
+            { "text": "Affinity diagramming: a technique for organising a large volume of qualitative data (observations, quotes, ideas) into grouped themes", "marks": 1 },
+            { "text": "Process: (1) Write each insight/observation on a separate note; (2) Individual sorting — group similar notes together without discussion; (3) Label each cluster with a theme; (4) Identify higher-order themes by clustering clusters; (5) Document and analyse", "marks": 1 },
+            { "text": "Output: a hierarchy of themes revealing patterns across users. Reveals what's important (large clusters) and unexpected insights. Example clusters for revision app: 'time management struggles', 'difficulty self-assessing knowledge', 'social pressure'", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "What is the difference between a need and a feature? Why is it important not to jump to solutions too early in the design process?",
+          "markscheme": [
+            { "text": "Need: an underlying user goal or problem (e.g. 'I need to know which topics I don't understand'). Feature: a specific implementation choice (e.g. 'a quiz feature'). Multiple features can address the same need", "marks": 1 },
+            { "text": "Jumping to solutions: teams may build the wrong thing (solving a problem users don't have); anchors on one solution, missing better alternatives; skips understanding the problem space", "marks": 1 },
+            { "text": "Double diamond model: first diverge to understand the problem (discover, define), then diverge again to generate solutions (develop, deliver). The 'problem space' phase is as important as the 'solution space' phase", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ixd-data-d1",
+      "topic": "user-research-data-analysis-keeping-the-user-in-mind",
+      "topicTitle": "User Research Data Analysis, Keeping the User in Mind",
+      "difficulty": 1,
+      "title": "Qualitative vs quantitative analysis",
+      "totalMarks": 3,
+      "prompt": "Distinguish qualitative and quantitative data in user research. Give two examples of each. Explain when you would use each type to answer a design question.",
+      "markscheme": [
+        { "text": "Qualitative: non-numerical, rich descriptions of behaviour and attitudes. Examples: interview transcripts, observations, think-aloud recordings, open survey responses", "marks": 1 },
+        { "text": "Quantitative: numerical, measurable. Examples: task completion rate, time-on-task, error rate, satisfaction score (Likert scale), A/B test conversion rates", "marks": 1 },
+        { "text": "Use qualitative to understand WHY (explore the problem space, generate hypotheses). Use quantitative to measure HOW MUCH (validate, compare, measure impact of changes). Most projects need both", "marks": 1 }
+      ]
+    },
+    {
+      "id": "ixd-data-d2",
+      "topic": "user-research-data-analysis-keeping-the-user-in-mind",
+      "topicTitle": "User Research Data Analysis, Keeping the User in Mind",
+      "difficulty": 2,
+      "title": "Usability metrics",
+      "totalMarks": 4,
+      "prompt": "Describe the three core usability metrics (effectiveness, efficiency, satisfaction) from ISO 9241. Give an example measurement for each in the context of a website checkout flow. What is the 'think-aloud' protocol and what does it reveal?",
+      "markscheme": [
+        { "text": "Effectiveness: whether users can complete tasks. Measure: task completion rate (e.g. % of users who successfully check out). Efficiency: resources required. Measure: time-on-task (e.g. average seconds to complete checkout)", "marks": 2 },
+        { "text": "Satisfaction: subjective user experience. Measure: post-task questionnaire (e.g. SUS — System Usability Scale, 0-100)", "marks": 1 },
+        { "text": "Think-aloud: users verbalise thoughts while performing tasks. Reveals: what users notice, misunderstand, or find confusing; their mental model vs the designer's model; specific points of confusion", "marks": 1 }
+      ]
+    },
+    {
+      "id": "ixd-data-d3",
+      "topic": "user-research-data-analysis-keeping-the-user-in-mind",
+      "topicTitle": "User Research Data Analysis, Keeping the User in Mind",
+      "difficulty": 3,
+      "title": "Card sorting",
+      "totalMarks": 5,
+      "prompt": "Explain card sorting as a UX research technique. Distinguish open and closed card sorting. A library website is being redesigned — describe how you would run a card sorting study, analyse the results, and apply the findings to the information architecture.",
+      "hint": "Think about what card sorting reveals and how it differs from other methods.",
+      "markscheme": [
+        { "text": "Card sorting: participants sort labelled cards (representing content items or features) into groups. Reveals users' mental model of how content should be organised", "marks": 1 },
+        { "text": "Open: participants create and name their own groups — reveals natural categorisation. Closed: participants sort cards into predefined categories — tests whether existing IA makes sense to users", "marks": 1 },
+        { "text": "Library study: create cards for each content type (events, e-books, catalogue search, membership, research guides...). Run open sort with ~15-20 participants. Analyse: create similarity matrix (how often each pair was grouped together); use cluster analysis to identify natural groupings", "marks": 2 },
+        { "text": "Apply to IA: use majority groupings to define navigation categories; items frequently grouped together → same section; items frequently isolated → need prominent placement. Validate with tree testing", "marks": 1 }
+      ]
+    },
+    {
+      "id": "ixd-data-d4",
+      "topic": "user-research-data-analysis-keeping-the-user-in-mind",
+      "topicTitle": "User Research Data Analysis, Keeping the User in Mind",
+      "difficulty": 4,
+      "title": "Communicating research findings",
+      "totalMarks": 6,
+      "prompt": "(i) Describe three artefacts for communicating user research findings to a design team and stakeholders.<br>(ii) How do you prioritise which usability problems to fix? Describe a severity rating system.<br>(iii) A stakeholder says 'users just need more training' when research shows the interface is confusing. How do you respond?",
+      "markscheme": [
+        { "text": "Artefacts: (1) Personas — condensed user archetypes; (2) User journey maps — visualise end-to-end experience with pain points and opportunities; (3) Research reports with quotes, video clips, and findings — evidence-based narrative", "marks": 2 },
+        { "text": "Severity rating (Nielsen's scale): 0 = not a usability problem; 1 = cosmetic only; 2 = minor (low priority); 3 = major (important to fix); 4 = catastrophic (must fix before release). Prioritise by frequency × severity. Fix 4s first", "marks": 2 },
+        { "text": "Response: present data — 'We tested with 8 representative users; 7 failed the task without any training. Training costs money and time; if the interface is confusing to new users, they may abandon it before getting help. Here's the specific issue and a proposed fix...' — use evidence, not opinion", "marks": 2 }
+      ]
+    },
+    {
+      "id": "ixd-data-d5a",
+      "topic": "user-research-data-analysis-keeping-the-user-in-mind",
+      "topicTitle": "User Research Data Analysis, Keeping the User in Mind",
+      "difficulty": 5,
+      "title": "Evaluating a design: usability study",
+      "totalMarks": 12,
+      "prompt": "This question concerns evaluating a user interface through a usability study.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Why does Jakob Nielsen argue that testing with 5 users finds 85% of usability problems? Under what conditions does this hold? What are the limitations?",
+          "markscheme": [
+            { "text": "Nielsen's finding: a 'discovery probability p' model — each new user discovers each problem independently with probability p≈0.31. With n users: 1−(1−p)^n → 1−(0.69)^5≈0.85 of problems found", "marks": 1 },
+            { "text": "Holds when: testing a single, homogeneous user group; typical usability problems; qualitative testing (think-aloud), not measuring task completion rates", "marks": 1 },
+            { "text": "Limitations: doesn't hold for heterogeneous user groups (may need different 5 per group); doesn't find rare/critical problems; doesn't give quantitative confidence intervals. For A/B testing or accessibility, larger samples needed", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Describe the System Usability Scale (SUS). What score constitutes 'good' usability? What is its main weakness?",
+          "markscheme": [
+            { "text": "SUS: 10-item Likert questionnaire, alternating positive/negative items. Score calculated: (sum positive items − 5)/2 + (25 − sum negative items)/2. Multiply by 2.5 for 0–100 scale", "marks": 1 },
+            { "text": "Score ≥68 = above average; ≥80 = good; ≥90 = excellent. Industry standard and correlates well with expert usability evaluation", "marks": 1 },
+            { "text": "Weakness: single composite score hides which aspects are good or poor (learnability vs efficiency vs satisfaction not distinguished); validated primarily for desktop software; doesn't diagnose specific problems", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Design a usability study for a mobile banking app's new payment flow. State: (1) study goals, (2) participant recruitment criteria, (3) tasks to give participants, (4) how you would measure success.",
+          "markscheme": [
+            { "text": "Goals: identify friction points in the new payment flow; measure task completion rate; compare satisfaction with old flow", "marks": 1 },
+            { "text": "Recruitment: existing bank customers, age 25-60, who have made a payment in the last 3 months. Exclude bank employees and UX professionals. n=8-10", "marks": 1 },
+            { "text": "Tasks: 'Please pay £50 to John Smith, a new payee'; 'Check your last 5 transactions'; 'Set up a recurring monthly payment of £200 to your landlord'. Success measures: completion rate, time-on-task, error count, SUS score post-study", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "What is a heuristic evaluation? Name five of Nielsen's 10 usability heuristics. How does it differ from a usability test?",
+          "markscheme": [
+            { "text": "Heuristic evaluation: expert inspects UI against a set of established usability principles (heuristics). Quicker and cheaper than user testing; finds different types of problems", "marks": 1 },
+            { "text": "Five heuristics (any 5 of 10): Visibility of system status; Match between system and real world; User control and freedom; Consistency and standards; Error prevention; Recognition rather than recall; Flexibility and efficiency of use; Aesthetic and minimalist design; Help users recognise/recover from errors; Help and documentation", "marks": 1 },
+            { "text": "Vs usability test: heuristic = expert-based, no real users, fast, finds expert-predicted problems; usability test = real users, finds actual user problems including unexpected ones. Complementary — use both", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ixd-req-d1",
+      "topic": "requirements-analysis-and-design-space",
+      "topicTitle": "Requirements Analysis and Design Space",
+      "difficulty": 1,
+      "title": "Functional vs non-functional requirements",
+      "totalMarks": 3,
+      "prompt": "Distinguish functional and non-functional requirements in the context of interaction design. Give two examples of each for a hospital patient-monitoring system.",
+      "markscheme": [
+        { "text": "Functional: what the system must do. Non-functional: how well it must do it (quality attributes)", "marks": 1 },
+        { "text": "Functional: display patient vital signs in real-time; alert nurse when values exceed thresholds", "marks": 1 },
+        { "text": "Non-functional: alert must appear within 2 seconds of threshold crossing (performance); interface must be usable by nurses without prior training (learnability/usability)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "ixd-req-d2",
+      "topic": "requirements-analysis-and-design-space",
+      "topicTitle": "Requirements Analysis and Design Space",
+      "difficulty": 2,
+      "title": "Design space exploration",
+      "totalMarks": 4,
+      "prompt": "Explain the concept of a design space and why exploring it matters. What is the difference between breadth-first and depth-first exploration of the design space? Give an example of a design decision and its alternatives.",
+      "markscheme": [
+        { "text": "Design space: the set of all possible design decisions and their combinations. Exploring it means considering alternatives before committing to one solution", "marks": 1 },
+        { "text": "Breadth-first: generate many divergent concepts at a shallow level (sketching, brainstorming). Depth-first: develop one concept in detail. Good design process uses breadth-first first, then depth on selected concepts", "marks": 2 },
+        { "text": "Example: navigation for a recipe app. Alternatives: bottom navigation bar (thumb-friendly mobile); hamburger menu (maximises screen space); tab bar at top (familiar Android pattern); voice navigation (eyes-free cooking). Each has different trade-offs for the context", "marks": 1 }
+      ]
+    },
+    {
+      "id": "ixd-req-d3",
+      "topic": "requirements-analysis-and-design-space",
+      "topicTitle": "Requirements Analysis and Design Space",
+      "difficulty": 3,
+      "title": "Wireframes and prototyping fidelity",
+      "totalMarks": 5,
+      "prompt": "Define wireframes. Explain the trade-off between low-fidelity and high-fidelity prototypes in terms of cost, feedback quality, and appropriate stage of design. When would you choose each?",
+      "markscheme": [
+        { "text": "Wireframe: a schematic representation of a UI showing structure and layout without final visual design. Focuses on information architecture, content placement, and interaction flow", "marks": 1 },
+        { "text": "Low-fidelity (paper sketches, grey boxes): fast to create (minutes), cheap to modify, encourages feedback on structure not visual style. Risk: users may not engage seriously; hard to test complex interactions", "marks": 2 },
+        { "text": "High-fidelity (interactive Figma/coded prototype): realistic, tests true usability, closer to final product. Risk: expensive to build, users may comment on visual details rather than usability; stakeholders may assume it's done", "marks": 1 },
+        { "text": "Choose low-fi early in process (ideation, testing concepts); high-fi later (testing specific interactions, stakeholder demos, developer handoff). Rule: use the lowest fidelity that answers your current question", "marks": 1 }
+      ]
+    },
+    {
+      "id": "ixd-req-d4",
+      "topic": "requirements-analysis-and-design-space",
+      "topicTitle": "Requirements Analysis and Design Space",
+      "difficulty": 4,
+      "title": "Accessibility and inclusive design",
+      "totalMarks": 6,
+      "prompt": "(i) Define accessibility in the context of digital interfaces. Give four categories of disability that designers must consider.<br>(ii) Explain the WCAG 2.1 POUR framework (Perceivable, Operable, Understandable, Robust).<br>(iii) Give two concrete design decisions that improve accessibility, justifying each.",
+      "markscheme": [
+        { "text": "Accessibility: ensuring digital interfaces are usable by people with diverse abilities including disabilities. WCAG 2.1 is the international standard. Four categories: visual (blindness, low vision, colour blindness); auditory; motor (limited hand mobility, tremors); cognitive (dyslexia, attention disorders)", "marks": 2 },
+        { "text": "POUR: Perceivable — content must be presentable in ways users can perceive (alt text for images, captions for video). Operable — all functionality available via keyboard; no seizure-inducing content. Understandable — readable, predictable behaviour; error recovery guidance. Robust — content interpretable by assistive technologies (semantic HTML)", "marks": 2 },
+        { "text": "Example 1: sufficient colour contrast (ratio ≥4.5:1) — benefits low-vision users and those in bright sunlight; doesn't harm sighted users. Example 2: keyboard navigation with visible focus indicators — essential for motor-impaired users who can't use a mouse; benefits power users too", "marks": 2 }
+      ]
+    },
+    {
+      "id": "ixd-req-d5a",
+      "topic": "requirements-analysis-and-design-space",
+      "topicTitle": "Requirements Analysis and Design Space",
+      "difficulty": 5,
+      "title": "Tripos: designing an interaction design process",
+      "totalMarks": 13,
+      "prompt": "This question concerns the full interaction design process for a new product.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "A charity wants to redesign their donation website to increase donations. Describe a complete UCD process from discovery to launch, identifying the key deliverables at each stage.",
+          "markscheme": [
+            { "text": "Discovery: interviews with current donors and non-donors, analytics review, competitor analysis. Deliverables: research report, personas, user journey maps", "marks": 1 },
+            { "text": "Design: requirements synthesis (JTBD); information architecture workshop (card sorting); low-fi wireframes; prototype iterations tested with users. Deliverables: IA diagram, wireframes, prototype, usability test reports", "marks": 1 },
+            { "text": "Delivery: high-fi designs, developer handoff, accessibility audit; A/B test key elements (CTA button, amount suggestions); post-launch analytics monitoring. Deliverables: design system, component specs, A/B test plan", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "A designer proposes putting the donation CTA at the bottom of the page 'because users should read the impact story first'. A product manager wants it above the fold 'to maximise visibility'. How would you resolve this disagreement, and what research would you conduct?",
+          "markscheme": [
+            { "text": "Neither position should be accepted without data. Frame as a testable hypothesis: 'Users who read the impact story will donate more' vs 'Users who see the CTA immediately will donate more'", "marks": 1 },
+            { "text": "Research: scroll depth analytics (do users currently reach the bottom?); eye-tracking study to see what users notice; A/B test: version A (CTA top) vs version B (CTA after story) — measure conversion rate and average donation amount", "marks": 2 },
+            { "text": "Possible resolution: a sticky CTA that stays visible as users scroll, or a short compelling CTA at top with a longer story below, with a secondary CTA at the bottom. Evidence-based design, not opinion-based", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "What is the difference between 'designing for' and 'designing with' users? Give the pros and cons of participatory design (co-design).",
+          "markscheme": [
+            { "text": "Designing for: designers create solutions on behalf of users, informed by research. Designing with (co-design/participatory design): users are active collaborators in generating and refining solutions", "marks": 1 },
+            { "text": "Co-design pros: incorporates tacit knowledge designers can't access; builds user ownership/buy-in; surfaces requirements not found in traditional research; especially valuable for marginalised groups", "marks": 1 },
+            { "text": "Co-design cons: users may not know what's technically feasible; may not represent the full user population; requires facilitation skill; more time-intensive; group dynamics may silence some voices", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "How does the ethical responsibility of an interaction designer extend beyond 'making things usable'? Give two examples of ethically problematic design patterns and explain why they are harmful.",
+          "markscheme": [
+            { "text": "Ethical responsibility extends to: dark patterns (manipulating users against their interests), persuasive technology that exploits psychology, accessibility, data privacy, algorithmic bias, environmental impact, effects on vulnerable populations", "marks": 1 },
+            { "text": "Dark pattern 1: 'roach motel' — easy to sign up (one click), but cancellation buried in settings requiring a phone call. Harmful: prevents users from exercising their right to exit; exploits inertia", "marks": 1 },
+            { "text": "Dark pattern 2: 'confirmshaming' — opt-out button reads 'No thanks, I don't want to save money' to shame users into subscribing. Harmful: manipulates emotions; undermines informed consent; erodes trust", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ixd-cog-d1",
+      "topic": "cognitive-and-interactive-aspects-for-design",
+      "topicTitle": "Cognitive and Interactive Aspects for Design",
+      "difficulty": 1,
+      "title": "Miller's Law and STM",
+      "totalMarks": 3,
+      "prompt": "State Miller's Law (The Magical Number Seven, Plus or Minus Two). What is short-term memory capacity in items? What does 'chunking' mean, and give a concrete design example showing how chunking helps users.",
+      "markscheme": [
+        { "text": "Miller's Law (1956): humans can hold approximately 7 (± 2) items in short-term memory at once. More precisely, 5-9 items depending on item type (7 digits, 6 letters, 5 words)", "marks": 1 },
+        { "text": "Chunking: grouping individual items into meaningful units that can be remembered as one. Reduces STM load by treating a group as a single 'chunk'", "marks": 1 },
+        { "text": "Design example: phone number displayed as 07700 900 123 instead of 07700900123 — grouping into 3 chunks of 3-5 items each, making it easier to read, copy, or remember", "marks": 1 }
+      ]
+    },
+    {
+      "id": "ixd-cog-d2",
+      "topic": "cognitive-and-interactive-aspects-for-design",
+      "topicTitle": "Cognitive and Interactive Aspects for Design",
+      "difficulty": 2,
+      "title": "Gestalt principles in UI design",
+      "totalMarks": 4,
+      "prompt": "Explain four Gestalt principles of visual perception and for each give a concrete example of how it is applied in UI design.",
+      "markscheme": [
+        { "text": "Similarity: elements that look alike are perceived as related. UI: Google search results use consistent typography for title/URL/snippet — each role has a distinct style so users parse results quickly", "marks": 1 },
+        { "text": "Proximity: elements close together are perceived as a group. UI: Amazon footer groups related links with whitespace separating different categories — no dividers needed, proximity alone conveys grouping", "marks": 1 },
+        { "text": "Figure/Ground: content stands out from background. UI: modal dialogs dim the background page — the modal becomes the figure, background becomes ground; user attention directed correctly", "marks": 1 },
+        { "text": "Closure: viewers complete missing visual information. UI: icons made of disconnected strokes still read as a phone, wifi symbol, or coffee cup — brain fills in the gaps (also: logos like WWF, NBC peacock)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "ixd-cog-d3",
+      "topic": "cognitive-and-interactive-aspects-for-design",
+      "topicTitle": "Cognitive and Interactive Aspects for Design",
+      "difficulty": 3,
+      "title": "Attention and affordances",
+      "totalMarks": 5,
+      "prompt": "(i) Distinguish reflexive (exogenous) and intentional (endogenous) attention. Which is harder to ignore, and why does this matter for notification design?<br>(ii) Define affordances in UI design. Give two examples where an affordance is clear and one where it is misleading (a 'false affordance').",
+      "markscheme": [
+        { "text": "Reflexive: triggered by external cues (motion, bright colour, sound) — automatic, involuntary. Intentional: directed by internal goals ('I need to find the save button'). Reflexive is harder to ignore — even under cognitive load, it captures attention", "marks": 1 },
+        { "text": "Notification design implication: use reflexive cues (vibration, sound, red badge) sparingly — they interrupt any task. Overuse → notification fatigue. Use for urgent/time-sensitive only; use intentional for non-urgent (available in settings)", "marks": 1 },
+        { "text": "Affordance: a visual/physical property that suggests how to interact. Clear example 1: a 3D-styled raised button suggests it can be pressed. Clear example 2: a scrollbar with visible grip suggests dragging", "marks": 2 },
+        { "text": "False affordance: an underlined text that looks like a link but isn't clickable — suggests interaction that doesn't work, causing confusion", "marks": 1 }
+      ]
+    },
+    {
+      "id": "ixd-cog-d4",
+      "topic": "cognitive-and-interactive-aspects-for-design",
+      "topicTitle": "Cognitive and Interactive Aspects for Design",
+      "difficulty": 4,
+      "title": "Memory, recognition over recall, and form factor",
+      "totalMarks": 6,
+      "prompt": "(i) Explain the design principle 'recognition over recall'. How does it reduce cognitive load? Give two UI examples, one digital and one from everyday life.<br>(ii) How does form factor (device type) constrain interaction design? Compare designing for a phone vs a multi-monitor desktop setup for the same productivity application.",
+      "markscheme": [
+        { "text": "Recognition over recall: provide cues/options so users recognise the right choice rather than having to recall it from memory. Recall is slower, error-prone, and sensitive to cognitive load. Recognition uses already-stored patterns in long-term memory", "marks": 1 },
+        { "text": "Digital: a file save dialogue showing recently used folders + search = recognition (user sees familiar path) vs typing path from memory = recall. Everyday: restaurant menus vs ordering from memory at a blank counter", "marks": 1 },
+        { "text": "Phone constraints: single-touch, small screen (≤6 inches), portrait orientation, thumb reach limits to bottom 2/3 of screen, no hover state, fat-finger error risk, frequently used in noisy/moving environments. Design: bottom navigation, large tap targets (≥44px), progressive disclosure of complex options", "marks": 2 },
+        { "text": "Desktop constraints: precise mouse pointer (pixel-level), large multi-panel display, keyboard shortcuts, hover states available, seated, focused environment. Design: dense information layout, contextual menus, keyboard shortcuts, multi-pane editing. Same app needs fundamentally different IA and interaction patterns", "marks": 2 }
+      ]
+    },
+    {
+      "id": "ixd-cog-d5a",
+      "topic": "cognitive-and-interactive-aspects-for-design",
+      "topicTitle": "Cognitive and Interactive Aspects for Design",
+      "difficulty": 5,
+      "title": "Cognitive design in practice: Cambridge Tripos style",
+      "totalMarks": 13,
+      "prompt": "This question concerns cognitive aspects of user interface design.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Describe the Atkinson-Shiffrin model of memory (three stores). For each store, state its capacity and duration. Give one design implication for each store.",
+          "markscheme": [
+            { "text": "Sensory register: briefly holds sensory input (iconic/echoic); capacity: large; duration: <1 second. Design: use motion or flash sparingly — sensory register is overwhelmed by animation, increasing cognitive load", "marks": 1 },
+            { "text": "Short-term memory (working memory): limited capacity (~7 items); duration: 15-30s without rehearsal. Design: don't force users to remember information across pages (e.g. show form validation inline, not after submission)", "marks": 1 },
+            { "text": "Long-term memory: unlimited capacity; potentially permanent. Design: exploit existing LTM by following conventions (log-in top-right, burger-menu for nav) — reduces learning cost by building on existing schemas", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "A data visualisation dashboard shows 12 metrics simultaneously. Apply at least three Gestalt principles to redesign it for better comprehension.",
+          "markscheme": [
+            { "text": "Similarity: group related metrics by consistent colour coding (e.g. financial metrics in blue, operational in green) — users immediately see clusters of related data", "marks": 1 },
+            { "text": "Proximity: physically group metrics that are related (cluster them with whitespace between clusters) rather than distributing them evenly across the grid", "marks": 1 },
+            { "text": "Enclosure: use subtle background fills or borders to visually separate different sections (e.g. revenue vs costs vs customer metrics)", "marks": 1 },
+            { "text": "Also valid: common fate (animate related metrics together during updates); figure/ground (highlight the most important metric by making it stand out from the background). Principle + concrete application + benefit required for each mark", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Progressive disclosure is a technique to manage complexity. Define it and give a concrete example from an application you know. When is it inappropriate?",
+          "markscheme": [
+            { "text": "Progressive disclosure: reveal information and options incrementally as users need them, hiding complexity until relevant. Reduces cognitive load for novice users while keeping power available for experts", "marks": 1 },
+            { "text": "Example: Duolingo onboarding (asks language, then level, then runs placement test — doesn't show all settings at once); or Gmail Compose (basic reply/send visible; 'More options' reveals CC/BCC/Schedule)", "marks": 1 },
+            { "text": "Inappropriate when: user frequently needs the hidden options (discovery frustration if hidden too deep); expert users who always need full control (professional tools like Photoshop); safety-critical interfaces where hiding options could cause errors", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "A student designs an app where all navigation uses icons without text labels, arguing 'it looks cleaner and users will learn them'. Critique this decision using principles from cognitive psychology.",
+          "markscheme": [
+            { "text": "Recall vs recognition: icon-only forces users to recall the meaning of each icon. Without labels, users must have already learned each icon's meaning — high learning cost, especially for new users", "marks": 1 },
+            { "text": "LTM and convention: icons only work without labels when they are universal conventions (play/pause, undo, home). Novel icons (e.g. a squiggle for 'settings') have no LTM association — labels are essential", "marks": 1 },
+            { "text": "Cognitive load and errors: icon-only nav increases cognitive load (must decode icon, recall meaning, verify it matches goal) and error rate. Android and iOS both require text labels below icons in bottom nav for this reason. The 'cleaner' aesthetic comes at the cost of usability", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ixd-content-d1",
+      "topic": "designing-content-and-tools-for-ixd",
+      "topicTitle": "Designing Content and Tools for IxD",
+      "difficulty": 1,
+      "title": "Information architecture basics",
+      "totalMarks": 3,
+      "prompt": "Define information architecture (IA) in the context of digital products. List four activities involved in developing an IA. Why is a good IA important for user experience?",
+      "markscheme": [
+        { "text": "IA: the practice of organising, structuring, and labelling content and functionality to help users find information and complete tasks. The invisible framework behind navigation and content organisation", "marks": 1 },
+        { "text": "Four activities: (1) content inventory — audit what exists; (2) establish taxonomy — create naming and categorisation system; (3) chunking — divide into logical units; (4) diagram — map structure and navigation; (5) user testing — validate with real users", "marks": 1 },
+        { "text": "Good IA matters: users can find content quickly (findability); matches their mental model (learnability); reduces frustration; improves task completion; underpins all navigation design", "marks": 1 }
+      ]
+    },
+    {
+      "id": "ixd-content-d2",
+      "topic": "designing-content-and-tools-for-ixd",
+      "topicTitle": "Designing Content and Tools for IxD",
+      "difficulty": 2,
+      "title": "Design patterns",
+      "totalMarks": 4,
+      "prompt": "What are interaction design patterns? What five components does a well-defined pattern have? Describe the Navigation Tabs pattern: problem, context, and solution.",
+      "markscheme": [
+        { "text": "Design patterns: reusable solutions to commonly occurring interaction design problems. Provide vocabulary, ensure consistency, and speed up design. From Christopher Alexander → GoF → Tidwell's Designing Interfaces", "marks": 1 },
+        { "text": "Five components: (1) Title; (2) Problem — what it solves; (3) Context — when to use it; (4) Solution — how to implement it; (5) Example", "marks": 1 },
+        { "text": "Navigation Tabs — Problem: user needs to navigate site/app sections with clear indication of current location. Context: 2-10 sections, short stable labels, highest navigation level. Solution: horizontal row of tabs (usually top); whole tab area clickable; tab for current section visually distinguished; maintained across all pages", "marks": 2 }
+      ]
+    },
+    {
+      "id": "ixd-content-d3",
+      "topic": "designing-content-and-tools-for-ixd",
+      "topicTitle": "Designing Content and Tools for IxD",
+      "difficulty": 3,
+      "title": "Design systems",
+      "totalMarks": 5,
+      "prompt": "Define a design system and explain how it differs from a UI toolkit. What are the advantages of a design system for a cross-functional team (designers, developers, PMs)? Give one example of a major design system and describe what it contains.",
+      "hint": "Think about the layers: raw components, usage guidelines, principles, and naming conventions.",
+      "markscheme": [
+        { "text": "Design system: a collection of reusable components guided by clear standards, composable to build applications. More than a UI kit — includes principles, usage guidelines, decision rationale, and rules for combining components", "marks": 1 },
+        { "text": "UI toolkit: provides ready-made components with consistent styling. Design system = patterns + UI kits + strict rules of usage + brand principles + documentation", "marks": 1 },
+        { "text": "Advantages: unified vocabulary across teams (designers say 'card' and developers build the same thing); faster development (reuse without reinvention); consistent UX across the product; easier maintenance (fix a component once, updates everywhere); reduced design-development handoff friction", "marks": 2 },
+        { "text": "Example: Google Material Design — contains principles (Material is the metaphor; Bold, graphic, intentional; Motion provides meaning); components with states (hover, focus, disabled, error); theming (customisable colour, typography, shape); per-component specs (anatomy, usage, behaviour, placement)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "ixd-content-d4",
+      "topic": "designing-content-and-tools-for-ixd",
+      "topicTitle": "Designing Content and Tools for IxD",
+      "difficulty": 4,
+      "title": "Data modelling for front-end design",
+      "totalMarks": 6,
+      "prompt": "(i) How does interaction design inform data modelling decisions? Why should UI/UX designers be involved in data structure design?<br>(ii) For a messaging app, describe two alternative data models (Option A: server stores conversation objects; Option B: server only stores message objects, client reconstructs conversations). Give the trade-offs.<br>(iii) The principle 'don't choose technical elegance over usability' — give an example where a technically elegant data model creates a poor user experience.",
+      "markscheme": [
+        { "text": "IA organises for the user; data modelling organises for the system. Misalignment causes problems: if the user sees 'tags' as a hierarchy but the data model is flat, the UI must constantly reshape data — bugs introduced. Designers must understand data constraints; engineers must understand user requirements", "marks": 2 },
+        { "text": "Option A (server stores conversations): conversations are a first-class entity; server can push conversation updates to all participants; more storage but simpler client code. Option B (only messages): minimal server-side state; client reconstructs conversations from message metadata; faster server, but client-side logic complex and may diverge between clients", "marks": 2 },
+        { "text": "Example: storing user settings as a flat JSON blob (technically elegant, easy to store) makes it impossible for the UI to show 'changed settings' or 'default vs custom' — the system doesn't know the default state. Technically clean but requires the UI to hardcode defaults, causing bugs when defaults change", "marks": 2 }
+      ]
+    },
+    {
+      "id": "ixd-content-d5a",
+      "topic": "designing-content-and-tools-for-ixd",
+      "topicTitle": "Designing Content and Tools for IxD",
+      "difficulty": 5,
+      "title": "Tripos: designing a complete information architecture",
+      "totalMarks": 13,
+      "prompt": "This question concerns information architecture and interaction design tooling.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 4,
+          "prompt": "A university library website has the following content: book catalogue, e-journals, research databases, reading lists, borrowing history, account settings, library opening hours, floor maps, events, news, staff directory, accessibility services, printing services, interlibrary loans. Propose an information architecture with a taxonomy and top-level navigation structure. Justify your choices.",
+          "markscheme": [
+            { "text": "Group by user task/need, not by organisational structure: Search & Discover (catalogue, e-journals, databases, reading lists); My Library (borrowing history, account, interlibrary loans); Visit (hours, maps, printing, accessibility, services); About (news, events, staff directory)", "marks": 2 },
+            { "text": "Justification: users arrive with a goal (find a book, renew books, plan a visit) not the library's internal structure in mind. Grouping by goal reduces clicks and matches mental models", "marks": 1 },
+            { "text": "Search is always a complement/shortcut to navigation — a global search bar handles power users and edge cases; navigation handles browsing and exploration", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Describe three common mobile app page structure patterns. For a recipe app with thousands of recipes, select the most appropriate pattern and justify your choice.",
+          "markscheme": [
+            { "text": "Hierarchy/Catalog: drill-down list. Hub & Spoke: central hub with detail pages. Tabbed View: peer screens via tabs. Filtered View: filtered list with search and faceted filters. Nested Doll/Flow: linear sequence for completion tasks", "marks": 1 },
+            { "text": "Recipe app: Filtered View is most appropriate — thousands of recipes requires search + filter (by cuisine, dietary needs, time, ingredients). Simple hierarchy would require too many drill-down levels", "marks": 1 },
+            { "text": "Complement with Tabbed View for top-level categories (Browse, Search, Saved, Meal Planner) and Nested Doll for the cooking flow (recipe → step-by-step instructions → timer)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "How does a design system become outdated or fail? Describe three failure modes and how they can be mitigated.",
+          "markscheme": [
+            { "text": "Failure mode 1: governance breakdown — teams start creating one-off components that diverge from the system ('design debt'). Mitigation: design system team reviews new component requests; clear contribution process", "marks": 1 },
+            { "text": "Failure mode 2: documentation rot — component docs become stale as product evolves. Mitigation: treat docs as code; require doc updates in the PR that changes a component; automated storybook documentation", "marks": 1 },
+            { "text": "Failure mode 3: lack of buy-in — teams see design system as overhead, build around it. Mitigation: involve teams in decisions; demonstrate value through case studies (time saved, bugs reduced); make it easier to use than not to use", "marks": 1 }
+          ]
+        },
+        {
+          "label": "d",
+          "marks": 3,
+          "prompt": "What is tree testing and how is it used to validate an information architecture? How does it complement card sorting?",
+          "markscheme": [
+            { "text": "Tree testing: participants are given tasks and navigate a text-only version of the IA (no visual design) to find where a given item lives. Tests whether the taxonomy is findable without visual design cues", "marks": 1 },
+            { "text": "Metrics: success rate (did they find the right category?), directness (did they go straight there?), time. Identify 'problem areas' where many users go wrong", "marks": 1 },
+            { "text": "Complements card sorting: card sorting reveals how users want to group content (input to IA design); tree testing validates whether the resulting structure is findable (output evaluation). Card sort → design IA → tree test → refine → tree test again", "marks": 1 }
+          ]
+        }
+      ]
+    }
+  ]
+}
