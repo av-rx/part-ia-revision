@@ -4,7 +4,6 @@ import {
   reviewCard,
   getCardState,
   type Quality,
-  type SrsCardState,
 } from '../lib/progress-store';
 
 export interface Card {
@@ -28,17 +27,8 @@ function isDue(cardId: string, now: number): boolean {
   return s.due === 0 || s.due <= now;
 }
 
-function relDue(due: number) {
-  if (due === 0) return 'new';
-  const ms = due - Date.now();
-  if (ms <= 0) return 'now';
-  const days = Math.round(ms / 86400_000);
-  if (days < 1) return `${Math.round(ms / 3600_000)}h`;
-  if (days < 30) return `${days}d`;
-  return `${Math.round(days / 30)}mo`;
-}
 
-export default function Flashcards({ module, title, cards }: Props) {
+export default function Flashcards({ title, cards }: Props) {
   const [mode, setMode] = useState<Mode>('due');
   const [topic, setTopic] = useState<string | 'all'>('all');
   const [hydrated, setHydrated] = useState(false);

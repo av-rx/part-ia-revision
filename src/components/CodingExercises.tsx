@@ -22,7 +22,7 @@ interface Props {
   exercises: Exercise[];
 }
 
-export default function CodingExercises({ module, title, language, exercises }: Props) {
+export default function CodingExercises({ module, exercises }: Props) {
   const storageKey = `piarev:coding:${module}`;
   const [pos, setPos] = useState(0);
   const [response, setResponse] = useState('');

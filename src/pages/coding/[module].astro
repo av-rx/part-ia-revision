@@ -12,7 +12,6 @@ export async function getStaticPaths() {
   }));
 }
 
-interface Props { data: any; }
 const { data } = Astro.props;
 const module = data.module as ModuleSlug;
 const meta = MODULES[module];

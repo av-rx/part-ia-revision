@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
-import { MODULES, MODULE_ORDER, type ModuleSlug } from '../../lib/syllabus';
+import { MODULES, MODULE_ORDER } from '../../lib/syllabus';
 
 const exercises = await getCollection('code-exercises');
 const present = new Map(exercises.map((e) => [e.data.module, e.data]));

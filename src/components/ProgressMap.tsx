@@ -70,7 +70,7 @@ export default function ProgressMap({ practiceModules }: { practiceModules: Reco
             </tr>
           </thead>
           <tbody>
-            {totals.map(({ slug, m, counts }) => (
+            {totals.map(({ slug, m }) => (
               <tr class="border-b border-ink-100 dark:border-ink-800/50">
                 <td class="px-4 py-2">
                   <a href={`/modules/${slug}`} class="font-medium text-ink-900 dark:text-white hover:text-accent-700">{m.title}</a>

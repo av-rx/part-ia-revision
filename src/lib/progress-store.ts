@@ -11,6 +11,7 @@ const KEYS = {
   meta: 'piarev:meta',
   questions: 'piarev:questions',
   practice: 'piarev:practice',
+  questionNotes: 'piarev:question-notes',
 };
 
 function safeGet<T>(key: string, fallback: T): T {
@@ -178,4 +179,18 @@ export function setQuestionStatus(qId: string, s: QuestionStatus | null) {
   const all = getAllQuestionStatus();
   if (s === null) delete all[qId]; else all[qId] = s;
   safeSet(KEYS.questions, all);
+}
+
+// ── Past paper question notes ──────────────────────────────────────────────
+
+export function getAllQuestionNotes(): Record<string, string> {
+  return safeGet<Record<string, string>>(KEYS.questionNotes, {});
+}
+export function getQuestionNote(qId: string): string {
+  return getAllQuestionNotes()[qId] ?? '';
+}
+export function setQuestionNote(qId: string, note: string) {
+  const all = getAllQuestionNotes();
+  if (!note.trim()) delete all[qId]; else all[qId] = note;
+  safeSet(KEYS.questionNotes, all);
 }

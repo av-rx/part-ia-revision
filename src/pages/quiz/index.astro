@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
-import { MODULES, MODULE_ORDER, type ModuleSlug } from '../../lib/syllabus';
+import { MODULES, MODULE_ORDER } from '../../lib/syllabus';
 
 const quizzes = await getCollection('quizzes');
 const present = new Set(quizzes.map((q) => q.data.module));

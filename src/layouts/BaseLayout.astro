@@ -1,6 +1,6 @@
 ---
 import '../styles/base.css';
-import { PAPERS, PAPER_ORDER, MODULES, MODULE_ORDER } from '../lib/syllabus';
+import { PAPERS, PAPER_ORDER } from '../lib/syllabus';
 
 interface Props {
   title: string;
@@ -10,7 +10,7 @@ interface Props {
   pageTitle?: string;
 }
 
-const { title, description = 'Cambridge Computer Science Part IA revision', currentModule, currentPaper } = Astro.props;
+const { title, description = 'Cambridge Computer Science Part IA revision', currentPaper } = Astro.props;
 const fullTitle = title === 'Part IA Revision' ? title : `${title} · Part IA Revision`;
 ---
 <!doctype html>

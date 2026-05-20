@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import TopicLayout from '../../../layouts/TopicLayout.astro';
-import { MODULES, MODULE_ORDER, type ModuleSlug } from '../../../lib/syllabus';
+import { type ModuleSlug } from '../../../lib/syllabus';
 
 export async function getStaticPaths() {
   const notes = await getCollection('notes');
@@ -27,7 +27,6 @@ export async function getStaticPaths() {
   return paths;
 }
 
-interface Props { entry: any; isSupplement: boolean; }
 const { entry, isSupplement } = Astro.props;
 const { Content } = await entry.render();
 
