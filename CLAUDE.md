@@ -88,13 +88,13 @@ Tailwind CSS with the `@tailwindcss/typography` plugin. Custom colour scales: `i
 
 ### Module slugs by paper
 
-**Paper 1:** `foundations-of-computer-science` (11 topics), `object-oriented-programming` (12 topics), `introduction-to-probability` (3 topics), `algorithms-1` (3 topics), `algorithms-2` (4 topics)
+**Paper 1:** `foundations-of-computer-science` (11 topics), `object-oriented-programming` (12 topics), `introduction-to-probability` (12 topics), `algorithms-1` (3 topics), `algorithms-2` (4 topics)
 
-**Paper 2:** `digital-electronics` (13 topics), `operating-systems` (12 topics), `software-security-engineering` (2 main topics + 5 supplements), `discrete-maths` (4 topics)
+**Paper 2:** `digital-electronics` (13 topics), `operating-systems` (12 topics), `software-security-engineering` (6 topics + 5 supplements), `discrete-maths` (4 topics)
 
-**Paper 3:** `databases` (8 topics), `introduction-to-graphics` (6 topics), `interaction-design` (3 main topics + 5 supplements), `machine-learning-real-world-data` (3 topics)
+**Paper 3:** `databases` (8 topics), `introduction-to-graphics` (6 topics), `interaction-design` (6 topics + 5 supplements), `machine-learning-real-world-data` (3 topics)
 
-**Maths:** `nst-mathematics-a` (11 topics + 1 supplement)
+**Maths:** `nst-mathematics-a` (13 topics)
 
 ### Content collections (src/content/config.ts)
 

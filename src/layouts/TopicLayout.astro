@@ -39,14 +39,21 @@ const practiceForTopic = (practiceEntry?.data.questions ?? []).filter(
       <header class="mb-6">
         <h1 class="text-3xl font-bold tracking-tight text-ink-900 dark:text-white">
           {isSupplement && <span class="inline-block text-xs font-semibold uppercase tracking-wider bg-amber-200 text-amber-900 px-2 py-1 rounded mr-2 align-middle">Supplement</span>}
+          {topic?.nonExaminable && <span class="inline-block text-xs font-semibold uppercase tracking-wider bg-ink-200 text-ink-600 dark:bg-ink-700 dark:text-ink-400 px-2 py-1 rounded mr-2 align-middle">Non-examinable</span>}
           {topicTitle}
         </h1>
         {topic && (
           <p class="text-ink-500 dark:text-ink-400 mt-1">Topic {topic.order} of {meta.topics.length}</p>
         )}
       </header>
+      {topic?.nonExaminable && (
+        <div class="mb-6 flex items-start gap-3 rounded-lg border border-ink-200 dark:border-ink-700 bg-ink-50 dark:bg-ink-900 px-4 py-3 text-sm text-ink-600 dark:text-ink-400">
+          <span class="mt-0.5">ℹ️</span>
+          <span>This topic is <strong>not examinable</strong> in the Cambridge Part IA Tripos. You do not need to revise it for the exam.</span>
+        </div>
+      )}
 
-      <ConfidenceButtons client:load topicId={topicId} />
+      <ConfidenceButtons client:load topicId={topicId} nonExaminable={topic?.nonExaminable ?? false} />
 
       <div class="prose dark:prose-invert max-w-none mt-6">
         <slot />

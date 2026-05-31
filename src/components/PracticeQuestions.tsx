@@ -31,6 +31,7 @@ interface Props {
   module: string;
   title: string;
   questions: PracticeQuestion[];
+  nonExaminableTopics?: string[];
 }
 
 const DIFF_LABELS: Record<number, string> = { 1: 'Recall', 2: 'Explain', 3: 'Apply', 4: 'Analyse', 5: 'Tripos' };
@@ -42,7 +43,7 @@ const DIFF_CLASSES: Record<number, string> = {
   5: 'bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300',
 };
 
-export default function PracticeQuestions({ questions }: Props) {
+export default function PracticeQuestions({ questions, nonExaminableTopics = [] }: Props) {
   const [topicFilter, setTopicFilter] = useState('');
   const [maxDifficulty, setMaxDifficulty] = useState(5);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
@@ -157,8 +158,13 @@ export default function PracticeQuestions({ questions }: Props) {
       <div class="space-y-10">
         {grouped.map(({ slug, title, questions: qs }) => (
           <section key={slug}>
-            <h2 class="text-lg font-bold tracking-tight text-ink-900 dark:text-white mb-4 pb-2 border-b border-ink-200 dark:border-ink-800">
+            <h2 class="text-lg font-bold tracking-tight text-ink-900 dark:text-white mb-4 pb-2 border-b border-ink-200 dark:border-ink-800 flex items-center gap-2 flex-wrap">
               {title}
+              {nonExaminableTopics.includes(slug) && (
+                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-ink-100 text-ink-500 dark:bg-ink-800 dark:text-ink-400 border border-ink-300 dark:border-ink-700">
+                  Non-examinable
+                </span>
+              )}
             </h2>
             <div class="space-y-4">
               {qs.map((q) => {
@@ -183,7 +189,14 @@ export default function PracticeQuestions({ questions }: Props) {
                         {DIFF_LABELS[q.difficulty]}
                       </span>
                       <div class="flex-1 min-w-0">
-                        <div class="font-semibold text-ink-900 dark:text-white">{q.title}</div>
+                        <div class="font-semibold text-ink-900 dark:text-white flex items-center gap-2 flex-wrap">
+                          {q.title}
+                          {nonExaminableTopics.includes(q.topic) && (
+                            <span class="text-xs font-normal px-1.5 py-0.5 rounded bg-ink-100 text-ink-400 dark:bg-ink-800 dark:text-ink-500 border border-ink-200 dark:border-ink-700">
+                              Non-examinable
+                            </span>
+                          )}
+                        </div>
                         <div class="text-xs text-ink-500 dark:text-ink-400 mt-0.5">{q.totalMarks} mark{q.totalMarks !== 1 ? 's' : ''}</div>
                       </div>
                       <div class="flex items-center gap-1 shrink-0">

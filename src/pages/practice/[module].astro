@@ -1,20 +1,22 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 import PracticeQuestions from '../../components/PracticeQuestions.tsx';
 import { MODULES, type ModuleSlug } from '../../lib/syllabus';
 
 export async function getStaticPaths() {
   const all = await getCollection('practice-questions');
-  return all.map((entry) => ({
+  return all.map((entry: CollectionEntry<'practice-questions'>) => ({
     params: { module: entry.data.module },
     props: { data: entry.data },
   }));
 }
 
-const { data } = Astro.props;
+type Props = { data: { module: string; title: string; questions: any[] } };
+const { data } = Astro.props as Props;
 const module = data.module as ModuleSlug;
 const meta = MODULES[module];
+const nonExaminableTopics = meta?.topics.filter((t) => t.nonExaminable).map((t) => t.slug) ?? [];
 ---
 <BaseLayout title={`${meta?.title ?? data.title} — Practice Questions`} currentModule={module} currentPaper={meta?.paper}>
   <nav class="text-sm text-ink-500 dark:text-ink-400 mb-4">
@@ -33,5 +35,6 @@ const meta = MODULES[module];
     module={module}
     title={data.title}
     questions={data.questions}
+    nonExaminableTopics={nonExaminableTopics}
   />
 </BaseLayout>

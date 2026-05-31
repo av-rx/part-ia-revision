@@ -10,6 +10,7 @@ import {
 interface Props {
   topicId: string;
   topicTitle?: string;
+  nonExaminable?: boolean;
 }
 
 const STATES: Confidence[] = ['weak', 'shaky', 'confident'];
@@ -26,7 +27,7 @@ const TIPS: Record<Confidence, string> = {
   confident: 'Could write this on Q-day',
 };
 
-export default function ConfidenceButtons({ topicId, topicTitle }: Props) {
+export default function ConfidenceButtons({ topicId, topicTitle, nonExaminable = false }: Props) {
   const [c, setC] = useState<Confidence>('unset');
   const [hydrated, setHydrated] = useState(false);
 
@@ -45,6 +46,18 @@ export default function ConfidenceButtons({ topicId, topicTitle }: Props) {
   }
 
   if (!hydrated) return <div class="h-9" />;
+
+  if (nonExaminable) {
+    return (
+      <div class="flex items-center gap-2 no-print opacity-40 select-none" title="Non-examinable topic — confidence not tracked">
+        <span class="text-sm text-ink-500 dark:text-ink-400 mr-1">How well do you know this?</span>
+        {STATES.map((s) => (
+          <button type="button" class="confidence-btn" disabled>{LABELS[s]}</button>
+        ))}
+        <span class="text-xs text-ink-400 dark:text-ink-500 ml-1 italic">Non-examinable</span>
+      </div>
+    );
+  }
 
   return (
     <div class="flex items-center gap-2 no-print">

@@ -65,6 +65,7 @@ export interface TopicMeta {
   vaultBasename: string;      // exact filename in vault, e.g. "1 - Sorting"
   title: string;              // human title shown in nav
   order: number;
+  nonExaminable?: boolean;    // true if this topic is explicitly out of scope for the Tripos
 }
 
 const T = (order: number, vaultBasename: string, title: string, slug?: string): TopicMeta => ({
@@ -152,6 +153,11 @@ export const MODULES: Record<ModuleSlug, ModuleMeta> = {
       T(5, '5 - Continuous Random Variables', 'Continuous Random Variables'),
       T(6, '6 - Marginals and Joint Distributions', 'Marginals and Joint Distributions'),
       T(7, '7 - Independence, Covariance and Correlation', 'Independence, Covariance and Correlation'),
+      T(8, '8 - Basic Inequalities and Law of Large Numbers', 'Basic Inequalities and Law of Large Numbers'),
+      T(9, '9 - Central Limit Theorem', 'Central Limit Theorem'),
+      T(10, '10 - Estimators (Part 1)', 'Estimators (Part 1)'),
+      T(11, '11 - Estimators (Part 2)', 'Estimators (Part 2)'),
+      T(12, '12 - Online Algorithms', 'Online Algorithms'),
     ],
   },
 
@@ -186,7 +192,7 @@ export const MODULES: Record<ModuleSlug, ModuleMeta> = {
       T(1, '1 - Graphs and Path-Finding Algorithms', 'Graphs and Path-Finding Algorithms'),
       T(2, '2 - Graphs and Subgraphs', 'Graphs and Subgraphs'),
       T(3, '3 - Advanced Data Structures', 'Advanced Data Structures'),
-      T(4, '4 - Geometric Algorithms', 'Geometric Algorithms'),
+      { ...T(4, '4 - Geometric Algorithms', 'Geometric Algorithms'), nonExaminable: true },
     ],
   },
 
@@ -346,6 +352,7 @@ export const MODULES: Record<ModuleSlug, ModuleMeta> = {
       T(3, '3 - Requirements Analysis and Development, Exploring the Design Space', 'Requirements Analysis and Design Space'),
       T(4, '4 - Cognitive Aspects for Design, Interactive Aspects for Design', 'Cognitive and Interactive Aspects for Design', 'cognitive-and-interactive-aspects-for-design'),
       T(5, '5 - Designing Content, Tools for Interaction Design', 'Designing Content and Tools for IxD', 'designing-content-and-tools-for-ixd'),
+      T(6, '6 - Practical Methods for Evaluating Designs', 'Practical Methods for Evaluating Designs'),
     ],
     supplements: [
       'prototyping-low-and-high-fidelity',
@@ -396,8 +403,9 @@ export const MODULES: Record<ModuleSlug, ModuleMeta> = {
       T(9, 'Mathematical Methods II/2 - Multivariable Calculus', 'MM II: Multivariable Calculus'),
       T(10, 'Mathematical Methods II/3 - Integration of Functions with Multiple Variables', 'MM II: Multiple Integration'),
       T(11, 'Mathematical Methods III/Matrices', 'MM III: Matrices'),
+      T(12, 'Mathematical Methods III/Eigenvalues and Eigenvectors', 'MM III: Eigenvalues and Eigenvectors'),
+      T(13, 'Mathematical Methods III/Fourier Series', 'MM III: Fourier Series'),
     ],
-    supplements: ['fourier-series'],
   },
 };
 
