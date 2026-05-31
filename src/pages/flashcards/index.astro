@@ -1,12 +1,16 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 import { MODULES, type ModuleSlug } from '../../lib/syllabus';
 
 const decks = await getCollection('flashcards');
-const modules = decks
-  .map((d) => ({ slug: d.data.module as ModuleSlug, title: d.data.title, count: d.data.cards.length }))
-  .sort((a, b) => a.title.localeCompare(b.title));
+type DeckInfo = { slug: ModuleSlug; title: string; count: number };
+const deckItems: DeckInfo[] = decks.map((d: CollectionEntry<'flashcards'>) => ({
+  slug: (d.data.module as ModuleSlug),
+  title: (d.data.title as string),
+  count: (d.data.cards as any[]).length,
+}));
+const modules = deckItems.sort((a: DeckInfo, b: DeckInfo) => a.title.localeCompare(b.title));
 ---
 <BaseLayout title="Flashcards">
   <header class="mb-8">

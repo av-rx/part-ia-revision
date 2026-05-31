@@ -1,17 +1,18 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 import { MODULES, type ModuleSlug } from '../../lib/syllabus';
 
 export async function getStaticPaths() {
   const cs = await getCollection('cheatsheets');
-  return cs.map((c) => ({
+  return cs.map((c: CollectionEntry<'cheatsheets'>) => ({
     params: { module: c.data.module },
     props: { entry: c },
   }));
 }
 
-const { entry } = Astro.props;
+type Props = { entry: CollectionEntry<'cheatsheets'> };
+const { entry } = Astro.props as Props;
 const { Content } = await entry.render();
 const module = entry.data.module as ModuleSlug;
 const meta = MODULES[module];

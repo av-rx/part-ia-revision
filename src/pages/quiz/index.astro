@@ -1,10 +1,10 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 import { MODULES, MODULE_ORDER } from '../../lib/syllabus';
 
 const quizzes = await getCollection('quizzes');
-const present = new Set(quizzes.map((q) => q.data.module));
+const present = new Set(quizzes.map((q: CollectionEntry<'quizzes'>) => q.data.module as string));
 ---
 <BaseLayout title="Quizzes">
   <header class="mb-8">

@@ -1,10 +1,10 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 import { MODULES, MODULE_ORDER, type ModuleSlug } from '../../lib/syllabus';
 
 const all = await getCollection('practice-questions');
-const present = new Map<string, number>(all.map((e) => [e.data.module, e.data.questions.length] as [string, number]));
+const present = new Map<string, number>(all.map((e: CollectionEntry<'practice-questions'>) => [e.data.module, e.data.questions.length] as [string, number]));
 
 ---
 <BaseLayout title="Practice Questions">

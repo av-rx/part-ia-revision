@@ -1,10 +1,16 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 import { MODULES, MODULE_ORDER } from '../../lib/syllabus';
 
 const exercises = await getCollection('code-exercises');
-const present = new Map(exercises.map((e) => [e.data.module, e.data]));
+type ExData = { module: string; title: string; language: 'ocaml' | 'java'; exercises: any[] };
+const present = new Map<string, ExData>(
+  exercises.map((e: CollectionEntry<'code-exercises'>) => {
+    const d = e.data as ExData;
+    return [d.module, d] as [string, ExData];
+  })
+);
 ---
 <BaseLayout title="Coding Exercises">
   <header class="mb-8">

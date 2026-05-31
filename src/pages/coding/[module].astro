@@ -1,18 +1,19 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 import CodingExercises from '../../components/CodingExercises.tsx';
 import { MODULES, type ModuleSlug } from '../../lib/syllabus';
 
 export async function getStaticPaths() {
   const all = await getCollection('code-exercises');
-  return all.map((entry) => ({
+  return all.map((entry: CollectionEntry<'code-exercises'>) => ({
     params: { module: entry.data.module },
     props: { data: entry.data },
   }));
 }
 
-const { data } = Astro.props;
+type Props = { data: { module: string; title: string; language: 'ocaml' | 'java'; exercises: any[] } };
+const { data } = Astro.props as Props;
 const module = data.module as ModuleSlug;
 const meta = MODULES[module];
 const langLabel = data.language === 'ocaml' ? 'OCaml' : 'Java';

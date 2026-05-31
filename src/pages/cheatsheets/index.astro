@@ -1,10 +1,10 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 import { MODULES, MODULE_ORDER } from '../../lib/syllabus';
 
 const cs = await getCollection('cheatsheets');
-const present = new Set(cs.map((c) => c.data.module));
+const present = new Set(cs.map((c: CollectionEntry<'cheatsheets'>) => c.data.module));
 ---
 <BaseLayout title="Cheat sheets">
   <header class="mb-8">

@@ -1,18 +1,19 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 import Flashcards from '../../components/Flashcards.tsx';
 import { MODULES, type ModuleSlug } from '../../lib/syllabus';
 
 export async function getStaticPaths() {
   const decks = await getCollection('flashcards');
-  return decks.map((d) => ({
+  return decks.map((d: CollectionEntry<'flashcards'>) => ({
     params: { module: d.data.module },
     props: { deck: d.data },
   }));
 }
 
-const { deck } = Astro.props;
+type Props = { deck: { module: string; title: string; cards: any[] } };
+const { deck } = Astro.props as Props;
 const module = deck.module as ModuleSlug;
 const meta = MODULES[module];
 ---

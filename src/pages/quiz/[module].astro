@@ -1,18 +1,19 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 import Quiz from '../../components/Quiz.tsx';
 import { MODULES, type ModuleSlug } from '../../lib/syllabus';
 
 export async function getStaticPaths() {
   const quizzes = await getCollection('quizzes');
-  return quizzes.map((q) => ({
+  return quizzes.map((q: CollectionEntry<'quizzes'>) => ({
     params: { module: q.data.module },
     props: { quiz: q.data },
   }));
 }
 
-const { quiz } = Astro.props;
+type Props = { quiz: { module: string; title: string; questions: any[] } };
+const { quiz } = Astro.props as Props;
 const module = quiz.module as ModuleSlug;
 const meta = MODULES[module];
 ---
