@@ -494,6 +494,104 @@
           ]
         }
       ]
+    },
+    {
+      "id": "a1-sort-d2b",
+      "topic": "sorting",
+      "topicTitle": "Sorting",
+      "difficulty": 2,
+      "title": "Counting sort: trace and stability",
+      "totalMarks": 4,
+      "prompt": "Consider the array A = [3, 1, 2, 3, 1] with elements drawn from the range [1..3].<br>(i) Trace counting sort on A: show the count array C after counting, after computing prefix sums, and the output array B after placing each element.<br>(ii) Explain what it means for a sorting algorithm to be <em>stable</em>. Is counting sort stable?<br>(iii) State the time complexity of counting sort in terms of n (array length) and k (range of values). When is it preferable to a comparison-based sort?",
+      "markscheme": [
+        { "text": "(i) After counting: C[1]=2, C[2]=1, C[3]=2. After prefix sums: C[1]=2, C[2]=3, C[3]=5. Place elements right-to-left: A[4]=1→B[2]=1, A[3]=3→B[5]=3, A[2]=2→B[3]=2, A[1]=1→B[1]=1... final B=[1,1,2,3,3]. (Award mark for correctly following the right-to-left placement preserving stability.)", "marks": 2 },
+        { "text": "(ii) A sort is stable if equal elements appear in the same relative order in the output as in the input. Counting sort is stable when elements are placed right-to-left (decrementing the count): the last occurrence of value v appears last in the output among all elements with value v.", "marks": 1 },
+        { "text": "(iii) Time: Θ(n+k). Preferable when k = O(n) (e.g. sorting n integers in range [0..n]) since Θ(n) beats the Θ(n log n) lower bound for comparison-based sorts. Impractical when k >> n.", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a1-sort-d3b",
+      "topic": "sorting",
+      "topicTitle": "Sorting",
+      "difficulty": 3,
+      "title": "Radix sort: worked example and correctness",
+      "totalMarks": 5,
+      "prompt": "Radix sort sorts d-digit numbers by iterating from the least significant digit to the most significant digit, using a stable sort on each digit.<br>(i) Apply LSD radix sort to the following array of 3-digit decimal numbers: [329, 457, 657, 839, 436, 720, 355]. Show the array after sorting on each digit (units, tens, hundreds).<br>(ii) Explain why LSD radix sort is correct — in particular, why does sorting from the least significant digit first work?",
+      "hint": "Use counting sort on each digit. After sorting on the units digit, re-sort on the tens digit using a stable sort, and so on.",
+      "markscheme": [
+        { "text": "After units digit: [720, 355, 436, 457, 657, 329, 839]. (720 ends in 0; 355 in 5; 436 in 6; 457,657 in 7; 329,839 in 9. Relative order of ties preserved by stability.)", "marks": 2 },
+        { "text": "After tens digit: [720, 329, 436, 839, 355, 457, 657]. (2→720; 2→329; 3→436,839 (tie broken by units from prev step); 5→355; 5→457,657.)", "marks": 1 },
+        { "text": "After hundreds digit: [329, 355, 436, 457, 657, 720, 839]. Fully sorted. ✓", "marks": 1 },
+        { "text": "Correctness: consider two numbers x < y that differ first in digit position d (counting from LSD). After all passes on digits < d, they are in the correct relative order at position d's pass. The stable sort on digit d places x before y and never disturbs this ordering in subsequent passes (all later digits above d are equal for x and y). Inducting upward gives full correctness.", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a1-strat-d2b",
+      "topic": "strategies-for-algorithm-design",
+      "topicTitle": "Strategies for Algorithm Design",
+      "difficulty": 2,
+      "title": "Greedy algorithms: activity selection",
+      "totalMarks": 4,
+      "prompt": "In the activity selection problem, you are given n activities each with a start time sᵢ and finish time fᵢ. The goal is to select a maximum-size subset of mutually compatible activities (no two overlap).<br>(i) State the greedy algorithm for this problem.<br>(ii) Apply it to the following activities (sorted by finish time): A=(1,4), B=(3,5), C=(0,6), D=(5,7), E=(3,9), F=(5,9), G=(6,10), H=(8,11), I=(8,12), J=(2,14). List the selected activities.<br>(iii) State (without full proof) why the greedy choice — always picking the activity with the earliest finish time that is compatible with the current selection — is optimal.",
+      "markscheme": [
+        { "text": "(i) Sort activities by finish time. Greedily select the first activity, then for each subsequent activity (in finish-time order), select it if its start time ≥ finish time of the last selected activity.", "marks": 1 },
+        { "text": "(ii) Greedy selects: A (finishes at 4) → D (starts 5 ≥ 4, finishes 7) → H (starts 8 ≥ 7, finishes 11). Selected: {A, D, H}. Maximum size is 3 here. (Accept {A,D,I} or similarly maximal valid set.)", "marks": 2 },
+        { "text": "(iii) Exchange argument: if an optimal solution does not include the earliest-finishing compatible activity x, we can swap x for whichever activity it chose without reducing the set size (x finishes no later, so it conflicts with no more subsequent activities). Hence always choosing the earliest-finishing activity never worsens the solution.", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a1-strat-d4b",
+      "topic": "strategies-for-algorithm-design",
+      "topicTitle": "Strategies for Algorithm Design",
+      "difficulty": 4,
+      "title": "Dynamic programming: 0-1 knapsack",
+      "totalMarks": 8,
+      "prompt": "In the 0-1 knapsack problem, you have a knapsack of capacity W and n items. Item i has weight wᵢ and value vᵢ. Each item can be taken at most once. Find the maximum total value achievable without exceeding capacity W.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Define the DP subproblem. State the recurrence relation for dp[i][c] (the maximum value using items 1..i with remaining capacity c). Give the base cases.",
+          "markscheme": [
+            { "text": "dp[i][c] = maximum value achievable using items from {1,...,i} with total weight ≤ c.", "marks": 1 },
+            { "text": "Base cases: dp[0][c] = 0 for all c ≥ 0 (no items → zero value); dp[i][0] = 0 for all i (zero capacity → zero value).", "marks": 1 },
+            { "text": "Recurrence: if wᵢ > c: dp[i][c] = dp[i-1][c] (cannot take item i). If wᵢ ≤ c: dp[i][c] = max(dp[i-1][c], vᵢ + dp[i-1][c-wᵢ]) (skip or take item i).", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Apply the recurrence to the following instance with W = 5: Item 1: weight 2, value 6; Item 2: weight 2, value 10; Item 3: weight 3, value 12. Fill in the DP table dp[i][c] for i ∈ {0,1,2,3} and c ∈ {0,1,2,3,4,5}. State the optimal value.",
+          "markscheme": [
+            { "text": "Row i=0: all 0s. Row i=1 (w=2,v=6): dp[1][c]=0 for c<2; dp[1][c]=6 for c≥2.", "marks": 1 },
+            { "text": "Row i=2 (w=2,v=10): dp[2][0]=dp[2][1]=0; dp[2][2]=max(6,10)=10; dp[2][3]=max(6,10)=10; dp[2][4]=max(6,10+6)=16; dp[2][5]=max(6,10+6)=16.", "marks": 1 },
+            { "text": "Row i=3 (w=3,v=12): dp[3][0..2] same as row 2 (can't take item 3); dp[3][3]=max(10,12)=12; dp[3][4]=max(16,12+6)=18; dp[3][5]=max(16,12+10)=22. Optimal value: dp[3][5] = 22 (take items 2 and 3).", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 2,
+          "prompt": "State the time and space complexity of the DP algorithm. Describe how to recover the optimal set of items from the DP table.",
+          "markscheme": [
+            { "text": "Time: O(nW) — fill n×W table entries, each in O(1). Space: O(nW) for the full table (reducible to O(W) with rolling array, at the cost of not being able to recover items).", "marks": 1 },
+            { "text": "Item recovery: trace back through the table. At cell (i,c): if dp[i][c] = dp[i-1][c] then item i was not taken (move to (i-1,c)). Otherwise item i was taken (move to (i-1, c-wᵢ)). Repeat until i=0.", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a1-ds-d2b",
+      "topic": "data-structures",
+      "topicTitle": "Data Structures",
+      "difficulty": 2,
+      "title": "Queue from two stacks: amortised analysis",
+      "totalMarks": 4,
+      "prompt": "A queue can be simulated using two stacks S₁ (inbox) and S₂ (outbox). Enqueue pushes onto S₁; Dequeue pops from S₂ (if S₂ is empty, all elements of S₁ are transferred to S₂ first).<br>(i) Describe the Enqueue and Dequeue operations precisely.<br>(ii) Give a sequence of operations where a single Dequeue costs O(n) in the worst case.<br>(iii) Show that the amortised cost of each Enqueue and Dequeue is O(1) over any sequence of n operations. Use the accounting (credit) method.",
+      "markscheme": [
+        { "text": "(i) Enqueue(x): push x onto S₁. Dequeue: if S₂ non-empty, pop and return top of S₂. If S₂ empty, pop all elements from S₁ and push them onto S₂ (reversal), then pop and return top of S₂.", "marks": 1 },
+        { "text": "(ii) Enqueue n elements (all go into S₁). Then Dequeue: S₂ is empty, so all n elements are transferred — this one Dequeue costs O(n).", "marks": 1 },
+        { "text": "Accounting method: charge each Enqueue 2 credits: 1 pays for the push onto S₁, and 1 is saved as credit on the element. Dequeue from S₂ costs 1 credit (just a pop). If S₂ is empty and k elements must be transferred from S₁ to S₂, each of those k elements has a saved credit that pays for its transfer. So each operation costs O(1) amortised. Total cost of n operations = O(n).", "marks": 2 }
+      ]
     }
   ]
 }

@@ -641,6 +641,121 @@
           ]
         }
       ]
+    },
+    {
+      "id": "a2-graph-d2b",
+      "topic": "graphs-and-path-finding-algorithms",
+      "topicTitle": "Graphs and Path-Finding Algorithms",
+      "difficulty": 2,
+      "title": "Bellman-Ford: trace and negative cycle detection",
+      "totalMarks": 4,
+      "prompt": "Consider the directed weighted graph with vertices {A, B, C, D} and edges: A→B:6, A→C:7, B→C:8, B→D:5, B→E:−4, C→B:−3, C→D:9, D→A:2, E→C:7, E→D:−2, with source vertex A.<br>(i) State the time complexity of Bellman-Ford and explain why it is needed instead of Dijkstra's algorithm here.<br>(ii) Run one complete pass (relaxing all edges) of Bellman-Ford starting from initial distances d[A]=0, d[others]=∞. Give all updated distances after this first pass.<br>(iii) Explain how Bellman-Ford detects negative-weight cycles. Does this graph contain one?",
+      "hint": "In each pass, iterate over all edges (u,v,w) and set d[v] = min(d[v], d[u] + w). After |V|−1 passes, check if any edge can still be relaxed.",
+      "markscheme": [
+        { "text": "(i) O(|V||E|). Dijkstra requires non-negative edge weights; this graph has negative edges (B→E:−4, E→D:−2, C→B:−3), so Dijkstra may give incorrect results.", "marks": 1 },
+        { "text": "(ii) First pass (relaxing all edges once, order may vary): After A→B: d[B]=6; A→C: d[C]=7; B→D: d[D]=11; B→E: d[E]=2; C→B: d[B]=min(6,7+(−3))=4; E→D: d[D]=min(11,2+(−2))=0. Representative result: d[A]=0, d[B]=4, d[C]=7, d[D]=0, d[E]=2. (Exact values depend on edge processing order; accept any correct single-pass result.)", "marks": 2 },
+        { "text": "(iii) After |V|−1 = 4 passes, if any edge (u,v,w) still satisfies d[u]+w < d[v], a negative cycle is reachable from the source. In this graph: checking edge D→A gives d[D]+2 = 2, but d[A]=0 ≤ 2, so no improvement there. A full trace would confirm no negative cycle reachable from A is present in this particular graph. (Award mark for correct detection method; accept reasonable conclusion.)", "marks": 1 }
+      ]
+    },
+    {
+      "id": "a2-graph-d4b",
+      "topic": "graphs-and-path-finding-algorithms",
+      "topicTitle": "Graphs and Path-Finding Algorithms",
+      "difficulty": 4,
+      "title": "Johnson's algorithm for all-pairs shortest paths",
+      "totalMarks": 8,
+      "prompt": "Johnson's algorithm computes all-pairs shortest paths in O(V² log V + VE) time, making it efficient for sparse graphs with negative (but no negative-cycle) edges.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Describe Johnson's algorithm at a high level. Your description must include: (1) the re-weighting step using an auxiliary vertex, (2) which single-source algorithm is run and on what graph, and (3) how the re-weighted edges are used to recover original shortest-path distances.",
+          "markscheme": [
+            { "text": "Add a new vertex s with zero-weight edges to every other vertex. Run Bellman-Ford from s to obtain potentials h[v] for every v (the shortest distance from s to v).", "marks": 1 },
+            { "text": "Re-weight each edge (u,v,w) as w'(u,v) = w(u,v) + h[u] − h[v]. All re-weighted edges have w' ≥ 0 (by the triangle inequality for h). Run Dijkstra's algorithm from each vertex u using the re-weighted graph.", "marks": 1 },
+            { "text": "Recover original shortest paths: for each pair (u,v), the original shortest-path distance is d'(u,v) − h[u] + h[v], where d'(u,v) is Dijkstra's distance under the re-weighted graph.", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Explain why the re-weighting preserves shortest paths — i.e. why a shortest path in the original graph is also a shortest path under the re-weighted edge weights.",
+          "markscheme": [
+            { "text": "For any path p = v₀ → v₁ → ··· → vₖ, the re-weighted length is Σ w'(vᵢ,vᵢ₊₁) = Σ (w(vᵢ,vᵢ₊₁) + h[vᵢ] − h[vᵢ₊₁]).", "marks": 1 },
+            { "text": "This telescopes to: Σ w(vᵢ,vᵢ₊₁) + h[v₀] − h[vₖ]. Since h[v₀] and h[vₖ] depend only on the endpoints (not the path), adding a constant to all paths between the same pair of endpoints does not change which path is shortest.", "marks": 1 },
+            { "text": "Non-negativity: h satisfies h[v] ≤ h[u] + w(u,v) by the triangle inequality (Bellman-Ford gives shortest paths from s). Hence w'(u,v) = w(u,v) + h[u] − h[v] ≥ 0, making Dijkstra applicable.", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 2,
+          "prompt": "State the time complexity of Johnson's algorithm. Compare it to running Floyd-Warshall. When is Johnson's preferred?",
+          "markscheme": [
+            { "text": "Johnson's: O(VE log V) (one Bellman-Ford O(VE) + V Dijkstra runs each O((V+E) log V) ≈ O(VE log V)). Floyd-Warshall: Θ(V³).", "marks": 1 },
+            { "text": "Johnson's is preferred for sparse graphs (E << V²): e.g. E = O(V) gives O(V² log V) vs O(V³). Floyd-Warshall is simpler to implement and preferred for dense graphs where E ≈ V².", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a2-subgraph-d2b",
+      "topic": "graphs-and-subgraphs",
+      "topicTitle": "Graphs and Subgraphs",
+      "difficulty": 2,
+      "title": "Bipartite matching via augmenting paths",
+      "totalMarks": 6,
+      "prompt": "Maximum bipartite matching: given a bipartite graph G = (L ∪ R, E), find a matching of maximum size.<br>(i) Define a matching and a maximum matching. Give an example distinguishing a maximal matching from a maximum matching.<br>(ii) Define an augmenting path with respect to a matching M. State the augmenting path theorem: a matching M is maximum iff there is no augmenting path.<br>(iii) Apply augmenting path search to find a maximum matching in the bipartite graph with L = {a,b,c}, R = {1,2,3}, and edges {a-1, a-2, b-2, b-3, c-3}. Start from the empty matching.",
+      "markscheme": [
+        { "text": "(i) A matching is a set of edges with no shared endpoints. A maximum matching has the largest possible size. Maximal vs maximum: in a path graph A−B−C−D, the matching {B−C} is maximal (no edge can be added) but not maximum ({A−B, C−D} has size 2).", "marks": 2 },
+        { "text": "(ii) An augmenting path (w.r.t. M) is an alternating path (alternating matched/unmatched edges) that starts and ends at unmatched vertices. Augmenting path theorem: M is maximum iff no augmenting path exists (Berge's theorem). If an augmenting path exists, XOR-ing M with the path's edges gives a matching of size |M|+1.", "marks": 2 },
+        { "text": "(iii) Start M=∅. Find augmenting path: a−1 (unmatched to unmatched). Add to M: M={a-1}. Find augmenting path: b−2 (unmatched to unmatched). M={a-1,b-2}. Find augmenting path: c−3 (unmatched to unmatched). M={a-1,b-2,c-3}. No more augmenting paths. Maximum matching: {a-1, b-2, c-3}, size 3 (perfect matching).", "marks": 2 }
+      ]
+    },
+    {
+      "id": "a2-advds-d4b",
+      "topic": "advanced-data-structures",
+      "topicTitle": "Advanced Data Structures",
+      "difficulty": 4,
+      "title": "Fibonacci heap: operations and amortised analysis",
+      "totalMarks": 7,
+      "prompt": "Fibonacci heaps support mergeable priority queue operations with better amortised complexities than binary or binomial heaps.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "State the amortised time complexities of the following Fibonacci heap operations: Insert, Peek-Min, Extract-Min, Decrease-Key, and Union (Destructive-Union). Compare to a binary heap for each.",
+          "markscheme": [
+            { "text": "Insert: Fibonacci O(1) amortised; binary heap O(log n). Peek-Min: both O(1). Extract-Min: Fibonacci O(log n) amortised; binary heap O(log n).", "marks": 1 },
+            { "text": "Decrease-Key: Fibonacci O(1) amortised (the key advantage); binary heap O(log n). Union: Fibonacci O(1); binary heap O(n).", "marks": 1 },
+            { "text": "The O(1) amortised Decrease-Key is why Dijkstra's algorithm with a Fibonacci heap achieves O(V log V + E) vs O((V+E) log V) with a binary heap — crucial for dense graphs.", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "The Fibonacci heap uses a potential function Φ = (number of roots) + 2 × (number of marked nodes). Explain: (i) when a node becomes marked; (ii) the purpose of cascading cuts; (iii) why Decrease-Key has O(1) amortised cost using this potential.",
+          "markscheme": [
+            { "text": "(i) A node becomes marked when one of its children is cut away (i.e. it has lost exactly one child since it was most recently made a root). A root is always unmarked.", "marks": 1 },
+            { "text": "(ii) Cascading cuts: when a marked node has a child cut from it (the second child loss), the node itself is cut from its parent and becomes a root (and is unmarked). This cascades up the tree. Purpose: ensures that tree degrees stay O(log n), bounding the consolidation cost after Extract-Min.", "marks": 1 },
+            { "text": "(iii) Decrease-Key cuts the node (and possibly cascades). Say k cascading cuts occur. Actual cost = O(k). Each cascading cut turns a marked node into a root (unmarked): potential change ≈ k×(+1 root) + k×(−2 marked) + 1×(possibly new marked) = k − 2k + O(1) = −k + O(1). Amortised cost = actual + ΔΦ = O(k) + (−k + O(1)) = O(1).", "marks": 2 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a2-geo-d3b",
+      "topic": "geometric-algorithms",
+      "topicTitle": "Geometric Algorithms",
+      "difficulty": 3,
+      "title": "Jarvis march (gift wrapping)",
+      "totalMarks": 6,
+      "prompt": "The Jarvis march (gift wrapping) algorithm computes the convex hull of a point set by repeatedly selecting the point that makes the smallest counterclockwise angle from the previous hull edge.<br>(i) Describe the Jarvis march algorithm. State its time complexity in terms of n (number of points) and h (number of hull vertices).<br>(ii) Apply Jarvis march to the point set P = {A=(0,0), B=(4,0), C=(4,3), D=(2,4), E=(0,3), F=(2,1)}. Starting from the lowest point, show which point is selected at each step, and state the final hull.<br>(iii) Compare Jarvis march and Graham scan: when is each preferred?",
+      "hint": "At each step, pick the point that all other points are to the left of (i.e. the one that minimises the polar angle). Use cross products to determine left/right turns.",
+      "markscheme": [
+        { "text": "(i) Jarvis march: start from the leftmost (or lowest) point. At each step, scan all remaining points and select the one that all others are to the left of (or on), using cross products. Add to hull; repeat until back at the start. Time: O(nh) — n comparisons per hull vertex, h vertices total.", "marks": 2 },
+        { "text": "(ii) Start at A=(0,0) (lowest). From A: scan all — B=(4,0) makes smallest angle with the rightward direction (all points are to the left of or on line A→B). Select B. From B: C=(4,3) is selected (scan shows C to the left of all others from B). From C: D=(2,4) is selected. From D: E=(0,3) is selected. From E: A=(0,0) is selected (closes hull). Hull: A→B→C→D→E→A. Note: F=(2,1) is interior.", "marks": 3 },
+        { "text": "(iii) Graham scan: O(n log n) due to angle sort; always O(n log n) regardless of h. Jarvis march: O(nh); better when h is small (e.g. h = O(1) → O(n)). Prefer Graham scan for large h or when the sort is already done; prefer Jarvis march when the hull has very few vertices.", "marks": 1 }
+      ]
     }
   ]
 }

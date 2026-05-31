@@ -1,1 +1,521 @@
-{ "module": "discrete-maths", "title": "Discrete Mathematics — Practice Questions", "questions": [] }
+{
+  "module": "discrete-maths",
+  "title": "Discrete Mathematics — Practice Questions",
+  "questions": [
+    {
+      "id": "dm-proofs-d1",
+      "topic": "proofs",
+      "topicTitle": "Proofs",
+      "difficulty": 1,
+      "title": "Converse, contrapositive, and negation",
+      "totalMarks": 4,
+      "prompt": "Consider the statement: <em>If n² is even, then n is even</em> (where n is an integer).<br>(i) Write the <strong>converse</strong> of this statement.<br>(ii) Write the <strong>contrapositive</strong> of this statement.<br>(iii) Write the <strong>negation</strong> of this statement.<br>(iv) State which of the original statement and its converse are true, and which proof strategy is most naturally suited to proving the original statement.",
+      "hint": "The contrapositive of 'if P then Q' is 'if not Q then not P', and is logically equivalent to the original.",
+      "markscheme": [
+        { "text": "(i) Converse: If n is even, then n² is even.", "marks": 1 },
+        { "text": "(ii) Contrapositive: If n is odd, then n² is odd. (Logically equivalent to the original.)", "marks": 1 },
+        { "text": "(iii) Negation: There exists an integer n such that n² is even but n is odd.", "marks": 1 },
+        { "text": "(iv) Both the original and its converse are true. Proof by contrapositive is most natural for the original: suppose n is odd, so n = 2k+1; then n² = 4k²+4k+1 = 2(2k²+2k)+1, which is odd.", "marks": 1 }
+      ]
+    },
+    {
+      "id": "dm-proofs-d2",
+      "topic": "proofs",
+      "topicTitle": "Proofs",
+      "difficulty": 2,
+      "title": "Direct proof of congruence preservation",
+      "totalMarks": 4,
+      "prompt": "Let m, n, a, b, k be integers with k > 0.<br>(i) State the definition of m ≡ a (mod k).<br>(ii) Prove directly: if m ≡ a (mod k) and n ≡ b (mod k), then m + n ≡ a + b (mod k).<br>(iii) Using a similar argument, prove that m · n ≡ a · b (mod k).",
+      "markscheme": [
+        { "text": "(i) m ≡ a (mod k) means k divides (m − a), i.e. there exists an integer q such that m − a = qk.", "marks": 1 },
+        { "text": "(ii) m − a = qk and n − b = rk for some q, r ∈ ℤ. Then (m+n) − (a+b) = (m−a)+(n−b) = qk+rk = (q+r)k, so k | (m+n−a−b), i.e. m+n ≡ a+b (mod k).", "marks": 1 },
+        { "text": "(iii) mn − ab = mn − an + an − ab = n(m−a) + a(n−b) = n·qk + a·rk = (nq+ar)k, so k | (mn−ab), i.e. mn ≡ ab (mod k).", "marks": 2 }
+      ]
+    },
+    {
+      "id": "dm-proofs-d3",
+      "topic": "proofs",
+      "topicTitle": "Proofs",
+      "difficulty": 3,
+      "title": "Proof by contradiction: irrationality of √3",
+      "totalMarks": 5,
+      "prompt": "Prove by contradiction that √3 is irrational. Your proof should clearly state the assumption, derive the contradiction, and explain how the contradiction arises.",
+      "hint": "Assume √3 = p/q in lowest terms. What does squaring tell you about divisibility of p by 3?",
+      "markscheme": [
+        { "text": "Assume for contradiction that √3 is rational, so √3 = p/q where p, q ∈ ℤ, q ≠ 0, and gcd(p,q) = 1 (fraction in lowest terms).", "marks": 1 },
+        { "text": "Then 3 = p²/q², so p² = 3q², which means 3 | p².", "marks": 1 },
+        { "text": "Since 3 is prime and 3 | p², we have 3 | p. Write p = 3s for some s ∈ ℤ.", "marks": 1 },
+        { "text": "Substituting: (3s)² = 3q², so 9s² = 3q², so q² = 3s², meaning 3 | q² and hence 3 | q.", "marks": 1 },
+        { "text": "But then 3 | p and 3 | q, contradicting gcd(p,q) = 1. Therefore √3 is irrational.", "marks": 1 }
+      ]
+    },
+    {
+      "id": "dm-proofs-d4",
+      "topic": "proofs",
+      "topicTitle": "Proofs",
+      "difficulty": 4,
+      "title": "Mathematical induction",
+      "totalMarks": 6,
+      "prompt": "This question is about proof by induction.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Prove by induction that for all n ∈ ℕ with n ≥ 1: 1 + 2 + 3 + ··· + n = n(n+1)/2. Your proof must clearly identify the base case, inductive hypothesis, and inductive step.",
+          "markscheme": [
+            { "text": "Base case n = 1: LHS = 1; RHS = 1·2/2 = 1. ✓", "marks": 1 },
+            { "text": "Inductive hypothesis: assume the formula holds for some k ≥ 1, i.e. 1+2+···+k = k(k+1)/2.", "marks": 1 },
+            { "text": "Inductive step: 1+2+···+k+(k+1) = k(k+1)/2 + (k+1) = (k+1)(k/2+1) = (k+1)(k+2)/2, which is the formula for n = k+1. By induction, the result holds for all n ≥ 1.", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Prove by induction that n! > 2ⁿ for all integers n ≥ 4.",
+          "markscheme": [
+            { "text": "Base case n = 4: 4! = 24 > 16 = 2⁴. ✓", "marks": 1 },
+            { "text": "Inductive hypothesis: assume k! > 2ᵏ for some k ≥ 4.", "marks": 1 },
+            { "text": "Inductive step: (k+1)! = (k+1)·k! > (k+1)·2ᵏ ≥ 2·2ᵏ = 2ᵏ⁺¹, where the first inequality uses the inductive hypothesis and the second uses k+1 ≥ 5 > 2. By induction, n! > 2ⁿ for all n ≥ 4.", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dm-proofs-d5",
+      "topic": "proofs",
+      "topicTitle": "Proofs",
+      "difficulty": 5,
+      "title": "Fermat's Little Theorem: statement, application, and proof",
+      "totalMarks": 8,
+      "prompt": "This question concerns Fermat's Little Theorem.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 2,
+          "prompt": "State Fermat's Little Theorem. Write down what it implies about i^p mod p for any integer i and prime p.",
+          "markscheme": [
+            { "text": "Fermat's Little Theorem: for all integers i and primes p, i^p ≡ i (mod p).", "marks": 1 },
+            { "text": "Equivalently: if p does not divide i then i^(p−1) ≡ 1 (mod p). In either case, i^p mod p = i mod p.", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 2,
+          "prompt": "Use Fermat's Little Theorem to compute (i) 7¹⁰⁰ mod 13 and (ii) 3⁵⁰ mod 7. Show your working.",
+          "markscheme": [
+            { "text": "(i) By FLT, 7¹² ≡ 1 (mod 13). Write 100 = 8×12 + 4, so 7¹⁰⁰ ≡ 7⁴ (mod 13). Now 7² = 49 ≡ 10 (mod 13) and 7⁴ ≡ 100 ≡ 9 (mod 13). Answer: 9.", "marks": 1 },
+            { "text": "(ii) By FLT, 3⁶ ≡ 1 (mod 7). Write 50 = 8×6 + 2, so 3⁵⁰ ≡ 3² = 9 ≡ 2 (mod 7). Answer: 2.", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 4,
+          "prompt": "Prove Fermat's Little Theorem — that i^p ≡ i (mod p) for all integers i ≥ 0 and all primes p — by induction on i. You may use the Binomial Theorem and the fact that for a prime p and 1 ≤ k ≤ p−1, the binomial coefficient C(p,k) is divisible by p.",
+          "markscheme": [
+            { "text": "Base case i = 0: 0^p = 0 ≡ 0 (mod p). ✓", "marks": 1 },
+            { "text": "Inductive hypothesis: assume k^p ≡ k (mod p) for some k ≥ 0.", "marks": 1 },
+            { "text": "Inductive step: by the Binomial Theorem, (k+1)^p = Σⱼ₌₀ᵖ C(p,j) kʲ = k^p + C(p,1)k^(p-1) + ··· + C(p,p-1)k + 1.", "marks": 1 },
+            { "text": "For 1 ≤ j ≤ p−1, p | C(p,j) since p is prime (C(p,j) = p!/(j!(p-j)!) and p divides the numerator but not the denominator). All middle terms vanish mod p, giving (k+1)^p ≡ k^p + 1 ≡ k + 1 (mod p) by the inductive hypothesis. By induction, i^p ≡ i (mod p) for all i ≥ 0.", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dm-numbers-d1",
+      "topic": "numbers",
+      "topicTitle": "Numbers",
+      "difficulty": 1,
+      "title": "Euclid's algorithm",
+      "totalMarks": 4,
+      "prompt": "Use Euclid's algorithm to compute gcd(252, 105). Show every step of the algorithm as a sequence of division equations a = q·b + r. State the final answer and express gcd(252, 105) as an integer linear combination of 252 and 105.",
+      "hint": "The algorithm terminates when the remainder is 0; the GCD is the last non-zero remainder. Back-substitute to find the linear combination.",
+      "markscheme": [
+        { "text": "252 = 2×105 + 42; 105 = 2×42 + 21; 42 = 2×21 + 0. So gcd(252, 105) = 21.", "marks": 2 },
+        { "text": "Back-substitution: 21 = 105 − 2×42 = 105 − 2×(252 − 2×105) = 5×105 − 2×252.", "marks": 2 }
+      ]
+    },
+    {
+      "id": "dm-numbers-d2",
+      "topic": "numbers",
+      "topicTitle": "Numbers",
+      "difficulty": 2,
+      "title": "Multiplicative inverse via Extended Euclid",
+      "totalMarks": 5,
+      "prompt": "Find the multiplicative inverse of 17 in ℤ₄₁ (the integers modulo 41). Use the Extended Euclid's algorithm, showing all steps. Verify your answer by checking that 17 × (your answer) ≡ 1 (mod 41).",
+      "hint": "The inverse of [n]ₘ exists iff gcd(m,n)=1. Run Euclid's algorithm on (41, 17) then back-substitute to write 1 as a linear combination of 41 and 17.",
+      "markscheme": [
+        { "text": "Euclid's algorithm: 41 = 2×17 + 7; 17 = 2×7 + 3; 7 = 2×3 + 1; 3 = 3×1 + 0. So gcd(41, 17) = 1 (inverse exists).", "marks": 2 },
+        { "text": "Back-substitution: 1 = 7 − 2×3 = 7 − 2×(17−2×7) = 5×7 − 2×17 = 5×(41−2×17) − 2×17 = 5×41 − 12×17.", "marks": 2 },
+        { "text": "So −12 ≡ 29 (mod 41). Inverse is 29. Verify: 17×29 = 493 = 12×41+1 ≡ 1 (mod 41). ✓", "marks": 1 }
+      ]
+    },
+    {
+      "id": "dm-numbers-d3",
+      "topic": "numbers",
+      "topicTitle": "Numbers",
+      "difficulty": 3,
+      "title": "Induction in number theory",
+      "totalMarks": 5,
+      "prompt": "This question concerns induction arguments in number theory.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Prove by induction that for all n ∈ ℕ (n ≥ 0), the expression n³ + 2n is divisible by 3.",
+          "markscheme": [
+            { "text": "Base case n = 0: 0³ + 2·0 = 0 = 3·0. Divisible by 3. ✓", "marks": 1 },
+            { "text": "Inductive hypothesis: assume k³ + 2k = 3m for some m ∈ ℤ and k ≥ 0.", "marks": 1 },
+            { "text": "Inductive step: (k+1)³ + 2(k+1) = k³ + 3k² + 3k + 1 + 2k + 2 = (k³ + 2k) + 3(k² + k + 1) = 3m + 3(k²+k+1) = 3(m+k²+k+1), which is divisible by 3. By induction the result holds for all n ≥ 0.", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 2,
+          "prompt": "State the Principle of Strong Induction. Use it to prove that every integer n ≥ 2 has at least one prime factor.",
+          "markscheme": [
+            { "text": "Strong induction from basis ℓ: if P(ℓ) holds, and for any n ≥ ℓ, (P(k) for all ℓ ≤ k ≤ n) implies P(n+1), then P(m) holds for all m ≥ ℓ.", "marks": 1 },
+            { "text": "Proof: Base n=2: 2 is prime so 2 is its own prime factor. Inductive step: suppose every integer in [2..n] has a prime factor. If n+1 is prime, it is its own factor. If composite, n+1 = a·b with 2 ≤ a ≤ n; by hypothesis a has a prime factor p; since p|a and a|(n+1), p|(n+1). Done.", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dm-numbers-d4",
+      "topic": "numbers",
+      "topicTitle": "Numbers",
+      "difficulty": 4,
+      "title": "GCD characterisation and modular inverses",
+      "totalMarks": 7,
+      "prompt": "This question concerns the GCD Characterisation Theorem and its applications.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 2,
+          "prompt": "State the GCD Characterisation Theorem (Theorem 92 in the lectures). What does it say about the relationship between gcd(m, n) and integer linear combinations of m and n?",
+          "markscheme": [
+            { "text": "For all positive integers m and n, gcd(m, n) is the least positive integer expressible as am + bn for integers a, b (the least positive linear combination of m and n).", "marks": 1 },
+            { "text": "Equivalently: {am+bn | a,b ∈ ℤ} = {k·gcd(m,n) | k ∈ ℤ} — every linear combination of m and n is a multiple of gcd(m,n), and gcd(m,n) itself is achievable.", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Use the Extended Euclid's algorithm to express gcd(35, 22) as an integer linear combination of 35 and 22. Show all steps.",
+          "markscheme": [
+            { "text": "Euclid: 35 = 1×22 + 13; 22 = 1×13 + 9; 13 = 1×9 + 4; 9 = 2×4 + 1; 4 = 4×1 + 0. So gcd(35,22) = 1.", "marks": 1 },
+            { "text": "Back-substitution: 1 = 9 − 2×4 = 9 − 2×(13−9) = 3×9 − 2×13 = 3×(22−13) − 2×13 = 3×22 − 5×13.", "marks": 1 },
+            { "text": "Continuing: 1 = 3×22 − 5×(35−22) = 8×22 − 5×35. So gcd(35,22) = 1 = (−5)×35 + 8×22.", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 2,
+          "prompt": "Using the result of part (b), find the multiplicative inverse of [22]₃₅ in ℤ₃₅. State why the inverse exists and verify your answer.",
+          "markscheme": [
+            { "text": "The inverse exists because gcd(35,22) = 1 (from part b), so 22 and 35 are coprime.", "marks": 1 },
+            { "text": "From part (b): 1 = 8×22 − 5×35, so 8×22 ≡ 1 (mod 35). The inverse of [22]₃₅ is [8]₃₅. Verify: 22×8 = 176 = 5×35+1 ≡ 1 (mod 35). ✓", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dm-numbers-d5",
+      "topic": "numbers",
+      "topicTitle": "Numbers",
+      "difficulty": 5,
+      "title": "Diffie-Hellman and RSA cryptography",
+      "totalMarks": 9,
+      "prompt": "This question concerns public-key cryptography.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "Describe the Diffie-Hellman key exchange scheme. Work through an example with public parameters prime p = 11, base c = 2, Alice's secret a = 3, and Bob's secret b = 6. Show all intermediate values and confirm both parties obtain the same shared secret.",
+          "markscheme": [
+            { "text": "Alice computes α = c^a mod p = 2³ mod 11 = 8 and sends α to Bob. Bob computes β = c^b mod p = 2⁶ mod 11 = 64 mod 11 = 9 and sends β to Alice.", "marks": 1 },
+            { "text": "Alice computes k = β^a mod p = 9³ mod 11 = 729 mod 11 = 3. Bob computes k = α^b mod p = 8⁶ mod 11: 8² ≡ 9, 8³ ≡ 72 ≡ 6, 8⁶ ≡ 36 ≡ 3 (mod 11). Both obtain shared secret k = 3. ✓", "marks": 1 },
+            { "text": "Security: an eavesdropper who sees α = 8 and β = 9 must solve the discrete logarithm problem (find a with 2^a ≡ 8 mod 11), which is computationally hard for large primes p.", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "An RSA scheme uses prime p = 11 and encryption exponent e = 3. (i) Verify gcd(p−1, e) = 1. (ii) Find the decryption exponent d. (iii) Encrypt the message k = 5, obtaining ciphertext ℓ, then decrypt ℓ to recover 5.",
+          "markscheme": [
+            { "text": "(i) p−1 = 10; gcd(10,3) = 1 since 10 = 3×3+1. ✓", "marks": 1 },
+            { "text": "(ii) d = inverse of e = 3 in ℤ₁₀. Need 3d ≡ 1 (mod 10). Since 3×7 = 21 ≡ 1 (mod 10), d = 7.", "marks": 1 },
+            { "text": "(iii) Encrypt: ℓ = 5³ mod 11 = 125 mod 11 = 4. Decrypt: 4⁷ mod 11: 4² ≡ 5, 4⁴ ≡ 3, 4⁷ = 4⁴·4²·4 ≡ 3·5·4 = 60 ≡ 5 (mod 11). Recovered k = 5. ✓", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Prove that RSA decryption always recovers the original message: (k^e)^d ≡ k (mod p). Cite Fermat's Little Theorem explicitly. (You may assume p does not divide k.)",
+          "markscheme": [
+            { "text": "By construction, ed ≡ 1 (mod p−1), so ed = 1 + t(p−1) for some integer t ≥ 0.", "marks": 1 },
+            { "text": "By Fermat's Little Theorem, k^(p−1) ≡ 1 (mod p) (since p is prime and p ∤ k). Therefore k^(ed) = k^(1+t(p−1)) = k · (k^(p−1))^t ≡ k · 1 = k (mod p).", "marks": 1 },
+            { "text": "Hence the decryption exponent d perfectly inverts the encryption: (k^e)^d ≡ k (mod p). ✓", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dm-sets-d1",
+      "topic": "sets",
+      "topicTitle": "Sets",
+      "difficulty": 1,
+      "title": "Set operations and De Morgan's law",
+      "totalMarks": 3,
+      "prompt": "Let U = {1,2,3,4,5,6,7,8} be the universal set, A = {1,2,3,5}, and B = {2,4,5,6}.<br>(i) Compute A ∩ B and (A ∩ B)ᶜ (the complement with respect to U).<br>(ii) Compute Aᶜ and Bᶜ, and then compute Aᶜ ∪ Bᶜ.<br>(iii) State De Morgan's law relating (A ∩ B)ᶜ and Aᶜ ∪ Bᶜ, and verify it holds here.",
+      "markscheme": [
+        { "text": "(i) A ∩ B = {2,5}; (A ∩ B)ᶜ = U \\ {2,5} = {1,3,4,6,7,8}.", "marks": 1 },
+        { "text": "(ii) Aᶜ = {4,6,7,8}; Bᶜ = {1,3,7,8}; Aᶜ ∪ Bᶜ = {1,3,4,6,7,8}.", "marks": 1 },
+        { "text": "(iii) De Morgan's law: (A ∩ B)ᶜ = Aᶜ ∪ Bᶜ. Both sides give {1,3,4,6,7,8}. ✓", "marks": 1 }
+      ]
+    },
+    {
+      "id": "dm-sets-d2",
+      "topic": "sets",
+      "topicTitle": "Sets",
+      "difficulty": 2,
+      "title": "Injective, surjective, bijective functions",
+      "totalMarks": 4,
+      "prompt": "For each of the following functions f : ℤ → ℤ, determine whether it is (a) injective (one-to-one), (b) surjective (onto), and hence (c) bijective. Justify each answer.<br>(i) f(n) = n + 1<br>(ii) f(n) = n²<br>(iii) f(n) = 2n",
+      "markscheme": [
+        { "text": "(i) f(n)=n+1: Injective (n+1=m+1 implies n=m). Surjective (for any y ∈ ℤ, f(y−1)=y). Bijective.", "marks": 1 },
+        { "text": "(ii) f(n)=n²: Not injective (f(1)=f(−1)=1 but 1≠−1). Not surjective (−1 has no preimage). Not bijective.", "marks": 2 },
+        { "text": "(iii) f(n)=2n: Injective (2n=2m implies n=m). Not surjective (1 ∈ ℤ has no preimage as 2n is always even). Not bijective.", "marks": 1 }
+      ]
+    },
+    {
+      "id": "dm-sets-d3",
+      "topic": "sets",
+      "topicTitle": "Sets",
+      "difficulty": 3,
+      "title": "Counting functions, injections, and surjections",
+      "totalMarks": 5,
+      "prompt": "Let A = {a, b, c} and B = {0, 1}. Using the lecture cardinality formulae, compute:<br>(i) The number of functions f : A → B.<br>(ii) The number of injections A ↪ B.<br>(iii) The number of surjections A ↠ B. (Use Stirling numbers: S(3,2) = 3.)<br>(iv) The cardinality of 𝒫(A × B), the powerset of A × B.",
+      "markscheme": [
+        { "text": "(i) #(A→B) = |B|^|A| = 2³ = 8.", "marks": 1 },
+        { "text": "(ii) No injections exist: |A|=3 > |B|=2, so we cannot map 3 distinct elements to 2 distinct values injectively. #Inj(A,B) = 0.", "marks": 1 },
+        { "text": "(iii) #Sur(A,B) = S(|A|,|B|)·|B|! = S(3,2)·2! = 3·2 = 6. (The 3 partitions of {a,b,c} into 2 non-empty blocks are {a},{b,c}; {b},{a,c}; {c},{a,b}; each gives 2! assignments.)", "marks": 2 },
+        { "text": "(iv) |A×B| = 3×2 = 6; |𝒫(A×B)| = 2⁶ = 64.", "marks": 1 }
+      ]
+    },
+    {
+      "id": "dm-sets-d4",
+      "topic": "sets",
+      "topicTitle": "Sets",
+      "difficulty": 4,
+      "title": "Element-chasing proof of distributivity",
+      "totalMarks": 5,
+      "prompt": "Prove the following set identity by element chasing (showing each side is a subset of the other):<br><strong>A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C)</strong><br>for any sets A, B, C in a universe U.",
+      "hint": "To show X = Y, show X ⊆ Y and Y ⊆ X. For each, take an arbitrary element of the left side and show it belongs to the right side.",
+      "markscheme": [
+        { "text": "(⊆) Let x ∈ A ∩ (B ∪ C). Then x ∈ A and x ∈ B ∪ C, so x ∈ A and (x ∈ B or x ∈ C).", "marks": 1 },
+        { "text": "If x ∈ B then x ∈ A ∩ B ⊆ (A ∩ B) ∪ (A ∩ C). If x ∈ C then x ∈ A ∩ C ⊆ (A ∩ B) ∪ (A ∩ C). In both cases x ∈ RHS.", "marks": 2 },
+        { "text": "(⊇) Let x ∈ (A∩B) ∪ (A∩C). Either x ∈ A∩B (so x ∈ A and x ∈ B ⊆ B∪C) or x ∈ A∩C (so x ∈ A and x ∈ C ⊆ B∪C). In both cases x ∈ A and x ∈ B∪C, so x ∈ A∩(B∪C). Hence equality.", "marks": 2 }
+      ]
+    },
+    {
+      "id": "dm-sets-d5a",
+      "topic": "sets",
+      "topicTitle": "Sets",
+      "difficulty": 4,
+      "title": "Equivalence relations and quotient sets",
+      "totalMarks": 6,
+      "prompt": "This question concerns equivalence relations.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 2,
+          "prompt": "Define what it means for a binary relation E on a set A to be an equivalence relation. State all three required properties.",
+          "markscheme": [
+            { "text": "E ⊆ A × A is an equivalence relation if it is: (1) Reflexive: ∀a ∈ A, a E a; (2) Symmetric: ∀a,b ∈ A, a E b → b E a; (3) Transitive: ∀a,b,c ∈ A, (a E b ∧ b E c) → a E c.", "marks": 2 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Define the relation E on ℤ by m E n iff 3 | (m − n) (i.e. m ≡ n mod 3). Prove that E is an equivalence relation by verifying all three properties.",
+          "markscheme": [
+            { "text": "Reflexive: m − m = 0 = 3·0, so 3 | (m−m). Thus m E m for all m ∈ ℤ. ✓", "marks": 1 },
+            { "text": "Symmetric: if m E n then 3 | (m−n), so m−n = 3k. Then n−m = −3k = 3(−k), so 3 | (n−m), giving n E m. ✓", "marks": 1 },
+            { "text": "Transitive: if m E n and n E p then m−n = 3k and n−p = 3j. Then m−p = (m−n)+(n−p) = 3(k+j), so 3 | (m−p), giving m E p. ✓", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 1,
+          "prompt": "Describe the equivalence classes of E. How many are there?",
+          "markscheme": [
+            { "text": "There are exactly 3 equivalence classes: [0] = {…,−6,−3,0,3,6,…}, [1] = {…,−5,−2,1,4,7,…}, [2] = {…,−4,−1,2,5,8,…}. These partition ℤ.", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dm-sets-d5b",
+      "topic": "sets",
+      "topicTitle": "Sets",
+      "difficulty": 5,
+      "title": "Countability and Cantor's theorem",
+      "totalMarks": 8,
+      "prompt": "This question concerns infinite cardinalities.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 2,
+          "prompt": "Define what it means for a set A to be (i) enumerable and (ii) countable. Show that the set of all integers ℤ is countable by exhibiting an explicit surjection f : ℕ → ℤ.",
+          "markscheme": [
+            { "text": "A is enumerable if there exists a surjection ℕ ↠ A. A is countable if it is either empty or enumerable.", "marks": 1 },
+            { "text": "Define f(0)=0, f(2k−1)=k, f(2k)=−k for k ≥ 1. This enumerates ℤ as 0, 1, −1, 2, −2, 3, −3, … covering every integer. So ℤ is enumerable (countable).", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 3,
+          "prompt": "Prove that ℕ × ℕ is countable by describing an explicit enumeration (surjection ℕ → ℕ × ℕ).",
+          "markscheme": [
+            { "text": "Use Cantor's diagonal enumeration: list pairs by diagonals of constant sum m+n = 0, 1, 2, …: (0,0); then (0,1),(1,0); then (0,2),(1,1),(2,0); and so on.", "marks": 1 },
+            { "text": "Every pair (m,n) appears on the diagonal m+n = m+n and is listed at a finite position. This gives a well-defined surjection ℕ → ℕ×ℕ.", "marks": 1 },
+            { "text": "Since there is a surjection ℕ → ℕ×ℕ, the set ℕ×ℕ is enumerable and hence countable. (Also injective, so it is a bijection, giving ℕ×ℕ ≅ ℕ.)", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 3,
+          "prompt": "Prove Cantor's theorem: for any set A, there is no surjection A ↠ 𝒫(A). Deduce that 𝒫(ℕ) is uncountable.",
+          "markscheme": [
+            { "text": "Suppose for contradiction f : A → 𝒫(A) is a surjection. Define the diagonal set D = {a ∈ A | a ∉ f(a)}. Then D ⊆ A, so D ∈ 𝒫(A).", "marks": 1 },
+            { "text": "Since f is surjective, ∃d ∈ A with f(d) = D. Ask: is d ∈ D? If d ∈ D, then by definition d ∉ f(d) = D — contradiction. If d ∉ D, then by definition d ∈ D — contradiction. Either case is impossible.", "marks": 1 },
+            { "text": "Hence no surjection A → 𝒫(A) exists. In particular, no surjection ℕ → 𝒫(ℕ) exists, so 𝒫(ℕ) is not enumerable, i.e. 𝒫(ℕ) is uncountable.", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dm-rl-d1",
+      "topic": "regular-languages-and-finite-automata",
+      "topicTitle": "Regular Languages and Finite Automata",
+      "difficulty": 1,
+      "title": "Tracing a DFA",
+      "totalMarks": 4,
+      "prompt": "Consider the DFA M with states {q₀, q₁, q₂}, alphabet Σ = {a, b}, start state q₀, accepting states {q₂}, and the following transition function:<br><br><table border='1' style='border-collapse:collapse;padding:4px'><tr><th>State</th><th>a</th><th>b</th></tr><tr><td>q₀</td><td>q₁</td><td>q₀</td></tr><tr><td>q₁</td><td>q₁</td><td>q₂</td></tr><tr><td>q₂</td><td>q₁</td><td>q₀</td></tr></table><br>(i) Trace M on the input <code>aab</code>, listing the state after each character. Does M accept?<br>(ii) Trace M on the input <code>bab</code>. Does M accept?<br>(iii) Give an informal description of the language L(M).",
+      "markscheme": [
+        { "text": "(i) Start q₀. Read a → q₁. Read a → q₁. Read b → q₂. Final state q₂ ∈ {q₂}, so M accepts 'aab'. ✓", "marks": 1 },
+        { "text": "(ii) Start q₀. Read b → q₀. Read a → q₁. Read b → q₂. Final state q₂. M accepts 'bab'. ✓", "marks": 1 },
+        { "text": "(iii) M accepts exactly the strings over {a,b} that end with 'ab' (the suffix is exactly one or more a's followed by a single b, with the final two characters being 'ab'). Equivalently: strings whose last character is b immediately preceded by at least one a.", "marks": 2 }
+      ]
+    },
+    {
+      "id": "dm-rl-d2",
+      "topic": "regular-languages-and-finite-automata",
+      "topicTitle": "Regular Languages and Finite Automata",
+      "difficulty": 2,
+      "title": "Constructing a DFA for divisibility by 3",
+      "totalMarks": 5,
+      "prompt": "Construct a DFA over Σ = {0, 1} that accepts exactly the binary strings whose numeric value is divisible by 3 (the empty string represents 0, which is divisible by 3).<br>(i) Describe what each state represents and explain the transition rule.<br>(ii) Give the complete transition function as a table.<br>(iii) Verify your DFA on input <code>110</code> (= 6, divisible by 3) and on <code>101</code> (= 5, not divisible by 3).",
+      "hint": "If the current value is v and you read bit b, the new value is 2v + b. Consider what (2v + b) mod 3 equals in terms of (v mod 3) and b.",
+      "markscheme": [
+        { "text": "States q₀, q₁, q₂ where qᵣ means 'the binary value read so far ≡ r (mod 3)'. Start and sole accepting state: q₀. On reading bit b in state qᵣ, go to state q_{(2r+b) mod 3}.", "marks": 2 },
+        { "text": "Transition table: q₀ -0→ q₀, q₀ -1→ q₁; q₁ -0→ q₂, q₁ -1→ q₀; q₂ -0→ q₁, q₂ -1→ q₂.", "marks": 2 },
+        { "text": "'110': q₀ -1→ q₁ -1→ q₀ -0→ q₀. Accept. ✓ (6 mod 3 = 0). '101': q₀ -1→ q₁ -0→ q₂ -1→ q₂. Reject. ✓ (5 mod 3 = 2).", "marks": 1 }
+      ]
+    },
+    {
+      "id": "dm-rl-d3",
+      "topic": "regular-languages-and-finite-automata",
+      "topicTitle": "Regular Languages and Finite Automata",
+      "difficulty": 3,
+      "title": "NFA to DFA via subset construction",
+      "totalMarks": 6,
+      "prompt": "Consider the NFA N with states {A, B, C}, alphabet Σ = {0,1}, start state A, accepting states {C}, and transitions:<br><br><table border='1' style='border-collapse:collapse;padding:4px'><tr><th>State</th><th>0</th><th>1</th></tr><tr><td>A</td><td>{A,B}</td><td>{A}</td></tr><tr><td>B</td><td>∅</td><td>{C}</td></tr><tr><td>C</td><td>∅</td><td>∅</td></tr></table><br>(i) Apply the subset construction to produce an equivalent DFA. Show the construction table systematically, starting from state {A}.<br>(ii) Identify the accepting states of the resulting DFA and state the language L(N) informally.",
+      "hint": "Each DFA state is a subset of {A,B,C}. Compute δ({A},0) and δ({A},1) first, then process each newly discovered subset.",
+      "markscheme": [
+        { "text": "δ({A},0) = {A,B}; δ({A},1) = {A}. δ({A,B},0) = A's 0-transitions ∪ B's 0-transitions = {A,B} ∪ ∅ = {A,B}; δ({A,B},1) = {A} ∪ {C} = {A,C}.", "marks": 3 },
+        { "text": "δ({A,C},0) = {A,B} ∪ ∅ = {A,B}; δ({A,C},1) = {A} ∪ ∅ = {A}. No new subsets. DFA states: {A}, {A,B}, {A,C}.", "marks": 1 },
+        { "text": "Accepting state: {A,C} (the only DFA state containing C). Language L(N): all strings over {0,1} that end with '01' (a 0 immediately followed by a 1).", "marks": 2 }
+      ]
+    },
+    {
+      "id": "dm-rl-d4",
+      "topic": "regular-languages-and-finite-automata",
+      "topicTitle": "Regular Languages and Finite Automata",
+      "difficulty": 4,
+      "title": "Regular expressions and closure under complement",
+      "totalMarks": 6,
+      "prompt": "This question is about regular expressions and closure properties.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 2,
+          "prompt": "Let L be the language over {0,1} of all binary strings containing an even number of 1s (zero counts as even). Write a regular expression for L and briefly explain why it is correct.",
+          "markscheme": [
+            { "text": "A correct regular expression: 0*(10*10*)* (leading 0s, then zero or more pairs of 1s separated by 0s, with trailing 0s absorbed). Or equivalently: (0|10*1)*.", "marks": 1 },
+            { "text": "Explanation: each pair (10*1) contributes exactly two 1s; repeating zero or more times gives an even total; interspersed 0s do not change the count. Any syntactically correct and semantically equivalent regex is accepted.", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 2,
+          "prompt": "Prove that the class of regular languages is closed under complement: if L ⊆ Σ* is regular, then Σ* \\ L is also regular.",
+          "markscheme": [
+            { "text": "Since L is regular, there exists a DFA M = (Q, Σ, δ, q₀, F) with L(M) = L. (A DFA is total: every state has a transition on every symbol.)", "marks": 1 },
+            { "text": "Construct M' = (Q, Σ, δ, q₀, Q \\ F) — identical to M but with accepting and non-accepting states swapped. Then M' accepts w iff M rejects w, so L(M') = Σ* \\ L. Since M' is a DFA, Σ* \\ L is regular. ✓", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 2,
+          "prompt": "Write a regular expression for the complement of L (i.e. binary strings with an odd number of 1s). Verify it accepts '1' and rejects '11'.",
+          "markscheme": [
+            { "text": "A correct regular expression: 0*1(0*10*10*)* or equivalently 0*10*(10*10*)*. This matches: any 0s, then exactly one 1, then zero or more pairs of 1s (each separated by 0s), giving an odd total.", "marks": 1 },
+            { "text": "Verify '1': 0*(=ε)·1·(0*10*10*)*(=ε). Matches. ✓ (1 one, odd). Verify '11': would need the second '1' to start a pair, giving '11' total = 2 ones (even). The regex requires an even number after the first '1', so '11' has 1 initial + 1 pair-start but no pair-end = fails to match. Rejected. ✓", "marks": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dm-rl-d5",
+      "topic": "regular-languages-and-finite-automata",
+      "topicTitle": "Regular Languages and Finite Automata",
+      "difficulty": 5,
+      "title": "The Pumping Lemma",
+      "totalMarks": 9,
+      "prompt": "This question is about proving languages are not regular.",
+      "parts": [
+        {
+          "label": "a",
+          "marks": 3,
+          "prompt": "State the Pumping Lemma for regular languages precisely. Include: the pumping length p, the conditions on the decomposition s = xyz, and the conclusion about pumped strings.",
+          "markscheme": [
+            { "text": "If L is a regular language, then there exists a pumping length p ≥ 1 such that:", "marks": 1 },
+            { "text": "for every string s ∈ L with |s| ≥ p, there exists a decomposition s = xyz with (1) |xy| ≤ p, (2) |y| ≥ 1,", "marks": 1 },
+            { "text": "(3) for all i ≥ 0, the string xy^i z ∈ L (the string obtained by repeating y i times is still in L).", "marks": 1 }
+          ]
+        },
+        {
+          "label": "b",
+          "marks": 4,
+          "prompt": "Use the Pumping Lemma to prove that L = {aⁿbⁿ | n ≥ 0} is not regular.",
+          "markscheme": [
+            { "text": "Assume for contradiction that L is regular with pumping length p. Choose s = aᵖbᵖ ∈ L; |s| = 2p ≥ p.", "marks": 1 },
+            { "text": "For any decomposition s = xyz with |xy| ≤ p and |y| ≥ 1: since the first p characters are all a's and |xy| ≤ p, both x and y consist entirely of a's. Write y = aᵏ with 1 ≤ k ≤ p.", "marks": 1 },
+            { "text": "Pump with i = 2: xy²z = aᵖ⁺ᵏbᵖ. Since k ≥ 1, there are more a's than b's, so aᵖ⁺ᵏbᵖ ∉ L.", "marks": 1 },
+            { "text": "This contradicts condition (3) of the Pumping Lemma. Therefore L is not regular. ✓", "marks": 1 }
+          ]
+        },
+        {
+          "label": "c",
+          "marks": 2,
+          "prompt": "Use the Pumping Lemma to prove that the language P = {w ∈ {a,b}* | w is a palindrome} is not regular.",
+          "markscheme": [
+            { "text": "Assume P is regular with pumping length p. Choose s = aᵖbaᵖ ∈ P; |s| = 2p+1 ≥ p. For any decomposition s = xyz with |xy| ≤ p, |y| ≥ 1: the prefix xy lies in the initial run of a's, so y = aᵏ with 1 ≤ k ≤ p.", "marks": 1 },
+            { "text": "Pump with i = 2: xy²z = aᵖ⁺ᵏbaᵖ. This has p+k a's before the b and p a's after; since k ≥ 1, it is not a palindrome, so xy²z ∉ P — contradicting the Pumping Lemma. Therefore P is not regular.", "marks": 1 }
+          ]
+        }
+      ]
+    }
+  ]
+}
