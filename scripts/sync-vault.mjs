@@ -213,12 +213,28 @@ async function syncModule(mod) {
       if (await fs.pathExists(c)) { resolvedPath = c; break; }
     }
 
+    // If the resolved file is inside the topic folder (not a flat sibling of the
+    // module root), check whether the folder also contains other typed content
+    // files.  If it does, the topic-named file is just a folder index and we
+    // should synthesise from the whole folder instead.
+    if (resolvedPath && resolvedPath !== candidates[0]) {
+      const topicFolder = path.join(VAULT, mod.vaultName, topic.vaultBasename);
+      const siblings = await fg(['*.md'], {
+        cwd: topicFolder,
+        ignore: ['*.excalidraw.md', 'Archive/**', 'archive/**'],
+      });
+      const mainFile = path.basename(resolvedPath);
+      if (siblings.filter(s => s !== mainFile).length > 0) {
+        resolvedPath = null; // fall through to synthesiseTopicFromFolder
+      }
+    }
+
     // For folders without a topic-named md (Discrete Maths, Probability, ML),
     // we synthesise an index from all md files inside the folder.
     if (!resolvedPath) {
       const folder = path.join(VAULT, mod.vaultName, topic.vaultBasename);
       if (await fs.pathExists(folder)) {
-        const childMd = await fg(['**/*.md'], { cwd: folder, ignore: ['**/Excalidraw/**', '**/excalidraw/**'] });
+        const childMd = await fg(['**/*.md'], { cwd: folder, ignore: ['**/Excalidraw/**', '**/excalidraw/**', '**/Archive/**', '**/archive/**'] });
         if (childMd.length > 0) {
           const body = await synthesiseTopicFromFolder(folder, childMd, topic, mod);
           const out = path.join(moduleOut, `${topic.slug}.md`);
@@ -301,27 +317,51 @@ async function synthesiseTopicFromFolder(folder, childMd, topic, mod) {
   lines.push(`## ${topic.title}`);
   lines.push('');
 
-  // sort by leading number if present
+  // The folder-index file (same basename as the topic) is just a table of
+  // contents — skip it as content, but read it to determine the intended
+  // ordering of the sub-files via its wiki links.
+  const indexFile = `${path.basename(topic.vaultBasename)}.md`;
+  const indexPath = path.join(folder, indexFile);
+  const orderMap = {};
+  if (await fs.pathExists(indexPath)) {
+    const indexContent = await fs.readFile(indexPath, 'utf8');
+    const linkRe = /\[\[([^\]|]+?)(?:\|[^\]]*)?\]\]/g;
+    let i = 0;
+    for (const match of indexContent.matchAll(linkRe)) {
+      const name = match[1].trim().toLowerCase();
+      orderMap[name] = i;
+      orderMap[`${name}.md`] = i;
+      i++;
+    }
+  }
+
+  // Sort by index-specified order first, then by leading number, then alphabetically.
   const sorted = [...childMd].sort((a, b) => {
-    const na = parseInt(path.basename(a)) || 999;
-    const nb = parseInt(path.basename(b)) || 999;
-    if (na !== nb) return na - nb;
+    const ba = path.basename(a).toLowerCase();
+    const bb = path.basename(b).toLowerCase();
+    const oa = orderMap[ba] ?? orderMap[path.basename(a, '.md').toLowerCase()] ?? (parseInt(path.basename(a)) || 999);
+    const ob = orderMap[bb] ?? orderMap[path.basename(b, '.md').toLowerCase()] ?? (parseInt(path.basename(b)) || 999);
+    if (oa !== ob) return oa - ob;
     return a.localeCompare(b);
   });
   for (const rel of sorted) {
     if (rel.endsWith('.excalidraw.md')) continue;
+    if (path.basename(rel) === indexFile) continue;
     const fullPath = path.join(folder, rel);
     let body = await fs.readFile(fullPath, 'utf8');
     if (body.startsWith('---')) body = body.replace(/^---[\s\S]*?---\s*\n/, '');
+    // Strip standalone excalidraw embed lines — the diagrams section handles them.
+    body = body.replace(/^!\[\[[^\]]*\.excalidraw[^\]]*\]\]\s*$/gm, '').trim();
     const lectureTitle = path.basename(rel, '.md');
     lines.push(`### ${lectureTitle}`);
     lines.push('');
-    lines.push(body.trim());
+    lines.push(body);
     lines.push('');
   }
 
   // List Excalidraw files explicitly so the user sees them rendered.
-  const excaliRel = await fg(['**/*.excalidraw.md'], { cwd: folder });
+  // Exclude Archive/ — those are filed away and not part of the main content.
+  const excaliRel = await fg(['**/*.excalidraw.md'], { cwd: folder, ignore: ['Archive/**', 'archive/**'] });
   if (excaliRel.length > 0) {
     lines.push('---');
     lines.push('### Diagrams');
