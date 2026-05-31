@@ -1,6 +1,6 @@
 /** @jsxImportSource preact */
 import { useEffect, useState } from 'preact/hooks';
-import { MODULE_ORDER, MODULES, PAPERS } from '../lib/syllabus';
+import { MODULE_ORDER, MODULES, PAPERS, type ModuleSlug } from '../lib/syllabus';
 import { getAllConfidence, getQuizResults, getAllQuestionStatus, getAllPracticeStatus, type Confidence, type QuestionStatus } from '../lib/progress-store';
 import { PAST_QUESTIONS, questionId } from '../lib/past-papers';
 
@@ -25,8 +25,9 @@ export default function ProgressMap({ practiceModules }: { practiceModules: Reco
 
   const totals = MODULE_ORDER.map((slug) => {
     const m = MODULES[slug];
-    const counts = { confident: 0, shaky: 0, weak: 0, unset: 0 };
+    const counts = { confident: 0, shaky: 0, weak: 0, unset: 0, na: 0 };
     for (const t of m.topics) {
+      if (t.nonExaminable) { counts.na++; continue; }
       const c = conf[`${slug}/${t.slug}`] ?? 'unset';
       counts[c]++;
     }
@@ -40,6 +41,7 @@ export default function ProgressMap({ practiceModules }: { practiceModules: Reco
     overall.weak += counts.weak;
     overall.unset += counts.unset;
     overall.total += counts.confident + counts.shaky + counts.weak + counts.unset;
+    // na topics excluded from overall total
   });
 
   return (
@@ -76,17 +78,31 @@ export default function ProgressMap({ practiceModules }: { practiceModules: Reco
                   <a href={`/modules/${slug}`} class="font-medium text-ink-900 dark:text-white hover:text-accent-700">{m.title}</a>
                 </td>
                 <td class="px-4 py-2 text-ink-500 dark:text-ink-400">{PAPERS[m.paper].number}</td>
-                <td class="px-4 py-2 text-ink-500 dark:text-ink-400">{m.topics.length}</td>
+                <td class="px-4 py-2 text-ink-500 dark:text-ink-400">
+                  {m.topics.length - (totals.find(t => t.slug === slug)?.counts.na ?? 0)}
+                  {(totals.find(t => t.slug === slug)?.counts.na ?? 0) > 0 && (
+                    <span class="text-ink-400 dark:text-ink-600 text-xs ml-1">(+{totals.find(t => t.slug === slug)!.counts.na} N/A)</span>
+                  )}
+                </td>
                 <td class="px-4 py-2">
                   <div class="flex gap-0.5">
                     {m.topics.map((t) => {
+                      if (t.nonExaminable) {
+                        return (
+                          <a
+                            href={`/modules/${slug}/${t.slug}`}
+                            class="h-5 flex-1 rounded-sm bg-ink-100 dark:bg-ink-800 border border-dashed border-ink-300 dark:border-ink-600"
+                            title={`${t.title} — N/A (non-examinable)`}
+                          />
+                        );
+                      }
                       const c = conf[`${slug}/${t.slug}`] ?? 'unset';
                       return (
                         <a
                           href={`/modules/${slug}/${t.slug}`}
                           class={`h-5 flex-1 rounded-sm ${COLORS[c]}`}
                           title={`${t.title} — ${c}`}
-                        ></a>
+                        />
                       );
                     })}
                   </div>
@@ -104,7 +120,7 @@ export default function ProgressMap({ practiceModules }: { practiceModules: Reco
             {results.slice(0, 12).map((r) => (
               <li class="flex items-center gap-2">
                 <span class="font-mono text-xs text-ink-500 dark:text-ink-400 w-32">{new Date(r.ts).toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' })}</span>
-                <a href={`/modules/${r.module}`} class="flex-1 hover:underline">{MODULES[r.module]?.title ?? r.module}</a>
+                <a href={`/modules/${r.module}`} class="flex-1 hover:underline">{MODULES[r.module as ModuleSlug]?.title ?? r.module}</a>
                 <span class="font-medium">{r.score} / {r.total}</span>
                 <span class="text-ink-500 dark:text-ink-400">({Math.round((r.score / r.total) * 100)}%)</span>
               </li>
