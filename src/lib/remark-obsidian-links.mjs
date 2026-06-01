@@ -44,6 +44,22 @@ function manifests() {
 const WIKI_RE = /\[\[([^\[\]\n]+?)\]\]/g;
 const EMBED_RE = /!\[\[([^\[\]\n]+?)\]\]/g;
 
+// remark-smartypants (Astro default) converts straight apostrophes (U+0027) to
+// curly right quotes (U+2019) in text nodes before our plugin runs. Manifest keys
+// are registered from filenames which always use U+0027. Normalise before lookup.
+const _SMART_QUOTES = new RegExp(
+  "[" +
+  String.fromCodePoint(0x2018) + // ‘
+  String.fromCodePoint(0x2019) + // ’
+  String.fromCodePoint(0x201a) + // ‚
+  String.fromCodePoint(0x02bc) + // ʼ
+  "]",
+  "g"
+);
+function normaliseKey(s) {
+  return s.toLowerCase().replace(_SMART_QUOTES, String.fromCharCode(0x27));
+}
+
 function resolveWiki(target, wikiManifest) {
   // strip trailing #anchor and |display
   let display = null;
@@ -59,7 +75,7 @@ function resolveWiki(target, wikiManifest) {
     anchor = '#' + slugify(key.slice(i + 1));
     key = key.slice(0, i).trim();
   }
-  const lookup = key.toLowerCase();
+  const lookup = normaliseKey(key);
   const hit = wikiManifest[lookup];
   if (!hit) return { href: null, display: display ?? key };
   return { href: hit + anchor, display: display ?? key };
@@ -75,7 +91,7 @@ function resolveEmbed(target, embedManifest) {
     const w = rest.join('|').trim();
     if (/^\d+$/.test(w)) width = Number(w);
   }
-  const hit = embedManifest[key.toLowerCase()] ?? null;
+  const hit = embedManifest[normaliseKey(key)] ?? null;
   return hit ? { ...hit, width } : null;
 }
 
