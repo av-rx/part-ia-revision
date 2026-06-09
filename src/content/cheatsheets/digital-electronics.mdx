@@ -2,109 +2,508 @@
 module: digital-electronics
 title: "Digital Electronics — Cheat Sheet"
 paper: paper-2
-updated: "2026-05-10"
+updated: "2026-06-09"
 ---
 
-## Boolean algebra identities
+## 1 · Boolean algebra
 
-| Law | Form |
-|---|---|
-| Identity | $A + 0 = A$, $A \cdot 1 = A$ |
-| Null | $A + 1 = 1$, $A \cdot 0 = 0$ |
-| Idempotent | $A + A = A$, $A \cdot A = A$ |
-| Inverse | $A + \bar A = 1$, $A \cdot \bar A = 0$ |
-| Commutative | $A + B = B + A$, $AB = BA$ |
-| Associative | $(A + B) + C = A + (B + C)$ |
-| Distributive | $A(B + C) = AB + AC$, $A + BC = (A+B)(A+C)$ |
-| **De Morgan** | $\overline{A + B} = \bar A \bar B$, $\overline{AB} = \bar A + \bar B$ |
-| Absorption | $A + AB = A$, $A(A + B) = A$ |
-| Consensus | $AB + \bar A C + BC = AB + \bar A C$ |
+### Basic identities
 
-## Logic gates
+| Law | OR form | AND form |
+|---|---|---|
+| Identity | $A + 0 = A$ | $A \cdot 1 = A$ |
+| Null | $A + 1 = 1$ | $A \cdot 0 = 0$ |
+| Idempotent | $A + A = A$ | $A \cdot A = A$ |
+| Inverse | $A + \bar{A} = 1$ | $A \cdot \bar{A} = 0$ |
+| Commutative | $A + B = B + A$ | $AB = BA$ |
+| Associative | $(A+B)+C=A+(B+C)$ | $(AB)C = A(BC)$ |
+| Distributive | $A+BC=(A+B)(A+C)$ | $A(B+C)=AB+AC$ |
+| Absorption | $A + AB = A$ | $A(A+B) = A$ |
+| Consensus | $AB + \bar{A}C + BC = AB + \bar{A}C$ | — |
+| **De Morgan** | $\overline{A+B}=\bar{A}\bar{B}$ | $\overline{AB}=\bar{A}+\bar{B}$ |
+| Double complement | $\overline{\bar{A}}=A$ | — |
 
-| Gate | Symbol | Boolean | Comments |
-|---|---|---|---|
-| AND | `&` | $A \cdot B$ | |
-| OR | `≥1` | $A + B$ | |
-| NOT | inverter | $\bar A$ | |
-| NAND | `&` + bubble | $\overline{AB}$ | universal |
-| NOR | `≥1` + bubble | $\overline{A+B}$ | universal |
-| XOR | `=1` | $A \oplus B = A\bar B + \bar A B$ | parity |
-| XNOR | | $\overline{A \oplus B}$ | equality |
+**Precedence:** NOT > AND > OR. Parenthesise if ambiguous.
 
-NAND and NOR each are **functionally complete** — any boolean fn realisable from one alone.
+### Logic gates
 
-## Minimisation: Karnaugh maps
+| Gate | Expression | Note |
+|---|---|---|
+| AND | $A \cdot B$ | |
+| OR | $A + B$ | |
+| NOT | $\bar{A}$ | Inverter |
+| NAND | $\overline{AB}$ | Universal; bubbled AND |
+| NOR | $\overline{A+B}$ | Universal; bubbled OR |
+| XOR | $A \oplus B = A\bar{B} + \bar{A}B$ | Odd-parity |
+| XNOR | $\overline{A \oplus B}$ | Equality detector |
 
-- For $n \le 4$ variables draw a 2D Gray-coded grid.
-- Combine adjacent 1s in groups of $2^k$ (1, 2, 4, 8…).
-- Each group → one product term; OR them.
-- **Don't-cares** (X) used for either value to enlarge groups.
-- Quine–McCluskey: tabular method for larger $n$ — produces same minimal SOP.
+**NAND and NOR are functionally complete** — any Boolean function can be built from NAND alone (or NOR alone).
 
-## Adders
+**Bubble logic (De Morgan's):** a NAND gate with bubbles on its inputs ≡ an OR gate. A NOR gate with bubbles on inputs ≡ AND gate. Use bubbles to cancel when signals are active-low.
+
+---
+
+## 2 · Canonical forms
+
+### Minterms and maxterms
+
+For $n$ variables, there are $2^n$ possible input combinations. For combination $i$:
+- **Minterm $m_i$:** product term that is 1 only at row $i$ (e.g. row 3 = $ABC$ if inputs $= 011$ → $m_3 = \bar{A}BC$).
+- **Maxterm $M_i$:** sum term that is 0 only at row $i$.
+
+**Sum of Products (SOP):** $F = \sum m_i$ over all rows where $F=1$ (also DNF).
+**Product of Sums (POS):** $F = \prod M_i$ over all rows where $F=0$ (also CNF).
+
+Canonical forms are unique; non-canonical SOP/POS can be minimised further.
+
+---
+
+## 3 · Logic minimisation
+
+### Karnaugh maps
+
+Gray-code arrangement of input combinations. **Adjacent cells differ in exactly one variable.** Groups of $2^k$ adjacent 1s (wrap around edges) → one product term.
+
+**Rules:**
+- Groups must be size $1, 2, 4, 8, \ldots$
+- Each group → one product term (include variables constant across the group; exclude others).
+- Choose fewest, largest groups that cover all 1s.
+- **Don't-cares (×):** may be included in groups as 1s if it enlarges them; never need to be covered.
+
+**Prime implicant:** group not contained in any larger group.
+**Essential prime implicant:** covers a minterm not covered by any other prime implicant; must be included.
+
+Minimal cover = all EPIs + smallest selection of PIs to cover remaining minterms.
+
+**3-variable K-map (2×4):**
+```
+     BC
+  00 01 11 10
+A=0 | | | | |
+A=1 | | | | |
+```
+
+**4-variable K-map (4×4):**
+```
+      CD
+    00 01 11 10
+AB=00
+AB=01
+AB=11
+AB=10
+```
+Corners wrap: top-bottom AND left-right.
+
+### Quine-McCluskey (tabular method)
+
+For large $n$ where K-maps are impractical.
+
+**Step 1 — Implication table:** group minterms by number of 1s. Compare adjacent groups; two minterms that differ in exactly one bit → combine (dash that bit). Repeat until no more combinations possible. Uncombined terms = prime implicants.
+
+**Step 2 — Prime implicant chart:** rows = prime implicants, columns = original minterms. Mark which minterms each PI covers. Find essential PIs (column with only one mark). Cover remaining minterms with minimum PIs.
+
+---
+
+## 4 · Binary adders
 
 ### Half adder
-$S = A \oplus B,\quad C_{out} = AB$
+
+$$S = A \oplus B \qquad C_{out} = A \cdot B$$
+
+Two inputs (A, B); no carry-in. Two outputs (Sum, Carry-out).
 
 ### Full adder
-$S = A \oplus B \oplus C_{in}, \quad C_{out} = AB + C_{in}(A \oplus B)$
 
-- **Ripple carry:** $n$ FAs in series — propagation delay $\Theta(n)$.
-- **Carry-look-ahead:** generate $G_i = A_i B_i$, propagate $P_i = A_i \oplus B_i$; carries computed in $\Theta(\log n)$.
+$$S = A \oplus B \oplus C_{in} \qquad C_{out} = AB + C_{in}(A \oplus B) = AB + AC_{in} + BC_{in}$$
 
-## Multilevel logic & hazards
+Three inputs (A, B, $C_{in}$); two outputs.
 
-- **Static-1 hazard:** output should remain 1 but glitches to 0 — covered by an extra prime implicant.
-- **Static-0 hazard:** symmetric.
-- **Dynamic hazard:** output transitions ≥3 times.
+### Ripple carry adder (RCA)
 
-## Latches & flip-flops
+Chain $n$ full adders; carry propagates bit by bit. **Delay ∝ $n$** (linear in word size). Simple but slow for wide operands.
 
-| Element | Symbol | Behaviour |
+### Carry lookahead adder (CLA)
+
+**Generate:** $g_i = a_i \cdot b_i$ — this bit produces a carry regardless of $c_i$.
+**Propagate:** $p_i = a_i + b_i$ — this bit passes through an incoming carry.
+
+$$c_{i+1} = g_i + p_i \cdot c_i$$
+
+Expand to remove dependence on intermediate carries:
+$$c_1 = g_0 + p_0 c_0$$
+$$c_2 = g_1 + p_1 g_0 + p_1 p_0 c_0$$
+$$c_3 = g_2 + p_2 g_1 + p_2 p_1 g_0 + p_2 p_1 p_0 c_0$$
+
+All carries computed in constant time from $g_i$, $p_i$, $c_0$ — **delay ∝ $\log n$** (or $O(1)$ with enough gates). Hardware cost increases.
+
+---
+
+## 5 · Multilevel logic and hazards
+
+### Multilevel logic
+
+SOP and POS are two-level (one inverter layer + one AND + one OR layer). More levels allow **sharing of sub-expressions** → fewer gates total. Apply Boolean algebra (factoring, sharing):
+
+$$AC + BC + AD + BD = (A+B)(C+D)$$
+
+Reduces gate count but increases levels (latency). Trade-off between area and speed.
+
+### Gate propagation delay
+
+Each gate has a propagation delay $t_{pd}$. Critical path = longest delay path from input to output. Clock period must exceed critical path delay.
+
+### Glitches and hazards
+
+A **hazard** is a momentary incorrect output caused by different signal paths having different delays.
+
+- **Static-1 hazard:** output should stay 1 but briefly goes 0 during an input transition.
+- **Static-0 hazard:** output should stay 0 but briefly goes 1.
+- **Dynamic hazard:** output should make one transition but transitions 3+ times.
+
+**Hazard in SOP:** when two adjacent minterms are not covered by a common prime implicant, the combinational output glitches when transitioning between them.
+
+**Fix:** add a **redundant prime implicant** covering the hazardous transition (the consensus term). In K-map: ensure every adjacent-1 pair is covered by some group. This costs one extra gate.
+
+Dynamic hazards occur only in circuits with three or more levels — avoid or add bridging gates.
+
+---
+
+## 6 · MSI components
+
+### Multiplexer (MUX)
+
+$n$-to-1 MUX: select one of $n = 2^s$ inputs using $s$ select lines. 2-to-1:
+$$F = I_0 \cdot \bar{S} + I_1 \cdot S$$
+
+**Hardware LUT (Look-Up Table):** implement any function of $s$ variables using a $2^s$-to-1 MUX — data inputs hold the truth table. Used in FPGAs.
+
+### Decoder
+
+$s$-to-$2^s$ decoder: given $s$-bit input, assert exactly one of $2^s$ outputs. Output $i$ = minterm $m_i$. **Generates all minterms** for $s$ variables. Any SOP function: OR selected outputs.
+
+### ROM (Read-Only Memory)
+
+Address → data look-up table. Rows = all $2^n$ input combinations (AND plane = identity, always enabled). Columns = output bits (OR plane = programmable). Slow to program; hard to change; used for fixed tables.
+
+**PLA (Programmable Logic Array):** both AND and OR planes programmable. More flexible than ROM; fewer rows needed (only one row per prime implicant, not per minterm). Output columns can be complemented.
+
+**PAL (Programmable Array Logic):** only AND plane programmable; OR plane fixed. Simpler and faster than PLA; less flexible.
+
+### Tristate buffers
+
+Output can be 0, 1, or **high-impedance** (Z). Controlled by enable line. Multiple tris can share a bus — only one enabled at a time.
+
+---
+
+## 7 · Underlying concepts
+
+### Basic electronics
+
+$I = Q/t$ (current = charge/time, amperes)
+$V = E/Q$ (voltage = energy/charge, volts)
+$P = IV$ (power = current × voltage, watts)
+**Ohm's Law:** $V = IR$
+
+**Kirchhoff's Current Law (KCL):** sum of currents into a node = sum out.
+**Kirchhoff's Voltage Law (KVL):** sum of voltages around any closed loop = 0.
+
+### Semiconductors
+
+Pure silicon: intrinsic carrier concentration.
+- **n-type:** doped with phosphorus (donor, extra electron) → electron majority carriers.
+- **p-type:** doped with boron (acceptor) → hole majority carriers.
+
+**p-n junction:** p-type + n-type joined → depletion region, built-in voltage. Forward-biased (p positive, n negative): conducts. Reverse-biased: blocks.
+
+### MOSFETs
+
+**n-channel MOSFET (nMOS):** source and drain are n-doped in p-substrate. Apply positive $V_{GS}$ ≥ $V_{th}$ → channel forms → current flows. Gate voltage (high) → switch closes. Gate voltage (low) → switch opens.
+
+**p-channel MOSFET (pMOS):** opposite polarities. Apply $V_{GS}$ ≤ $-V_{tp}$ → conducts. Gate low → conducts. Gate high → open.
+
+### CMOS
+
+**CMOS inverter:** pMOS (pull-up, connected to $V_{DD}$) + nMOS (pull-down, connected to $V_{SS}$). Both gates tied together. Input low → pMOS on, nMOS off → output high ($V_{DD}$). Input high → pMOS off, nMOS on → output low ($V_{SS}$).
+
+**CMOS NAND:** 2 nMOS in **series** (pull-down: both must be on to pull low) + 2 pMOS in **parallel** (pull-up: either off → output high).
+
+**CMOS NOR:** 2 nMOS in **parallel** + 2 pMOS in **series**.
+
+General rule: pull-down = dual of pull-up. NAND has N pMOS; NOR has N pMOS in series.
+
+**Advantages of CMOS:** near-zero static power (one transistor always off except during transition); rail-to-rail output (full $V_{DD}$ or $0$); scales well.
+
+**Logic families:**
+- CMOS (74HC): propagation delay 60 ns (1970s) → 3 ns (modern). Noise margins excellent.
+- TTL: bipolar transistors; faster historically; higher static power.
+- ECL: very fast but high power; used in special applications.
+
+**Noise margin:** $V_{IL,\text{max}} - V_{OL,\text{max}}$ (low noise margin) and $V_{OH,\text{min}} - V_{IH,\text{min}}$ (high noise margin). Quantifies how much noise the interconnect can add before logic level corrupted.
+
+---
+
+## 8 · Latches and flip-flops
+
+### RS latch (NOR-based)
+
+| S | R | Q | $\bar{Q}$ | State |
+|---|---|---|---|---|
+| 0 | 0 | Q | $\bar{Q}$ | Hold |
+| 1 | 0 | 1 | 0 | Set |
+| 0 | 1 | 0 | 1 | Reset |
+| 1 | 1 | 0 | 0 | **Forbidden** |
+
+NAND-based: inputs active-low; $\bar{S}=\bar{R}=0$ is forbidden.
+
+### D latch (transparent)
+
+Level-triggered (level = enable/clock). When enable=1: $Q$ follows $D$. When enable=0: $Q$ holds last value. Transparent to input while enabled → **transparent latch**.
+
+### Master-slave D flip-flop
+
+Two D latches in series; master enabled on clock high, slave on clock low (or vice versa). **Edge-triggered** — $Q$ captures $D$ only at the clock edge. Eliminates transparency. Standard element for synchronous design.
+
+### JK flip-flop
+
+Resolves the forbidden state of SR. Same as SR but $J=K=1$ → **toggle** ($Q \leftarrow \bar{Q}$). Built from D flip-flop + logic.
+
+### T (toggle) flip-flop
+
+$T=1$ → toggle on clock edge. $T=0$ → hold. Used for counters.
+
+### Timing parameters
+
+- **Setup time** $t_{su}$: how long before clock edge input must be stable.
+- **Hold time** $t_h$: how long after clock edge input must remain stable.
+- **Propagation delay** $t_{pd}$: clock edge to $Q$ changing.
+- **Clock-to-output** $t_{pc}$ (or $t_{clk \to Q}$): latency from clock to valid output.
+
+Characteristic table: maps $(Q, \text{input})$ → $Q_{\text{next}}$.
+Excitation table: maps $(Q, Q_{\text{next}})$ → required input (used for synthesis).
+
+---
+
+## 9 · Timing and synchronisation
+
+### Clock period constraint
+
+$$T_c \geq t_{pc} + t_{pd,\text{comb}} + t_{su}$$
+
+where $t_{pc}$ = FF clock-to-output delay, $t_{pd,\text{comb}}$ = combinational logic delay, $t_{su}$ = setup time of receiving FF. Maximum clock frequency = $1/T_{c,\text{min}}$.
+
+### Hold time constraint
+
+$$(t_{pc} + t_{pd,\text{comb}})_{\text{min}} \geq t_h$$
+
+A hold-time violation is **not fixable by slowing the clock** — must be fixed by adding delay in the data path.
+
+### Clock skew
+
+Skew $\delta$ = arrival time difference between clock edges at two FFs. Worst-case setup: $T_c \geq t_{pc} + t_{pd} + t_{su} + \delta$. Hold: $(t_{pc}+t_{pd})_{\min} \geq t_h + \delta$. Use H-tree or matched-length routing to minimise skew.
+
+### Metastability
+
+When a FF's $D$ input changes within the setup/hold window, the FF may enter a **metastable state** — output neither 0 nor 1, or oscillating. Eventually resolves, but resolution time is unbounded.
+
+$$P(\text{resolution time} > t) = \frac{T_0}{T_c} \cdot e^{-t/\tau}$$
+
+where $T_0$ and $\tau$ are FF characteristics. To reduce probability: slow down sampling (longer $t$), synchronise using two FFs in series.
+
+$$\text{MTBF} = \frac{1}{N \cdot P_{\text{fail}}}$$
+
+where $N$ = transitions/second, $P_{\text{fail}}$ = probability FF fails to resolve in one period.
+
+**Synchroniser design:** two-FF synchroniser adds one clock period of resolution time. Use whenever data crosses clock-domain boundaries.
+
+---
+
+## 10 · Counters and shift registers
+
+### Counters
+
+**Ripple counter:** chain of T flip-flops; each $Q$ clocks the next. Simple but delay accumulates (output valid only after all FFs have settled). Not synchronous — avoid for fast circuits.
+
+**Synchronous counter:** all FFs share the same clock. Enable logic derived from current state (K-maps). Propagation delay = combinational logic only; all bits update simultaneously.
+
+### Shift registers
+
+**SIPO (Serial In, Parallel Out):** shift in one bit per clock; read all outputs simultaneously. Used for serial-to-parallel conversion.
+
+**PISO (Parallel In, Serial Out):** load all bits in parallel; shift out one per clock. Used for parallel-to-serial conversion.
+
+---
+
+## 11 · Synchronous FSMs (state machines)
+
+### Moore vs Mealy
+
+| | Moore | Mealy |
 |---|---|---|
-| SR latch | NAND/NOR cross-coupled | $S=R=0$ hold; $SR$ forbidden |
-| D latch | level-triggered | $Q$ follows $D$ when enable high |
-| D flip-flop | edge-triggered | $Q \leftarrow D$ on clock edge |
-| JK flip-flop | edge | $J=K=1$ toggles |
-| T flip-flop | edge | toggle on clock if $T=1$ |
+| Output depends on | State only | State + input |
+| Output changes | Only on clock edge | Immediately on input change |
+| States needed | Typically more | Typically fewer |
+| Output glitches | No | Possible on input change |
 
-**Setup time** $t_{su}$ — input must be stable before edge.
-**Hold time** $t_h$ — input must remain stable after edge.
-**Propagation delay** $t_{pd}$ — clock-edge to $Q$ change.
-**Min clock period** $T \ge t_{pd} + t_{comb} + t_{su}$.
+### Design procedure
 
-## Synchronous state machines
+1. **Write state diagram:** circles = states, arrows = transitions (labelled with input conditions). For Moore: output in state circle. For Mealy: output on transition arrow.
+2. **State table:** for each state, list next state and output for each input combination.
+3. **Assign binary codes** to states.
+4. **Derive next-state equations** and output equations using K-maps or Boolean algebra.
+5. **Select FFs** (D, JK, or T); convert equations using excitation tables.
+6. **Verify self-start:** from unused states, the FSM must eventually reach a used state (no isolated cycles in unused states).
 
-- **Mealy:** output depends on (state, input). Can react in same cycle.
-- **Moore:** output depends on state only. More registers but glitch-free output.
+### Traffic light example (Moore FSM)
 
-Design steps: state diagram → state table → encode states → derive next-state and output equations → realise with FFs + combinational logic.
+States: G (green), Y (yellow), R (red). On timer tick: G→Y→R→G. Output encodes light colour from state alone.
 
-## Transistors & gates (CMOS)
+---
 
-- nMOS: conducts when gate high. pMOS: conducts when gate low.
-- CMOS gate: pull-up network (pMOS) + pull-down network (nMOS), duals of each other.
-- NAND2: 2 nMOS in series + 2 pMOS in parallel (4 transistors).
-- Power: $P = C V^2 f + I_{leak} V$. Quadratic in voltage.
+## 12 · State assignment
 
-## Processor architecture (introductory)
+The choice of binary codes for states affects circuit complexity (total gate area).
 
-- Datapath: registers + ALU + buses.
-- Control unit: micro-instructions / hard-wired.
-- Fetch–decode–execute cycle.
-- Memory hierarchy: registers ↔ cache ↔ RAM ↔ disk; speed/cost tradeoff.
+| Method | Code assignment | Properties |
+|---|---|---|
+| **Sequential** | 000, 001, 010, 011, ... | Simple; minimise flip-flops |
+| **Sliding/unit distance** | Gray code or similar | Reduce transitions per cycle |
+| **One-hot** | One bit per state: 001, 010, 100, ... | One FF per state; very regular |
+| **Shift register** | States shift through a register | Efficient for sequential states |
+
+**One-hot encoding advantages:**
+- Next-state logic trivial: each state's input = OR of all transitions entering it.
+- No encoder/decoder needed.
+- Glitch-free (only one bit changes at a time in ideal case).
+- Fast: logic depth proportional to fan-in, not number of states.
+
+**Self-start:** with one-hot, unused states (all 0s or more than one 1) must eventually reach valid state. Add explicit reset or design transitions from unused states.
+
+---
+
+## 13 · State minimisation
+
+**Goal:** find equivalent states (states that can be merged without changing observable behaviour).
+
+### Row matching
+
+Two states are **equivalent** if they have:
+- The same outputs (Moore) or same output transitions (Mealy), AND
+- The same or equivalent next states for every input.
+
+**Algorithm (implication table):**
+1. Draw triangular table with all pairs of states.
+2. Mark pairs with different outputs as **not equivalent** (✗).
+3. For remaining pairs: if any pair $(P, Q)$ requires two next states to be equivalent, write that dependency in the cell.
+4. Propagate: if a dependency is in a marked cell → mark the dependent cell. Repeat until no change.
+5. Unmarked cells = equivalent pairs. Merge equivalent states.
+
+**Redundant state elimination** reduces hardware (fewer FFs, simpler logic) and can improve speed.
+
+---
+
+## 14 · Programmable logic
+
+### GLA / GAL
+
+**Gate Logic Array (GLA):** programmable OR plane over a fixed AND plane. More specific term for some PAL-like devices.
+
+**GAL (Generic Array Logic):** in-system reprogrammable (EEPROM-based); replaces many specific PAL devices. Macrocell output can be registered or combinational, inverted or not.
+
+### FPGAs (Field-Programmable Gate Arrays)
+
+Composed of an array of **CLBs (Configurable Logic Blocks)** connected by **programmable routing**.
+
+**CLB contains:**
+- **LUT (Look-Up Table):** typically 4- or 6-input; implements any function of that many variables by storing truth table.
+- **Multiplexers:** select between LUT output and FF output; routing flexibility.
+- **D flip-flop:** for registered output.
+
+**FPGA advantages:** reprogrammable (reconfigure without new silicon); rapid prototyping; production costs lower at low volumes; higher power and latency than ASIC.
+
+**FPGA flow:** HDL (VHDL/Verilog) → synthesis → technology mapping (to LUTs) → place and route → bitstream download.
+
+---
+
+## 15 · Processor architecture
+
+### Simple computer model
+
+```
+CPU ──── System Bus ──── Main Memory (RAM)
+ │              │
+ │         (data/address/control lines)
+ │
+ └──── I/O devices
+```
+
+**CPU components:**
+- **Datapath:** registers, ALU, buses.
+- **Control unit:** decodes instructions; generates control signals.
+
+### Fetch-decode-execute cycle
+
+1. **Fetch:** read instruction at PC → IR; increment PC.
+2. **Decode:** identify opcode, operands, addressing mode.
+3. **Execute:** ALU operation, memory access, or branch.
+4. **Memory:** load/store data (if required).
+5. **Writeback:** write result to register (if required).
+
+### Single-cycle processor
+
+Each instruction completes in exactly one clock cycle. Clock period must accommodate the slowest instruction (e.g. `lw` = fetch + decode + ALU + memory + writeback). Simple control; wasteful for fast instructions.
+
+### Multicycle processor
+
+Instructions use a variable number of shorter cycles. Clock period set to one stage's delay (e.g. memory access). Faster instructions (e.g. `add`) finish in 4 cycles vs `lw` in 5. Requires state register to hold intermediate results.
+
+### Pipelining (5-stage)
+
+Overlap execution of multiple instructions:
+
+```
+           IF  ID  EX  MEM WB
+Instr 1:    ─   ─   ─   ─   ─
+Instr 2:        ─   ─   ─   ─   ─
+Instr 3:            ─   ─   ─   ─   ─
+```
+
+In steady state: one instruction completes per clock cycle. **Ideal throughput** ≈ $\times$5 vs single-cycle. Clock period = one stage delay (the critical stage).
+
+**Data hazards (RAW):** instruction reads a register that a previous instruction hasn't yet written.
+- **Forwarding:** route result directly from EX/MEM stage to earlier stage's ALU input. Handles most cases without stalling.
+- **Stalling (bubble):** insert a NOP cycle; unavoidable when `lw` followed immediately by dependent instruction.
+
+**Control hazards:** branch instruction — wrong instructions may have entered pipeline.
+- **Branch prediction:** predict not-taken (continue fetching); flush on misprediction.
+- **Static prediction** or **dynamic prediction** (2-bit saturating counter).
+
+---
 
 ## Common pitfalls
 
-- $A + AB \ne A + B$ — it's $A$ (absorption).
-- De Morgan: $\overline{A+B} = \bar A \bar B$ NOT $\bar A + \bar B$.
-- A K-map group must be a power-of-2 size — don't draw diagonals or 3-cell groups.
-- Static hazards arise only for SOP/POS realisations; Mealy outputs can glitch on input changes.
-- Setup/hold violations are about flip-flop input timing, not clock distribution.
+- **Absorption:** $A + AB = A$ (not $A + B$). Students frequently confuse this.
+- **De Morgan requires complement of the entire expression:** $\overline{A + B} = \bar{A}\bar{B}$ not $\bar{A} + \bar{B}$.
+- **K-map groups must be power-of-2 size:** no $3$-cell or $5$-cell groups; no diagonal groupings.
+- **Don't-care cells don't have to be covered**, but can be included to make larger groups.
+- **Essential prime implicant ≠ only prime implicant:** an EPI is one that covers a minterm no other PI covers.
+- **Glitches matter in asynchronous circuits** but are usually harmless in synchronous circuits (FFs sample only at clock edge, long after glitches have settled).
+- **Setup time violation is fixable by slowing the clock;** hold time violation is not.
+- **One-hot encoding uses more FFs** but less combinational logic; good trade-off for FPGAs.
+- **Mealy output can glitch on input changes** even without clock; Moore output is glitch-free.
+- **CLA carry lookahead:** $p_i = a_i + b_i$ not $a_i \oplus b_i$ — use OR not XOR for propagate.
+- **nMOS in series = NAND pull-down; pMOS in parallel = NAND pull-up.** Remember the dual structure.
+- **Pipelining doesn't reduce latency of a single instruction** — it improves throughput.
+- **MTBF in synchronous circuits:** longer clock period → more time for metastability to resolve → exponentially lower failure rate.
+
+---
 
 ## Exam strategy
 
-- Draw the K-map *clearly* — examiners check minimal cover.
-- For sequential design, always present (a) state diagram, (b) state table, (c) encoding, (d) logic equations.
-- Quote propagation-delay equations when asked about clock-frequency limits.
+- **K-map questions:** draw the map clearly, label correctly, circle all groups with colour/labels. State which PIs are essential before writing the minimal expression.
+- **Adder questions:** state $g_i = a_i b_i$, $p_i = a_i + b_i$ before expanding carry equations.
+- **Hazard questions:** show the K-map first, identify the hazardous adjacent pair, then name the missing PI.
+- **FSM design:** always show all four steps — state diagram, state table, encoding, next-state equations. Lose marks if any step is absent.
+- **Timing questions:** write $T_c \geq t_{pc} + t_{pd} + t_{su}$ before substituting numbers.
+- **State minimisation:** use the implication table method — don't rely on inspection for more than 3 states.
+- **CMOS gate structure:** state "nMOS in series/parallel" + "pMOS is dual" — this shows understanding.
+- **Pipelining questions:** draw the time-space diagram showing stage overlap; compute throughput and latency separately.

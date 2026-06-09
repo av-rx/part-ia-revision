@@ -2,105 +2,472 @@
 module: discrete-maths
 title: "Discrete Mathematics — Cheat Sheet"
 paper: paper-2
-updated: "2026-05-10"
+updated: "2026-06-09"
 ---
 
-## Logic & proof
+## 1 · Logic and propositions
 
-- **Implication** $P \Rightarrow Q$: false only if $P$ true and $Q$ false.
-- **Contrapositive:** $P \Rightarrow Q \equiv \neg Q \Rightarrow \neg P$ (equivalent).
-- **Converse:** $Q \Rightarrow P$ — *not* equivalent.
-- **Iff:** $P \Leftrightarrow Q$ ≡ $(P\Rightarrow Q) \land (Q \Rightarrow P)$.
+**Proposition:** a statement that is either true or false.
+
+**Connectives:**
+
+| Symbol | Name | Truth |
+|---|---|---|
+| $\neg P$ | Negation | Opposite of $P$ |
+| $P \wedge Q$ | Conjunction | True iff both true |
+| $P \vee Q$ | Disjunction | True iff at least one true |
+| $P \Rightarrow Q$ | Implication | False only when $P$ true, $Q$ false |
+| $P \Leftrightarrow Q$ | Biconditional (iff) | $P$ true iff $Q$ true |
+
+**Key equivalences:**
+$$P \Rightarrow Q \equiv \neg P \vee Q \equiv \neg Q \Rightarrow \neg P \quad (\text{contrapositive})$$
+$$\neg(P \Rightarrow Q) \equiv P \wedge \neg Q$$
+
+**Converse** of $P \Rightarrow Q$ is $Q \Rightarrow P$ — **not** logically equivalent.
+**Contrapositive** of $P \Rightarrow Q$ is $\neg Q \Rightarrow \neg P$ — always equivalent.
 
 ### Quantifiers
-$\forall x\, P(x)$, $\exists x\, P(x)$. Negation: $\neg \forall x P \equiv \exists x \neg P$; $\neg \exists x P \equiv \forall x \neg P$.
 
-### Proof techniques
-- **Direct.**
-- **Contrapositive** — show $\neg Q \Rightarrow \neg P$.
-- **Contradiction** — assume $\neg Q$, derive $\bot$.
-- **Induction:** base case $P(0)$, step $P(k) \Rightarrow P(k+1)$.
-- **Strong / well-founded** — use $\forall j < k.\ P(j) \Rightarrow P(k)$.
-- **Construction / counterexample.**
+$$\forall x \in A.\, P(x) \qquad \exists x \in A.\, P(x) \qquad \exists! x \in A.\, P(x) \text{ (unique)}$$
 
-## Numbers
+**Negation rules:**
+$$\neg(\forall x.\, P(x)) \equiv \exists x.\, \neg P(x)$$
+$$\neg(\exists x.\, P(x)) \equiv \forall x.\, \neg P(x)$$
 
-- **Divisibility:** $a \mid b$ iff $\exists k.\ b = ka$.
-- **GCD via Euclid:** $\gcd(a, b) = \gcd(b, a \bmod b)$, base $\gcd(a, 0) = a$.
-- **Bézout:** $\exists x, y \in \mathbb{Z}: ax + by = \gcd(a, b)$ — extended Euclid finds them.
-- **Coprime:** $\gcd(a, b) = 1$.
-- **Modular arithmetic:** $a \equiv b \pmod n$ iff $n \mid (a - b)$.
+Swapping $\forall$ and $\exists$ changes meaning: $\forall x\,\exists y.\,R(x,y) \not\equiv \exists y\,\forall x.\,R(x,y)$.
 
-### Fermat's little theorem
-For prime $p$ and $\gcd(a, p) = 1$: $a^{p-1} \equiv 1 \pmod p$.
+---
 
-### Chinese remainder theorem
-If $\gcd(m_i, m_j) = 1$ for $i \ne j$, the system $x \equiv a_i \pmod{m_i}$ has a unique solution mod $\prod m_i$.
+## 2 · Proof techniques
 
-## Sets
+### Direct proof
 
-- **Set-builder:** $\{x \in S \mid P(x)\}$.
-- **Operations:** $\cup, \cap, \setminus, \triangle$ (symmetric difference), $\overline{A}$ (complement w.r.t. universe).
-- **Power set:** $\mathcal{P}(S)$, size $2^{|S|}$.
-- **Cartesian product:** $A \times B = \{(a, b) \mid a \in A, b \in B\}$.
+Assume $P$; derive $Q$ using definitions, lemmas, algebra. Label each step.
 
-### Functions
-- $f: A \to B$. **Injective** (1-1): $f(x) = f(y) \Rightarrow x = y$. **Surjective** (onto): $\forall b \exists a.\ f(a) = b$. **Bijective** = both.
-- Composition $g \circ f$ associative.
-- $|A| \le |B|$ iff there's an injection $A \hookrightarrow B$.
+**Template:** "We prove $P \Rightarrow Q$ directly. Assume $P$. [Steps]. Therefore $Q$."
 
-### Relations
-- **Equivalence relation:** reflexive, symmetric, transitive — induces partition.
-- **Partial order:** reflexive, antisymmetric, transitive.
-- **Total order:** partial + comparable.
+### Proof by contrapositive
 
-### Cardinality
-- $\aleph_0$ countable (e.g. $\mathbb{Q}$); $|\mathbb{R}|$ uncountable (Cantor diagonal).
+Prove $\neg Q \Rightarrow \neg P$ instead of $P \Rightarrow Q$ (logically equivalent). Useful when $\neg Q$ gives more to work with than $P$.
 
-## Counting & combinatorics
+**Template:** "We prove the contrapositive: assume $\neg Q$. [Steps]. Therefore $\neg P$."
 
-- **Permutations:** $n!$ orderings; $\binom{n}{k} k!$ for $k$-permutations.
-- **Combinations:** $\binom{n}{k} = \frac{n!}{k!(n-k)!}$.
-- **Pascal's rule:** $\binom{n}{k} = \binom{n-1}{k-1} + \binom{n-1}{k}$.
-- **Binomial theorem:** $(x+y)^n = \sum_k \binom{n}{k} x^{n-k} y^k$.
-- **Pigeonhole:** $n$ items in $k$ boxes ($n > k$) ⇒ some box has $\ge 2$.
-- **Inclusion–exclusion:** $|A \cup B| = |A| + |B| - |A \cap B|$.
+### Proof by contradiction
 
-## Regular languages & automata
+Assume $P \wedge \neg Q$ (i.e. $P$ holds but $Q$ fails). Derive a contradiction $\bot$. Conclude $Q$ must hold whenever $P$ holds.
+
+**Template:** "Suppose for contradiction that $P$ holds but $Q$ fails. [Steps reaching $\bot$]. Contradiction. Therefore $Q$ follows from $P$."
+
+### Proof by construction
+
+Prove existence by explicitly constructing the object. Most convincing form of existence proof.
+
+### Disproof by counterexample
+
+To refute $\forall x.\, P(x)$: exhibit one $x$ with $\neg P(x)$.
+
+---
+
+## 3 · Mathematical induction
+
+### Ordinary induction
+
+**Principle:** Let $P(m)$ be a statement for $m \in \mathbb{N}$. If $P(0)$ holds and $\forall n.\,(P(n) \Rightarrow P(n+1))$, then $\forall m.\,P(m)$.
+
+**Template:**
+1. State "We prove by the Principle of Induction."
+2. Define $P(m)$ explicitly.
+3. **Base case:** prove $P(0)$.
+4. **Inductive step:** let $n \in \mathbb{N}$; assume $P(n)$ **(IH)**; prove $P(n+1)$.
+5. Conclude "By induction, $P(m)$ holds for all $m \in \mathbb{N}$."
+
+**Induction from basis $\ell$:** same but base case is $P(\ell)$ and step is $\forall n \geq \ell.\,(P(n) \Rightarrow P(n+1))$.
+
+### Strong induction
+
+**Principle:** Let $P(m)$ for $m \geq \ell$. If for all $n \geq \ell$, assuming $P(k)$ for all $k \in [\ell..n]$ implies $P(n+1)$, then $\forall m \geq \ell.\,P(m)$.
+
+**Key difference:** the IH may assume $P$ at **all** prior values, not just $n$.
+
+**When to use:** when $P(n+1)$ depends on more than one predecessor (e.g. Fibonacci, prime factorisation).
+
+**Template:**
+1. "We prove by the Principle of Strong Induction from basis $\ell$."
+2. **Base case:** prove $P(\ell)$.
+3. **Inductive step:** let $n \geq \ell$; assume $P(k)$ for all $\ell \leq k \leq n$ **(SIH)**; prove $P(n+1)$.
+4. Conclude.
+
+### Well-founded induction
+
+Generalises ordinary and strong induction to any **well-founded relation** $\prec$ (one with no infinite descending chains). To prove $\forall a \in A.\,P(a)$: for each $x$, assuming $P(y)$ for all $y \prec x$ implies $P(x)$.
+
+---
+
+## 4 · Numbers and number theory
+
+### Divisibility
+
+$a \mid b$ (reads "$a$ divides $b$"): $\exists k \in \mathbb{Z}.\, b = k \cdot a$.
+
+**Congruence:** $a \equiv b \pmod{m}$ iff $m \mid (a - b)$ iff $a$ and $b$ have the same remainder when divided by $m$.
+
+**Congruence is an equivalence relation** on $\mathbb{Z}$; compatible with $+$ and $\times$.
+
+$\mathbb{Z}_m = \{[0]_m, [1]_m, \ldots, [m-1]_m\}$ — the ring of integers modulo $m$.
+
+**Division theorem (Euclidean division):** $\forall a \in \mathbb{Z}, b \in \mathbb{N}^+.\, \exists! q, r \in \mathbb{Z}.\, a = bq + r \wedge 0 \leq r < b$.
+
+### GCD
+
+$\gcd(a, b)$ = largest positive integer dividing both $a$ and $b$.
+
+**Euclid's algorithm:**
+$$\gcd(a, 0) = a \qquad \gcd(a, b) = \gcd(b, a \bmod b)$$
+
+Runs in $O(\log \min(a,b))$ steps. At each step: $\gcd(a,b) = \gcd(b, a \bmod b)$.
+
+**Example:** $\gcd(252, 105) = \gcd(105, 42) = \gcd(42, 21) = \gcd(21, 0) = 21$.
+
+**Bézout's theorem:** $\gcd(a, b) = ax + by$ for some $x, y \in \mathbb{Z}$ (the **Extended Euclidean Algorithm** finds $x, y$).
+
+**Theorem 92:** $\gcd(m, n)$ is the **least positive linear combination** of $m$ and $n$.
+
+### Multiplicative inverses in $\mathbb{Z}_m$
+
+**Corollary 93:** $[n]_m$ has a multiplicative inverse in $\mathbb{Z}_m$ **iff** $\gcd(m, n) = 1$.
+
+To find $[n]_m^{-1}$: run Extended Euclid's on $(m, n)$ to get $mx + ny = 1$; then $[n]_m^{-1} = [y]_m$.
+
+**Coprime:** $\gcd(a, b) = 1$. When $m$ is prime, every non-zero element of $\mathbb{Z}_m$ has an inverse → $\mathbb{Z}_m$ is a field.
+
+### Fermat's Little Theorem
+
+**For prime $p$ and any $i \in \mathbb{N}$:** $i^p \equiv i \pmod{p}$.
+
+**Equivalent form (for $\gcd(a, p) = 1$):** $a^{p-1} \equiv 1 \pmod{p}$.
+
+**Proof by induction on $i$:**
+- Base: $0^p = 0 \equiv 0$.
+- Step: $(i+1)^p = i^p + p(\text{integer sum}) + 1 \equiv i + 1 \pmod{p}$ (by Binomial Theorem; middle terms divisible by $p$).
+
+### Binomial theorem
+
+$$(x + y)^n = \sum_{k=0}^{n} \binom{n}{k} x^{n-k} y^k$$
+
+**Pascal's rule:** $\binom{m+1}{k} = \binom{m}{k} + \binom{m}{k-1}$.
+
+**Proof:** induction on $n$; inductive step uses Pascal's rule to split $\binom{n+1}{k}$.
+
+### Fundamental Theorem of Arithmetic
+
+**Every integer $\geq 2$ has a unique prime factorisation** (product of primes in non-decreasing order).
+
+**Proposition 96 (existence):** proved by strong induction from basis 2. Base: $2$ is prime. Step: if $n+1$ is composite, it factors as $p \times q$ with $p, q \in [2..n]$, and each factor is prime or a product of primes by the SIH.
+
+---
+
+## 5 · Cryptography
+
+### Diffie-Hellman key exchange
+
+**Public parameters:** prime $p$, base $c$.
+
+| Party | Secret | Computes | Sends |
+|---|---|---|---|
+| Alice | $a$ | $\alpha = [c^a]_p$ | $\alpha$ |
+| Bob | $b$ | $\beta = [c^b]_p$ | $\beta$ |
+
+**Shared secret:** Alice computes $[\beta^a]_p = [c^{ab}]_p$; Bob computes $[\alpha^b]_p = [c^{ab}]_p$.
+
+**Security:** eavesdropper sees $c, p, \alpha, \beta$. Recovering $a$ requires solving the **discrete logarithm problem**, which is computationally infeasible for large $p$.
+
+### RSA encryption
+
+**Setup:** choose prime $p$, encryption exponent $e$ with $\gcd(p-1, e) = 1$. Compute $d = [\text{lc}_2(p-1, e)]_{p-1}$ (so $ed \equiv 1 \pmod{p-1}$).
+
+**Encrypt:** $k \mapsto [k^e]_p$ **Decrypt:** $\ell \mapsto [\ell^d]_p$
+
+**Correctness (Lemma 94):** $e \cdot d = 1 + c(p-1)$ for some $c$, so $(k^e)^d = k^{ed} = k \cdot k^{c(p-1)} \equiv k \pmod{p}$ by Fermat's Little Theorem.
+
+**Practical RSA (Lemma 95):** use modulus $N = pq$ (product of two large primes). Choose $d, e$ with $ed \equiv 1 \pmod{(p-1)(q-1)}$. Then $(k^e)^d \equiv k \pmod{N}$. Publish $N, e$; keep $p, q, d$ secret. Security relies on hardness of factoring $N$.
+
+---
+
+## 6 · Sets
+
+### Basics
+
+An **abstract set** is an unordered collection with no repetition. **Extensionality:** $A = B \iff \forall x.\, (x \in A \iff x \in B)$.
+
+**ZFC axioms** (named, not memorised individually): extensionality, separation, powerset, pairing, union, infinity, choice, replacement, foundation.
+
+**Russell's paradox:** $R = \{x \mid x \notin x\}$ is contradictory. Separation axiom prevents this by requiring $\{x \in A \mid P(x)\}$ — need a pre-existing set $A$.
+
+### Set operations
+
+$$A \cup B = \{x \mid x \in A \vee x \in B\}$$
+$$A \cap B = \{x \mid x \in A \wedge x \in B\}$$
+$$A \setminus B = A \cap B^c = \{x \in A \mid x \notin B\}$$
+$$A^c = \{x \in U \mid x \notin A\} \quad \text{(complement w.r.t. universe } U\text{)}$$
+
+**Powerset:** $\mathcal{P}(A) = \{X \mid X \subseteq A\}$. For finite $A$: $|\mathcal{P}(A)| = 2^{|A|}$.
+
+### Boolean algebra of sets
+
+$(\mathcal{P}(U), \emptyset, U, \cup, \cap, (\cdot)^c)$ is a Boolean algebra:
+
+| Law | Form |
+|---|---|
+| Commutativity | $A \cup B = B \cup A$ |
+| Associativity | $(A \cup B) \cup C = A \cup (B \cup C)$ |
+| Distributivity | $A \cup (B \cap C) = (A \cup B) \cap (A \cup C)$ |
+| Idempotency | $A \cup A = A$ |
+| Neutral | $A \cup \emptyset = A$; $A \cap U = A$ |
+| Annihilator | $A \cup U = U$; $A \cap \emptyset = \emptyset$ |
+| Absorption | $A \cup (A \cap B) = A$ |
+| Complementation | $A \cup A^c = U$; $A \cap A^c = \emptyset$ |
+| **De Morgan** | $(A \cup B)^c = A^c \cap B^c$; $(A \cap B)^c = A^c \cup B^c$ |
+| Double complement | $A^{cc} = A$ |
+
+**Sets–logic correspondence:**
+$\emptyset \leftrightarrow \text{false}$, $U \leftrightarrow \text{true}$, $\cup \leftrightarrow \vee$, $\cap \leftrightarrow \wedge$, $(\cdot)^c \leftrightarrow \neg$, $\subseteq \leftrightarrow \Rightarrow$, $= \leftrightarrow \Leftrightarrow$.
+
+---
+
+## 7 · Relations
+
+### Binary relations
+
+A **binary relation** $R : A \mapsto B$ is a subset $R \subseteq A \times B$. Write $a\,R\,b$ for $(a, b) \in R$.
+
+**Composition:** $S \circ R = \{(a,c) \mid \exists b.\, a\,R\,b \wedge b\,S\,c\} : A \mapsto C$. Associative.
+
+**Identity relation:** $\text{id}_A = \{(a,a) \mid a \in A\}$. Neutral element for composition.
+
+### $n$-fold composition and paths
+
+$R^{\circ 0} = \text{id}_A$; $R^{\circ(n+1)} = R \circ R^{\circ n}$.
+
+$s\,R^{\circ n}\,t$ iff there is a **path of length $n$** from $s$ to $t$ in the directed graph $(A, R)$.
+
+### Reflexive-transitive closure
+
+$$R^{\circ *} = \bigcup_{n \in \mathbb{N}} R^{\circ n}$$
+
+$s\,R^{\circ *}\,t$ iff there is a path (of any length) from $s$ to $t$.
+
+**Theorem:** $R^{\circ *}$ is the **least preorder** containing $R$ (least reflexive-transitive relation containing $R$).
+
+### Boolean matrix representation
+
+Relation $R : [m] \mapsto [n]$ ↔ $(m \times n)$ Boolean matrix. **Composition = Boolean matrix multiplication.** Reachability in finite graphs can be computed by iterating the adjacency matrix over $(\{\text{F},\text{T}\}, \vee, \wedge)$.
+
+### Preorders and partial orders
+
+**Preorder:** reflexive + transitive. **Partial order (poset):** preorder + antisymmetric.
+
+Examples: $(\mathbb{R}, \leq)$, $(\mathcal{P}(A), \subseteq)$, $(\mathbb{N}, \mid)$ (divisibility).
+
+---
+
+## 8 · Functions
+
+### Partial and total functions
+
+- **Partial function** $f : A \rightharpoonup B$: each $a \in A$ maps to at most one $b$.
+- **Total function (map)** $f : A \to B$: each $a \in A$ maps to exactly one $b$.
+
+$$|A \to B| = |B|^{|A|} \qquad |A \rightharpoonup B| = (|B|+1)^{|A|}$$
+
+**Composition** $(g \circ f)(a) = g(f(a))$ is associative; $\text{id}_A$ is its neutral element.
+
+### Injections, surjections, bijections
+
+| Property | Formal statement | Also called |
+|---|---|---|
+| **Injective** | $f(a_1) = f(a_2) \Rightarrow a_1 = a_2$ | One-to-one |
+| **Surjective** | $\forall b.\, \exists a.\, f(a) = b$ | Onto |
+| **Bijective** | Injective and surjective | One-to-one correspondence |
+
+$f : A \to B$ bijective iff there exists a unique inverse $f^{-1} : B \to A$ with $f^{-1} \circ f = \text{id}_A$ and $f \circ f^{-1} = \text{id}_B$.
+
+$A \cong B$ (isomorphic) iff a bijection between them exists. Same cardinality.
+
+$|A| \leq |B|$ iff an injection $A \rightarrowtail B$ exists. $|A| \geq |B|$ iff a surjection $A \twoheadrightarrow B$ exists.
+
+**Cantor-Bernstein-Schroeder:** $(A \lesssim B \wedge B \lesssim A) \Rightarrow A \cong B$.
+
+### Finite cardinality
+
+| Construction | Cardinality |
+|---|---|
+| $\mathcal{P}(A)$ | $2^{\#A}$ |
+| $A \times B$ | $\#A \cdot \#B$ |
+| $A \uplus B$ | $\#A + \#B$ |
+| $A \to B$ | $\#B^{\#A}$ |
+| $A \rightharpoonup B$ | $(\#B+1)^{\#A}$ |
+| $\text{Bij}(A,A)$ | $(\#A)!$ |
+
+### Equivalence relations and partitions
+
+**Equivalence relation** $E$ on $A$: reflexive, symmetric, transitive.
+
+**Equivalence class:** $[a]_E = \{x \in A \mid x\,E\,a\}$.
+
+**Partition** of $A$: family of non-empty, pairwise disjoint blocks covering $A$.
+
+**Theorem:** equivalence relations on $A$ correspond bijectively to partitions of $A$. The bijection sends $E \mapsto A/E$ (quotient set); inverse sends partition $P$ to the relation "same block."
+
+**Bell numbers** $B_n = |\text{Part}([n])|$: $B_0=1, B_1=1, B_2=2, B_3=5, B_4=15$. Recurrence: $B_{n+1} = \sum_{i=0}^{n} \binom{n}{i} B_i$.
+
+---
+
+## 9 · Countability and Cantor's theorem
+
+### Countability
+
+- $A$ is **countable** if $A = \emptyset$ or there exists a surjection $\mathbb{N} \twoheadrightarrow A$ (an enumeration).
+- $\mathbb{N}, \mathbb{Z}, \mathbb{Q}$ are countable; $\mathbb{N} \times \mathbb{N}$ is countable (Cantor pairing/anti-diagonals).
+
+**Enumeration of $\mathbb{Z}$:** $0, -1, 1, -2, 2, -3, 3, \ldots$ (interleave non-negatives and negatives).
+
+**Enumeration of $\mathbb{N} \times \mathbb{N}$:** go along anti-diagonals: $(0,0), (1,0), (0,1), (2,0), (1,1), (0,2), \ldots$
+
+### Cantor's diagonalisation
+
+**Theorem 181:** For every set $A$, there is **no surjection** $A \twoheadrightarrow \mathcal{P}(A)$, so $|A| < |\mathcal{P}(A)|$.
+
+**Proof:** Suppose $e : A \twoheadrightarrow \mathcal{P}(A)$. Let $D = \{x \in A \mid x \notin e(x)\}$. Since $e$ surjects, $\exists a$ with $e(a) = D$. Then $a \in D \iff a \notin D$ — contradiction.
+
+**Corollary:** $\mathcal{P}(\mathbb{N}) \cong (\mathbb{N} \to \{0,1\}) \cong \mathbb{R}$ is **uncountable**.
+
+**Non-computability corollary:** the set of programs is countable; the set of functions $\mathbb{N} \to \mathbb{N}$ is uncountable — so most functions are non-computable.
+
+### Lawvere's fixed-point theorem
+
+**Theorem:** If $\exists$ surjection $e : A \twoheadrightarrow (A \to X)$, then every $f : X \to X$ has a fixed point.
+
+**Proof:** let $h(x) = f(e(x)(x))$. By surjectivity, $\exists a$ with $e(a) = h$. Then $e(a)(a) = h(a) = f(e(a)(a))$ — so $e(a)(a)$ is a fixed point.
+
+**Connection to Cantor:** take $X = \{0,1\}$; negation $x \mapsto 1-x$ has no fixed point → no surjection $A \twoheadrightarrow (A \to \{0,1\}) \cong \mathcal{P}(A)$.
+
+---
+
+## 10 · Formal languages
+
+### Alphabet, words, languages
+
+- **Alphabet** $\Sigma$: finite non-empty set of symbols.
+- **Word (string):** finite sequence of symbols from $\Sigma$. $\epsilon$ = empty word.
+- **Length** $|w|$: number of symbols. $|\epsilon| = 0$.
+- **Concatenation:** $uv$ = $u$ followed by $v$. Associative; $\epsilon$ is neutral.
+- **Language** $L$: any set of words, $L \subseteq \Sigma^*$ where $\Sigma^* = \bigcup_{n \geq 0} \Sigma^n$ is the set of all finite words over $\Sigma$.
 
 ### Regular expressions
-- $\varnothing, \varepsilon, a$ are regex.
-- $RS$ concatenation; $R + S$ (or $R \mid S$) union; $R^*$ Kleene star.
 
-### DFA $(Q, \Sigma, \delta, q_0, F)$
-- $\delta : Q \times \Sigma \to Q$.
-- Accepts $w$ iff $\hat\delta(q_0, w) \in F$.
+Defined inductively:
+- $\varnothing$ — empty language (no words).
+- $\varepsilon$ — language $\{\epsilon\}$ (just empty word).
+- $a$ (for $a \in \Sigma$) — language $\{a\}$.
+- $RS$ — concatenation of $R$ and $S$.
+- $R + S$ (or $R \mid S$) — union of $R$ and $S$.
+- $R^*$ — Kleene star: $\{\epsilon\} \cup R \cup RR \cup \ldots$ (zero or more repetitions).
 
-### NFA
-- $\delta : Q \times \Sigma \cup \{\varepsilon\} \to \mathcal{P}(Q)$.
-- **Subset construction:** every NFA has an equivalent DFA (potentially exponentially larger).
+**Precedence:** $^* > \text{concat} > +$. So $ab^*c + d = ((a(b^*)c) + d)$.
 
-### Equivalence
-**Kleene's theorem:** regex ⇔ NFA ⇔ DFA describe the same class.
+### Deterministic Finite Automata (DFAs)
 
-### Pumping lemma (regular)
-If $L$ regular, $\exists p \ge 1: \forall w \in L, |w| \ge p \Rightarrow w = xyz$ with $|xy| \le p$, $|y| \ge 1$, $\forall i \ge 0.\ xy^iz \in L$.
+$$M = (Q, \Sigma, \delta, q_0, F)$$
 
-Use to show non-regularity (e.g. $\{a^n b^n\}$).
+- $Q$: finite set of states.
+- $\Sigma$: alphabet.
+- $\delta : Q \times \Sigma \to Q$: transition function.
+- $q_0 \in Q$: initial state.
+- $F \subseteq Q$: accepting (final) states.
+
+**Extended transition function** $\hat{\delta}$: $\hat{\delta}(q, \epsilon) = q$; $\hat{\delta}(q, wa) = \delta(\hat{\delta}(q, w), a)$.
+
+**Accepts** $w$ iff $\hat{\delta}(q_0, w) \in F$.
+
+**DFA representation:** state-transition table or state diagram (directed graph; double circles = accepting states).
+
+### Non-deterministic Finite Automata (NFAs)
+
+$$M = (Q, \Sigma, \delta, q_0, F) \quad \text{where } \delta : Q \times (\Sigma \cup \{\varepsilon\}) \to \mathcal{P}(Q)$$
+
+Multiple transitions possible from one state on the same symbol. $\varepsilon$-transitions allowed (move without consuming input). Accepts $w$ if **any** computation path reaches an accepting state.
+
+**NFA ≡ DFA** in expressive power.
+
+**Subset (powerset) construction:** convert NFA with $n$ states to DFA with $2^n$ states. DFA states = subsets of NFA states. Initial state = $\varepsilon$-closure$(q_0)$.
+
+### Kleene's theorem
+
+**Every regular language can be recognised by a DFA**, and vice versa. Equivalences:
+
+$$\text{Regular expressions} \iff \text{NFAs} \iff \text{DFAs}$$
+
+**Constructive proofs:**
+- Regex → NFA: Thompson's construction (small NFA per operator).
+- NFA → DFA: subset construction.
+- DFA → Regex: state elimination.
 
 ### DFA minimisation
-Hopcroft / table-filling — partition states by distinguishability; merge equivalent states.
+
+Two states $p, q$ are **distinguishable** if some word $w$ leads to acceptance from exactly one of them.
+
+**Table-filling (Hopcroft-Moore) algorithm:**
+1. Mark all pairs $(p, q)$ where one is accepting and the other is not.
+2. Mark $(p, q)$ if $\exists a \in \Sigma$ such that $(\delta(p,a), \delta(q,a))$ is already marked.
+3. Repeat step 2 until no new markings. Unmarked pairs = equivalent states.
+4. Merge equivalent states; remove unreachable states.
+
+### The pumping lemma for regular languages
+
+**Lemma:** If $L$ is regular, then $\exists p \geq 1$ (pumping length) such that:
+$$\forall w \in L \text{ with } |w| \geq p: \exists x, y, z \text{ with } w = xyz,\ |xy| \leq p,\ |y| \geq 1,\ \forall i \geq 0.\ xy^iz \in L.$$
+
+**Usage (to prove $L$ is not regular):**
+1. Assume $L$ is regular with pumping length $p$.
+2. Choose a specific word $w \in L$ with $|w| \geq p$ (your choice!).
+3. For **any** split $w = xyz$ with $|xy| \leq p$, $|y| \geq 1$: find $i$ such that $xy^iz \notin L$.
+4. Contradiction → $L$ is not regular.
+
+**Classic example:** $L = \{a^n b^n \mid n \geq 0\}$. Take $w = a^p b^p$. Any $y$ with $|xy| \leq p$ lies entirely in the $a$-prefix, so $y = a^k$ for some $k \geq 1$. Then $xy^0z = a^{p-k}b^p \notin L$ since $p-k \neq p$.
+
+### Inductive rule definitions
+
+Languages can be defined inductively via **inference rules**:
+$$\frac{\text{premises}}{\text{conclusion}} \quad \text{(rule name)}$$
+
+**Rule induction:** to prove $\forall x \in L.\, P(x)$ for an inductively-defined $L$: for each rule, assume $P$ holds for all premises; prove $P$ holds for the conclusion.
+
+---
 
 ## Common pitfalls
 
-- $\Rightarrow$ versus $\Leftrightarrow$ — proving one direction does not give the other.
-- Strong induction step must apply to *all* smaller $k$, not just $k - 1$.
-- $\binom{n}{k}$ defined only for $0 \le k \le n$ as integers (extend by convention to 0 outside).
-- An NFA with $\varepsilon$-moves is *not* a DFA — convert via subset construction.
-- "$L$ is not regular" requires the pumping lemma to be applied for *every* sufficiently long word, not just one.
+- **Implication $\Rightarrow$ is false only when $P$ true and $Q$ false.** $P$ false → implication vacuously true (a common surprise).
+- **Converse ≠ contrapositive.** Proving $Q \Rightarrow P$ does NOT prove $P \Rightarrow Q$.
+- **Induction step must be universal.** Never assume the specific value you're proving; assume $P(n)$ for an arbitrary $n$, then derive $P(n+1)$.
+- **Strong induction SIH:** "assume $P(k)$ for all $k \in [\ell..n]$" — explicitly state the range.
+- **GCD is the LEAST positive linear combination** — Theorem 92. Do not confuse with Bézout (which says a linear combination exists; Theorem 92 says it's the smallest positive one).
+- **Multiplicative inverse exists iff coprime to modulus.** In $\mathbb{Z}_6$: $[2]_6$ has no inverse (since $\gcd(6,2) = 2 \neq 1$).
+- **Cantor's theorem:** the contradiction requires the diagonal set $D = \{x \mid x \notin e(x)\}$. Spell this out explicitly in proofs.
+- **Lawvere is strictly more general than Cantor** — Cantor is the special case $X = \{0,1\}$.
+- **NFA subset construction** can produce exponentially more states than the NFA. This is the price for determinism.
+- **Pumping lemma: you choose $w$; adversary chooses the split.** Your proof must handle ALL valid splits, not just one.
+- **$\varepsilon \in R^*$ always** — Kleene star includes zero repetitions.
+- **$\{a^n b^n\}$ is not regular but is context-free** — don't confuse the hierarchy.
+
+---
 
 ## Exam strategy
 
-- For "prove…" use a formal style: state hypothesis, induction principle, base case, step, conclusion.
-- For language questions, give an explicit DFA (table or diagram) — partial credit only for vague descriptions.
-- Always verify number-theoretic claims with one numerical example.
+- **Induction proofs:** always write the 5-step template explicitly. Losing marks for "assume it holds at $n$" without labelling it (IH) is common.
+- **Strong induction:** state the SIH as a range: "assume $P(k)$ for all $k \in [0..n]$" — not just "assume $P(n)$."
+- **GCD calculations:** run Euclid's algorithm step by step. Extended Euclid's: work backwards substituting remainders.
+- **RSA correctness:** the key equation is $ed \equiv 1 \pmod{p-1}$; Fermat's Little Theorem closes the proof.
+- **Pumping lemma:** choose $w$ strategically so that $y$ (constrained by $|xy| \leq p$) must cause problems. State "for any valid split $xyz$..." and then show the contradiction.
+- **DFA minimisation:** draw the table carefully; mark initial pairs (accepting vs non-accepting) first, then propagate.
+- **Set proofs:** to prove $A = B$, prove $A \subseteq B$ and $B \subseteq A$ separately using element arguments.
+- **Cantor diagonalisation:** the proof is the same structure every time — know it cold.

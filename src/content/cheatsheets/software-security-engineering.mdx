@@ -2,102 +2,522 @@
 module: software-security-engineering
 title: "Software & Security Engineering — Cheat Sheet"
 paper: paper-2
-updated: "2026-05-10"
+updated: "2026-06-09"
 ---
 
-## Engineering mindset
+## 1 · Engineering mindset
 
-- **Engineering vs. craft:** budget, schedule, accountability, discipline.
-- **80/20 rule** — 80% of cost in maintenance, not development.
-- **Brooks's law:** "adding manpower to a late software project makes it later." Ramp-up + communication overhead.
-- **Cost of fixing** (Boehm): roughly 10× per phase moved later (req → design → impl → test → prod).
-- **NATO 1968** — birth of software engineering as a discipline.
+**Software engineering ≠ programming.** Engineering requires: defined process, accountability, quantified trade-offs, systematic verification. The **software crisis** (NATO 1968) arose because software was being built craftsman-style without engineering discipline.
 
-## Requirements
+**80/20 rule:** ~80% of total cost is incurred in maintenance, not development. Writing the code is the cheap part.
 
-- **Functional:** what the system does (use cases, behaviours).
-- **Non-functional / quality:** performance, reliability, usability, security, maintainability.
-- **Constraints:** regulatory, hardware, interface.
-- **Sources:** stakeholders, domain docs, observation, prototyping.
-- **Hierarchy:** business → user → system → software requirements.
+**Brooks's Law:** "Adding manpower to a late software project makes it later." Communication paths scale as $\frac{n(n-1)}{2}$; new people need ramp-up time; coordination overhead grows super-linearly.
 
-### Specifications
-- Should be **complete, consistent, unambiguous, verifiable, traceable, modifiable**.
-- **MoSCoW:** Must, Should, Could, Won't.
-- **Formal:** Z, B, Alloy — mathematical precision; high cost.
-- **Semi-formal:** UML use-case + sequence + state diagrams.
+**Iron triangle:** time / cost / scope — fix two, the third must flex. Compression increases risk and reduces quality.
 
-## Lifecycle models
+**Code as liability:** code costs money to maintain, test, and secure. New code added = new liability assumed. Tech debt (Cunningham 1992) = future rework accumulated by choosing quick but imperfect solutions.
 
-| Model | When |
+### Case studies (each illustrates a failure mode)
+
+| Incident | Root cause | Lesson |
+|---|---|---|
+| **Therac-25** (1985–87) | Race condition in radiation therapy software; removed hardware interlocks | No hardware safety net; insufficient testing of concurrent interactions |
+| **Mars Climate Orbiter** (1999) | Units mismatch (imperial vs SI) | Interface contracts must be explicit and verified |
+| **London Ambulance (LAS CAD)** (1992) | Premature rollout; inadequate user training; system overloaded | Deployed without fallback; requirements misunderstood |
+| **Post Office Horizon** (1999–2019) | Bugs blamed on subpostmasters; cover-up | Institutional failures; no independent audit; catastrophic social consequences |
+| **Boeing 737 MAX** (2018–19) | MCAS software hid from pilots; single sensor input; inadequate training | Safety-critical systems need transparency, redundancy, human override |
+
+---
+
+## 2 · Requirements
+
+### Problem vs solution space
+
+**Problem space:** what the customer needs (the *why*).
+**Solution space:** what the system does (the *what/how*).
+
+Never jump straight to solutions — misidentifying the problem is the most expensive mistake (Boehm's curve: fixing in production costs ~100× fixing in requirements).
+
+### Functional vs non-functional requirements
+
+- **Functional (FR):** specific behaviours — "user can reset password via email link."
+- **Non-functional (NFR, -ilities):** qualities — performance, reliability, availability, security, maintainability, usability, scalability, portability.
+- **Constraints:** technology, regulatory, budget, timeline.
+
+Every NFR must have a **fit criterion** (measurable test: "page load < 2 s for 95th percentile").
+
+### Elicitation challenges
+
+- Stakeholders don't know what they want until they see it.
+- Ambiguity: "fast", "secure", "user-friendly" mean different things.
+- Conflict: different stakeholders have different priorities.
+- Tacit knowledge: domain experts assume knowledge that engineers don't have.
+
+### Prioritisation: MoSCoW
+
+| Priority | Meaning |
 |---|---|
-| Waterfall | well-understood, fixed reqs |
-| V-model | safety-critical, with verification per phase |
-| Iterative / spiral | risk-driven |
-| Agile (Scrum, XP) | uncertain reqs, fast feedback |
-| DevOps / CI-CD | continuous delivery |
+| **Must have** | Non-negotiable; MVP fails without it |
+| **Should have** | Important but can work around |
+| **Could have** | Nice to have; include if time/budget allows |
+| **Won't have (this time)** | Out of scope for now; might revisit |
 
-## Testing
+### UML sketches
 
-- **Unit:** smallest behaviour unit (function/class).
-- **Integration:** modules together.
-- **System:** end-to-end against requirements.
-- **Acceptance:** stakeholder sign-off.
-- **Regression:** ensure fixes don't break old behaviour.
-- **TDD:** red → green → refactor.
-- **Coverage:** statement, branch, MC/DC (high-integrity).
-- **Mutation testing:** measures test-suite quality by injecting bugs.
-- **Property-based** (QuickCheck): generate random inputs from spec.
+- **Class diagram:** boxes (class name, attributes, operations), lines (association, inheritance `◁—`, composition `♦—`, dependency `- ->`)
+- **Sequence diagram:** vertical lifelines, horizontal arrows (synchronous `→`, async `-->`, return `-->`)
+- Use UML as communication aid, not bureaucratic artifact — enough detail to remove ambiguity.
 
-## Security principles
+---
 
-- **CIA:** Confidentiality, Integrity, Availability.
-- **Defence in depth:** layered, redundant controls.
-- **Least privilege:** minimum rights for the task.
-- **Separation of duties:** no one person can complete a critical action alone.
-- **Fail-safe defaults:** deny unless explicitly allowed.
-- **Economy of mechanism:** keep security-critical code small.
-- **Open design** (Kerckhoffs): security through key, not algorithm secrecy.
-- **Complete mediation:** every access checked.
-- **Psychological acceptability:** if it's hard to use securely, it'll be used insecurely.
-- **Threat modelling:** STRIDE (Spoofing, Tampering, Repudiation, Info-disclosure, DoS, Elevation).
+## 3 · Engineering process
 
-## Common vulnerabilities (overview)
+### Waterfall model
 
-- **Buffer overflow** — write past array; smashed return address; use bounds-checked types.
-- **SQL injection** — concatenated queries; parameterise.
-- **XSS** — untrusted input reflected/stored in HTML; escape on output.
-- **CSRF** — exploit logged-in user's session; tokens.
-- **Auth flaws** — weak passwords, missing MFA, session fixation.
-- **Race conditions / TOCTOU** — check-then-use under concurrency.
-- **Insecure deserialisation** — attacker-controlled object graphs.
+Sequential phases: Requirements → Design → Implementation → Testing → Deployment → Maintenance.
+Each phase produces verified output; proceeding without completing the previous is costly.
+Best for: well-understood, fixed requirements. Problems: late integration; no customer feedback until end.
 
-## Designing for failure
+### Agile manifesto (2001)
 
-- **Redundancy** — RAID, hot-standby, geographically distributed.
-- **Graceful degradation** — partial service is better than none.
-- **Circuit breakers** — fail fast when dependent service is down.
-- **Backups + restore tested** — not just taken.
-- **Postmortems** — blameless, focused on systemic causes.
-- **MTBF / MTTR** — reliability metrics.
+Four values (left preferred over right):
+1. Individuals and interactions **over** processes and tools.
+2. Working software **over** comprehensive documentation.
+3. Customer collaboration **over** contract negotiation.
+4. Responding to change **over** following a plan.
 
-## Ethics & professionalism
+### Scrum
 
-- **BCS Code of Conduct, ACM Code of Ethics.**
-- **Privacy by design** — minimise data collection.
-- **Whistleblowing** — duty when public harm is at stake.
-- **Dual use** — research can be misused; consider before publishing.
-- **AI ethics** — bias, accountability, opacity.
+**Pillars:** transparency, inspection, adaptation.
+
+**Artifacts:**
+- **Product backlog:** ordered list of everything the product might need.
+- **Sprint backlog:** items selected for this sprint + plan for delivering them.
+- **Increment:** potentially shippable product at end of sprint.
+
+**Roles:**
+- **Product owner:** defines and prioritises product backlog.
+- **Scrum master:** facilitates process; removes impediments.
+- **Dev team:** self-organising; 3–9 people.
+
+**Events:**
+- **Sprint:** 1–4 week time-box; fixed goal.
+- **Sprint planning:** team selects and estimates backlog items.
+- **Daily scrum (stand-up):** 15 min; what did I do? what will I do? impediments?
+- **Sprint review:** demo increment to stakeholders.
+- **Sprint retrospective:** inspect and adapt the process.
+
+**Definition of Done:** explicit, agreed criteria an increment must meet.
+
+### Extreme Programming (XP)
+
+Key practices: pair programming, TDD (test-first), continuous integration, collective ownership, refactoring, on-site customer, small releases, 40-hour week, coding standards.
+
+### Kanban
+
+Visualise flow (board: To Do → In Progress → Done). Limit WIP (work-in-progress). Pull don't push. Measure cycle time. No sprints — continuous flow.
+
+---
+
+## 4 · Quality assurance
+
+### Testing pyramid
+
+```
+       /  E2E  \     ← Few; slow; expensive; high confidence
+      /──────────\
+     / Integration\  ← Moderate; test module interactions
+    /──────────────\
+   /   Unit tests   \ ← Many; fast; cheap; test one thing
+  /──────────────────\
+```
+
+- **Unit tests:** test smallest logic unit (function/class) in isolation; fast; deterministic.
+- **Integration tests:** test module interactions; need actual infrastructure (DB, HTTP).
+- **System/E2E tests:** test whole workflow; slowest; most brittle.
+- **Acceptance tests:** stakeholder sign-off against requirements.
+- **Regression tests:** ensure fixes don't break existing behaviour.
+
+### TDD (Test-Driven Development)
+
+**Red → Green → Refactor:**
+1. **Red:** write a failing test for next bit of behaviour.
+2. **Green:** write minimal code to pass the test.
+3. **Refactor:** clean up code; tests must stay green.
+
+Forces explicit specification before implementation; creates high-coverage test suite as a side-effect.
+
+### Coverage criteria
+
+| Criterion | Description | Standard |
+|---|---|---|
+| Statement | Every line executed | Minimum baseline |
+| Branch | Every true/false branch | Common CI gate |
+| **MC/DC** | Each condition independently affects outcome | DO-178C (avionics), ISO 26262 (automotive) |
+
+**Coverage ≠ Quality:** 100% coverage ≠ no bugs (tests can pass with assertions that don't catch wrong results).
+
+### Mutation testing
+
+Introduce small code changes (mutations: change `+` to `-`, `>` to `>=`, delete a line). Run test suite. A test that doesn't catch the mutation is weak. **Mutation score** = mutations killed / total mutations.
+
+### Property-based testing
+
+Define properties the code should satisfy; framework (QuickCheck/Hypothesis) generates random inputs and tries to falsify properties. Finds edge cases humans miss.
+
+### Fuzzing
+
+Feed malformed/random inputs to find crashes, assertion failures, or hangs. Especially useful for parsers, codecs, network protocols. **Intelligent fuzzing** (AI-assisted) generates plausible-but-malformed inputs.
+
+### Git and branching strategies
+
+| Strategy | Approach | Best for |
+|---|---|---|
+| **GitFlow** | Long-lived `develop` + `release` branches | Versioned releases, multiple concurrent versions |
+| **Trunk-based** | All commit to `main`/`trunk`; short-lived feature branches | CI/CD, high-frequency deployment |
+
+Feature flags: merge incomplete code behind a flag; enable selectively. Decouples deployment from feature release.
+
+### CI/CD pipeline
+
+```
+Push → Lint → Build → Unit tests → Integration tests
+    → Security scan → Build artefact → Deploy to staging
+    → E2E tests → Deploy to production
+```
+
+**Deployment strategies:**
+- **Blue-green:** two identical environments; switch traffic at once. Fast rollback.
+- **Canary:** gradually increase traffic to new version; monitor; roll back on error.
+- **Feature flags:** toggle features at runtime; no re-deploy needed.
+- **A/B testing:** show different versions to different users; measure outcomes.
+
+### SLOs and error budgets
+
+- **SLI (Service Level Indicator):** measured metric (e.g. request latency, error rate).
+- **SLO (Service Level Objective):** target for an SLI (e.g. 99.9% success rate over 30 days).
+- **SLA (Service Level Agreement):** contractual SLO with consequences.
+- **Error budget:** allowed fraction of failures = $1 - \text{SLO}$. Burn down budget by shipping risky features; deplete it and freeze changes.
+
+### Blameless post-mortems
+
+Goal: learn, not punish. Outcome: timeline of events, contributing factors, corrective actions. No names attached to mistakes. Assumes workers made reasonable decisions given information available.
+
+---
+
+## 5 · Cloud and DevOps
+
+| Service model | Provider manages | Customer manages |
+|---|---|---|
+| **IaaS** | Hardware, virtualisation | OS, middleware, apps, data |
+| **PaaS** | + OS, middleware, runtime | Apps, data |
+| **SaaS** | Everything | Configuration, data |
+
+**Docker vs VMs:**
+- VMs: full OS copy; strong isolation; ~1 GB+ per instance; slow start.
+- Containers: share host kernel; process isolation (namespaces + cgroups); ~MB per image; fast start.
+
+**Kubernetes:** container orchestration. Pods (1+ containers), Services (stable IP/DNS), Deployments (desired state), Nodes (machines). Cluster manages scheduling, health, scaling, rolling updates.
+
+**Observability = Metrics + Logs + Traces:**
+- **Metrics:** numeric time-series (Prometheus + Grafana).
+- **Logs:** timestamped text events (ELK stack).
+- **Traces:** request journeys across services (Jaeger/Zipkin).
+- **Four golden signals (Google SRE):** latency, traffic, errors, saturation.
+
+---
+
+## 6 · Software evolution
+
+### Lehman's laws (1980)
+
+1. **Continuing change:** a system must be adapted or it becomes less useful.
+2. **Increasing complexity:** unless specific effort is made, complexity increases.
+3. **Self-regulation:** the development process is self-regulating (effort and change rates stabilise).
+
+### Maintenance categories
+
+| Category | % | Examples |
+|---|---|---|
+| Corrective | 20% | Bug fixes |
+| Adaptive | 25% | Platform/dependency updates |
+| **Perfective** | **50%** | New features, improvements |
+| Preventive | 5% | Refactoring, technical debt |
+
+### Versioning: SemVer
+
+`MAJOR.MINOR.PATCH`: bump MAJOR for breaking changes, MINOR for new backward-compatible features, PATCH for backward-compatible fixes. Allows dependency resolution (`^1.2.0` = allow up to `<2.0.0`).
+
+### Hyrum's Law
+
+> "With a sufficient number of users of an API, it does not matter what you promise in the contract: all observable behaviors of your system will be depended on by somebody."
+
+All observable behaviour becomes an implicit contract. Changing undocumented behaviour breaks users anyway.
+
+### Compatibility
+
+- **Backward compatible:** new code works with old data/callers.
+- **Forward compatible:** old code works with new data/servers.
+- **Postel's Law:** "Be liberal in what you accept, conservative in what you send." Enables forward compatibility.
+
+### Technical debt quadrant (Fowler)
+
+| | Reckless | Prudent |
+|---|---|---|
+| **Deliberate** | "We don't have time for design" | "We'll ship now, fix later" |
+| **Inadvertent** | "What's layering?" | "Now we know we should have used X" |
+
+### Strangler Fig pattern
+
+Gradually replace legacy system by routing new functionality to new system, until old system is fully replaced. No big-bang rewrite; no downtime. Named after the strangler fig tree.
+
+### Code smells and refactoring
+
+Code smells: long functions, feature envy, data clumps, god classes, inappropriate intimacy, duplicate code, primitive obsession, shotgun surgery, divergent change. **Refactoring** = structural change without behaviour change; only safe if tests exist.
+
+### Chaos engineering
+
+Deliberately introduce failures to test resilience: Netflix Chaos Monkey terminates random production instances. **Game days:** simulate failures in planned drills. Goal: find weaknesses before real incidents do.
+
+---
+
+## 7 · Security principles
+
+### CIA triad
+
+- **Confidentiality:** data only accessed by authorised parties.
+- **Integrity:** data only modified by authorised parties.
+- **Availability:** system accessible when needed.
+
+Also: **Authenticity** (identity verified), **Non-repudiation** (actions can't be denied).
+
+**Risk = likelihood × impact.** Security controls reduce likelihood and/or impact.
+
+### Saltzer & Schroeder (8 principles)
+
+| # | Principle | Meaning |
+|---|---|---|
+| 1 | Economy of mechanism | Simple security code → fewer bugs |
+| 2 | Fail-safe defaults | Deny by default; allow explicitly |
+| 3 | Complete mediation | Check every access, every time |
+| 4 | Open design | Security in the keys, not the algorithm (Kerckhoffs) |
+| 5 | Separation of privilege | Require multiple conditions for critical actions |
+| 6 | Least privilege | Minimum rights needed; no more |
+| 7 | Least common mechanism | Minimise shared components between privilege levels |
+| 8 | Psychological acceptability | If hard to use securely, it won't be |
+
+### STRIDE threat model
+
+| Threat | What it violates | Example |
+|---|---|---|
+| **S**poofing | Authenticity | Pretending to be another user |
+| **T**ampering | Integrity | Modifying data in transit |
+| **R**epudiation | Non-repudiation | Denying you performed an action |
+| **I**nformation disclosure | Confidentiality | Data leak |
+| **D**enial of service | Availability | Flooding a server |
+| **E**levation of privilege | Authorisation | Gaining admin from user |
+
+**Defence in depth:** multiple independent security layers so no single failure is catastrophic.
+
+**Trust boundaries:** draw where data crosses trust levels (network boundary, IPC, user input). Validate at every boundary crossing.
+
+---
+
+## 8 · Common vulnerabilities
+
+### Buffer overflow
+
+**Stack smashing:** write beyond array end → overwrite return address → redirect execution.
+
+**Mitigations:**
+- **Stack canaries:** value placed before return address; checked on return.
+- **ASLR (Address Space Layout Randomisation):** randomise memory layout; hard to guess target addresses.
+- **NX bit (No-Execute):** stack/heap non-executable.
+- **Safe languages:** Rust, Java, Python do bounds checking automatically.
+- **Use `strncpy`/`snprintf`** not `strcpy`/`sprintf`.
+
+### SQL injection
+
+```sql
+-- Vulnerable:
+"SELECT * FROM users WHERE name = '" + input + "'"
+-- Attack input: ' OR '1'='1
+-- Fix: use parameterised queries / prepared statements
+SELECT * FROM users WHERE name = ?
+```
+
+### Cross-site scripting (XSS)
+
+| Type | How | Fix |
+|---|---|---|
+| Reflected | Input returned in response | Escape output; Content-Security-Policy |
+| Stored | Malicious data in DB, rendered later | Escape on output; input validation |
+| DOM-based | JavaScript modifies DOM with untrusted data | Avoid `innerHTML`; use `textContent` |
+
+### CSRF (Cross-Site Request Forgery)
+
+Browser automatically sends cookies with cross-origin requests. Attacker's page makes authenticated request on behalf of logged-in user.
+- **Fix:** `SameSite=Strict` cookies; CSRF token in hidden form field; check `Origin`/`Referer` header.
+
+### TOCTOU (Time-of-Check Time-of-Use)
+
+Race condition: check condition → window → use resource (condition may have changed). Example: check file permissions then open file. Fix: atomically open-and-check; use safe API.
+
+### Other vulnerabilities
+
+- **Insecure deserialisation:** attacker-controlled object graphs → arbitrary code execution. Fix: validate/whitelist; use safer formats (JSON); sign serialised data.
+- **SSRF (Server-Side Request Forgery):** server fetches attacker-specified URL → access internal services. Fix: allowlist of valid destinations.
+- **IDOR (Insecure Direct Object Reference):** `/invoice/12345` — can user 1 access user 2's invoice? Fix: access control check on every request, not just listing.
+
+---
+
+## 9 · Testing strategies
+
+### Test level overview
+
+| Level | What | Who | Tools |
+|---|---|---|---|
+| Unit | Single function/class | Dev | pytest, JUnit |
+| Integration | Module interactions | Dev | Real DB/service |
+| System | End-to-end | QA | Selenium, Cypress |
+| Acceptance | User stories | Customer | BDD (Cucumber) |
+| Performance | Load/stress | Ops | JMeter, k6 |
+
+### Coverage hierarchy
+
+Statement ⊂ Branch ⊂ Condition ⊂ MC/DC.
+
+**MC/DC (Modified Condition/Decision Coverage):** each condition (atomic boolean) independently affects the decision outcome. Required by DO-178C (DAL A), ISO 26262 (ASIL D). Typically requires more tests than branch coverage but catches interaction bugs.
+
+### Mutation testing workflow
+
+1. Generate mutants (source code with single mutations).
+2. Run test suite against each mutant.
+3. Killed = test fails (good); survived = test doesn't catch the change (bad).
+4. Mutation score = killed/total. Target >85%.
+
+---
+
+## 10 · Design for failure
+
+### Reliability metrics
+
+- **MTBF (Mean Time Between Failures):** average time between failures.
+- **MTTR (Mean Time To Recovery):** average time to restore service.
+- **Availability:** $\text{Av} = \frac{\text{MTBF}}{\text{MTBF} + \text{MTTR}}$
+
+| Availability | Downtime per year |
+|---|---|
+| 99% ("two nines") | ~3.65 days |
+| 99.9% ("three nines") | ~8.76 hours |
+| 99.99% ("four nines") | ~52.6 minutes |
+| 99.999% ("five nines") | ~5.26 minutes |
+
+### Redundancy patterns
+
+- **N+1:** one spare component; survives one failure.
+- **2N:** full duplication; active-active or active-passive.
+- **Geographic (multi-AZ/region):** survives data centre failure.
+
+### Resilience patterns
+
+- **Circuit breaker:** after $N$ consecutive failures, open the circuit (fail fast). Periodically try again (half-open state). Prevents cascading failure.
+- **Bulkhead:** isolate failures; thread pools or process isolation per service. One failing component can't starve others.
+- **Retry with backoff:** transient failures often resolve; exponential backoff + jitter avoids thundering herd.
+- **Timeout:** every network call must have a timeout; blocked calls cascade.
+
+### Backup rule: 3-2-1
+
+3 copies of data, 2 different media types, 1 offsite. Test restores regularly.
+
+**RPO (Recovery Point Objective):** maximum acceptable data loss (age of last usable backup).
+**RTO (Recovery Time Objective):** maximum acceptable downtime before service restored.
+
+---
+
+## 11 · Software evolution in the AI era
+
+**AI vs autocomplete:** LLMs understand intent across files; autocomplete knows only syntax. AI completes logic; autocomplete completes tokens.
+
+**Risks:**
+- **Technical debt of ignorance:** committing code you don't understand → unmaintainable.
+- **Hallucinations:** AI invents non-existent APIs, methods, libraries.
+- **Stale patterns:** training data contains outdated/insecure code (old CVEs).
+- **Critic architecture:** generator model writes code; verifier model finds flaws. Reduces hallucinations.
+
+**Jevons paradox:** making coding cheaper doesn't reduce demand for engineers — it increases total software produced.
+
+**Determinism vs probabilistic:** $f(x) = y$ always vs $f(x) \approx y$ usually. AI systems require guardrails, evals, and monitoring that traditional software doesn't.
+
+**Core principles unchanged:** reliability, maintainability, security, value. AI changes tools, not goals.
+
+---
+
+## 12 · Ethics and professionalism
+
+### BCS Code of Conduct (4 pillars)
+
+1. **Public interest:** act with due skill and care; promote equality.
+2. **Professional competence:** work within competence; keep skills current.
+3. **Duty to relevant authority:** avoid conflicts of interest; be honest.
+4. **Duty to the profession:** uphold reputation of the profession.
+
+### ACM Code of Ethics (1 general principle)
+
+"Computing professionals should contribute to society and human well-being, avoiding harm."
+
+### Whistleblowing
+
+**PIDA (Public Interest Disclosure Act 1998, UK):** protects workers who disclose wrongdoing in good faith. Triggered when there's: criminal activity, legal obligation breach, miscarriage of justice, safety risk, environmental damage, or cover-up.
+
+Duty to blow the whistle exists when public harm is at stake and internal channels have failed or are dangerous.
+
+### GDPR principles (EU)
+
+Lawfulness, fairness, transparency; purpose limitation; data minimisation; accuracy; storage limitation; integrity and confidentiality; accountability.
+
+**Privacy by design:** data protection built into systems from the start, not bolted on.
+
+### AI ethics framework
+
+| Principle | Meaning |
+|---|---|
+| **Fairness** | No discriminatory bias |
+| **Transparency** | Explainable decisions |
+| **Accountability** | Clear responsibility for AI actions |
+| **Privacy** | Minimal data collection; right to erasure |
+| **Safety** | Humans can override; tested robustly |
+| **Environmental** | Energy cost of training models |
+
+**EU AI Act:** risk-based tiered regulation. Unacceptable risk (banned) → High risk (conformity assessment required) → Limited risk (transparency obligations) → Minimal risk (voluntary code).
+
+### Dual-use research
+
+Research can be misused. Engineers have responsibility to consider misuse potential and may have obligation not to publish certain findings.
+
+---
 
 ## Common pitfalls
 
-- "Tested" ≠ "verified" — passing tests don't guarantee absence of bugs (Dijkstra).
-- Security as an afterthought — orders of magnitude more expensive than baked-in.
-- Confusing reliability (works correctly) with availability (is reachable) with integrity (data correct).
-- Patching a symptom without root-cause analysis ⇒ recurrence.
+- **Boehm's curve is the key exam anchor** — fixing requirements errors in production costs 50–200× fixing them in analysis.
+- **Brooks's Law is not just "people slow things down"** — it's specifically about communication overhead scaling as $n^2$.
+- **Testing ≠ verification** — passing all tests does not prove correctness (Dijkstra).
+- **"Tested" ≠ "correct"**: mutation score measures test suite quality; statement coverage doesn't.
+- **CIA triad has three parts** — security failures often violate availability (DoS) or integrity, not just confidentiality.
+- **STRIDE maps to CIA+** — memorise the table; each threat has a specific defence.
+- **SemVer MAJOR bump required for breaking changes** — incrementing MINOR for breaking changes is a common mistake.
+- **Hyrum's law applies to you** — even internal APIs have hidden dependents; refactor carefully.
+- **Chaos engineering is not negligence** — it is proactive, controlled testing of resilience.
+- **Error budget is a shared resource** — developers and ops jointly responsible for reliability.
+
+---
 
 ## Exam strategy
 
-- Quote the principle by name (least privilege, defence in depth) before applying.
-- For "engineering" questions, anchor in the cost-of-fixing curve and Brooks's law.
-- For "design a system" questions, list 3 functional + 3 non-functional reqs, then 2 threat-model entries.
+- **Case study questions:** identify failure mode first (technical? organisational? requirements?), then apply appropriate principle.
+- **"Compare X and Y process models":** use criteria — visibility, feedback frequency, change tolerance, documentation overhead.
+- **Requirements:** always distinguish FR/NFR; give a concrete fit criterion for every NFR.
+- **Security question:** name Saltzer-Schroeder principles by number + name before applying.
+- **STRIDE:** go through all 6 categories systematically — don't stop at the obvious one.
+- **Reliability calculations:** show the $\text{MTBF}/(\text{MTBF}+\text{MTTR})$ formula before substituting.
+- **Ethics:** cite BCS/ACM/PIDA specifically; vague "ethics" answers score poorly.

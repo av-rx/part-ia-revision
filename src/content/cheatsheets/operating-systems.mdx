@@ -2,101 +2,470 @@
 module: operating-systems
 title: "Operating Systems — Cheat Sheet"
 paper: paper-2
-updated: "2026-05-10"
+updated: "2026-06-09"
 ---
 
-## Roles of an OS
+## 1 · OS fundamentals
 
-- **Resource manager** — CPU, memory, devices, storage.
-- **Abstraction provider** — files, processes, virtual memory.
-- **Protection** — isolate user processes; control hardware access via privileged modes.
+**What an OS does:** Control (only trusted OS code can access hardware), **multiplexing** (share CPU/memory/devices), **abstraction** (uniform APIs regardless of hardware), extensibility.
 
-## Processes
+**Mechanisms vs policies:** OS provides *mechanisms* (how to do something); *policies* (what to do) are pluggable and can change.
 
-- **Process** = program + state (registers, stack, heap, PCB).
-- **PCB** stores PID, registers, page tables, open files, scheduling info.
-- States: new → ready → running → waiting → terminated.
-- **Context switch:** save current PCB, restore next.
-- **Threads:** share address space, file descriptors; private stack + registers.
+**Fetch-execute cycle:** fetch instruction at PC → decode → execute (ALU / branch / memory) → repeat. CPU only reads/writes registers and memory; devices have local buffers, interrupts signal completion.
 
-## Scheduling
+**Interrupts:** device raises interrupt-request line → CPU defers at instruction boundary → looks up **interrupt vector** → saves registers → runs **ISR** → restores and resumes. A **trap** (software interrupt) is the mechanism for system calls. **Non-maskable interrupts** cannot be disabled.
 
-| Algorithm | Preemptive | Avg-wait | Notes |
-|---|---|---|---|
-| FCFS | no | poor (convoy) | simple |
-| SJF | optional | optimal avg-wait | needs burst length |
-| Shortest Remaining | yes | optimal | preemptive SJF |
-| Round Robin | yes | depends on $q$ | fairness |
-| Priority | yes/no | starvation possible — aging fixes |
-| Multilevel feedback | yes | adaptive | Linux CFS in spirit |
+**Storage hierarchy (fastest → slowest):**
+```
+Registers → L1/L2/L3 cache → Main memory (DRAM) → SSD → HDD → Tape
+```
+- **Caching:** small, faster storage masks slower layer (temporal + spatial locality).
+- **Buffering:** absorbs short-term speed/size mismatches between two components.
 
-- **Throughput:** jobs/time. **Turnaround:** finish − arrival. **Waiting:** ready-queue time. **Response:** arrival → first run.
-- **CFS (Linux):** red–black tree of vruntime; pick smallest.
+**Key metrics:** Latency (how long), Bandwidth/throughput (rate), Jitter (variance).
 
-## Synchronisation
+---
 
-- **Race condition** — outcome depends on schedule.
-- **Mutex / lock:** lock/unlock; deadlock if held + acquire other.
-- **Semaphore:** counting; `P()` wait, `V()` signal.
-- **Monitor:** lock + condition variables; `wait`, `signal`/`notify`.
-- **Producer–consumer, readers–writers, dining philosophers** — classic patterns.
+## 2 · Protection and kernels
 
-**Deadlock conditions (all four needed):** mutual exclusion, hold-and-wait, no-preemption, circular wait. Banker's algorithm avoids by checking safety before granting.
+### Dual-mode operation
 
-## Memory management
+Hardware **mode bit**: **kernel mode** (privileged; any instruction) vs **user mode** (restricted). Attempting a privileged instruction in user mode raises a trap.
 
-- **Address spaces:** logical (process view) → physical via MMU.
-- **Contiguous allocation:** first-fit / best-fit / worst-fit; external fragmentation.
-- **Paging:** logical address = (page number, offset). Page table maps page → frame. No external frag; internal frag in last page.
-- **TLB:** cached recent translations. Hit ratio dominates effective access time:
-  $$ t_{eff} = h \cdot t_{TLB} + (1 - h)(t_{TLB} + t_{mem}) + t_{mem}. $$
-- **Multi-level page tables:** save space when address space is sparse.
+- **CPU protection:** countdown timer, only OS can set; fires interrupt at zero → prevents CPU monopoly.
+- **Memory protection:** base + limit registers; CPU checks every user-mode access; violation → exception. Updating base/limit is privileged.
+- **I/O protection:** all I/O instructions are privileged.
 
-## Virtual memory
+### System calls
 
-- **Demand paging:** load on first reference; minor vs major page fault.
-- **Page replacement:**
-  - **FIFO** — Belady's anomaly (more frames can mean more faults).
-  - **Optimal (Belady)** — replace page used furthest in future. Theoretical lower bound.
-  - **LRU** — least recently used; expensive in pure form, approximated with reference bits / clock.
-  - **Clock / Second-chance** — circular scan respecting reference bit.
-- **Working set:** pages used in a window. Thrashing = working sets exceed memory.
+User executes a **trap** with syscall number in a register → CPU switches to kernel mode → kernel indexes **system-call table** → runs handler → returns status.
 
-## I/O systems
+```
+User code  TRAP #n   ┌──────────┐
+  ──────────────────→│  Kernel  │ lookup table[n] → handler
+  ←─────────────────│          │ return value / errno
+                    └──────────┘
+```
 
-- **Polling vs interrupt** — polling spins; interrupts notify.
-- **DMA:** device transfers directly to memory, freeing CPU.
-- **Block vs character** devices.
-- **I/O scheduling:** FCFS, SSTF, SCAN/elevator, C-SCAN.
+Parameters passed via: registers (≤6), stack, or memory block pointed to by register.
 
-## Storage & file systems
+### Kernel architectures
 
-- **Inode:** metadata + pointers (direct, indirect, double, triple).
-- **File allocation:** contiguous (frag), linked (no random), indexed (FAT, inode).
-- **Directories:** hash, B-tree.
-- **Journaling:** write-ahead log for crash consistency.
-- **RAID:** 0 (stripe, no redundancy), 1 (mirror), 5 (block-level parity), 10 (mirror+stripe).
+| Style | Description | Trade-offs |
+|---|---|---|
+| **Monolithic** | All services in kernel address space | Fast (direct calls); hard to extend; one bug → kernel crash |
+| **Microkernel** | Minimal kernel; services as user-space servers | Extensible, crash-isolated; IPC overhead |
+| **Modules** (Linux) | Monolithic with loadable kernel modules | Practical compromise |
 
-## UNIX / Linux essentials
+### Virtualisation
 
-- Everything is a file (devices in `/dev`, sysfs in `/sys`).
-- `fork()` — copy process; `exec()` — replace image; `wait()` — reap child.
-- File descriptors 0/1/2 = stdin/stdout/stderr; pipes via `pipe()`.
-- Signals (SIGINT, SIGTERM, SIGKILL) — async control.
-- Capability/permission model: rwx for user/group/other.
-- Linux scheduler: CFS for normal tasks, real-time classes (FIFO, RR) above.
+- **Type 1 hypervisor:** bare-metal (VMware ESXi, Hyper-V); runs directly on hardware.
+- **Type 2 hypervisor:** hosted (VirtualBox); runs on top of OS.
+- **VMs:** full OS per instance; strong isolation; high overhead.
+- **Containers:** share host kernel; lightweight; weaker isolation (Docker, LXC).
+
+### Access control
+
+**Access matrix:** rows = domains (users/processes), columns = objects, cells = permitted operations.
+
+- **Access Control Lists (ACLs):** stored per *object* — which domains may do what. Good for storage; easy auditing.
+- **Capabilities:** stored per *domain* — unforgeable token representing permission. Good for distribution.
+
+**Principle of Least Privilege:** grant minimum rights needed for the task. Limits damage from compromise.
+
+---
+
+## 3 · Processes
+
+### What a process is
+
+**Process** = program in execution = unit of protection + resource allocation.
+
+| Component | Description |
+|---|---|
+| Text | Machine instructions |
+| Data | Global/static variables |
+| Heap | Dynamically allocated memory (`malloc`/`new`) |
+| Stack(s) | Per-thread: local vars, parameters, return addresses |
+
+**PCB (Process Control Block):** PID, state, PC, registers, memory info (page table base), accounting, I/O status, list of open file descriptors.
+
+### Process lifecycle
+
+```
+New ──→ Ready ⇄ Running ──→ Terminated
+               ↓↑
+            Waiting
+            (Blocked)
+```
+
+- **New:** being created.
+- **Ready:** in memory, waiting for CPU.
+- **Running:** currently using CPU.
+- **Waiting:** blocked on I/O or event (e.g. `sleep`, `wait`, semaphore).
+- **Terminated:** finished; PCB held until parent calls `wait()`.
+
+### Creation and termination
+
+- `fork()`: creates child as copy of parent; CoW pages — no copy until write.
+- `exec()`: replaces process image with new program (resets text/data/stack).
+- **Zombie:** child terminated but parent hasn't called `wait()` — PCB still exists.
+- **Orphan:** parent terminated before child — adopted by `init`/`systemd` (PID 1).
+- **Cascading termination:** OS terminates all children when parent exits (platform-dependent).
+
+### Threads
+
+A **thread** = individual execution context (PC + stack + registers). Multiple threads share the process address space (text, data, heap). Each has its own **TCB (Thread Control Block)**.
+
+Context switch cost: save all registers + PC; possibly TLB flush. Pure overhead — no useful work done.
+
+### IPC mechanisms
+
+| Mechanism | How | Sync |
+|---|---|---|
+| **Message passing** | `send`/`receive` via kernel buffer | Blocking or non-blocking |
+| **Shared memory** | `shmget`/`shmat`; direct memory access | Must add own locks |
+| **Pipes** | `pipe()` returns `(rd, wr)` fds | Blocking; half-duplex |
+| **Named pipes (FIFOs)** | `/path/to/fifo`; any processes | Same blocking rules |
+| **Signals** | `kill(pid, sig)` — async notification | `sigaction` to handle |
+
+---
+
+## 4 · Scheduling
+
+### Queue structure
+
+- **Job queue:** all processes in system.
+- **Ready queue:** processes in memory waiting for CPU.
+- **Wait queues:** one per device/event.
+- **Short-term (CPU) scheduler:** picks next to run; invoked on every quantum expiry, block, or new arrival (ms timescale).
+- **Long-term (job) scheduler:** controls degree of multiprogramming; invoked infrequently (seconds).
+- **Dispatcher:** performs context switch + user-mode switch + jump to PC.
+
+**Dispatch latency** = time dispatcher takes = overhead of every context switch.
+
+### Scheduling criteria
+
+| Criterion | Goal | Who cares |
+|---|---|---|
+| CPU utilisation | Keep CPU busy | System |
+| Throughput | Jobs/unit time | Batch |
+| Turnaround time | Finish − submit | Batch |
+| Waiting time | Time in ready queue | Batch |
+| Response time | First response time | Interactive |
+
+### Scheduling algorithms
+
+**FCFS (First Come First Served):** run in arrival order; non-preemptive.
+- **Convoy effect:** short jobs stuck behind long jobs → high average wait.
+- Example: P1=24ms, P2=3ms, P3=3ms arriving at t=0. Avg wait FCFS = 17ms, optimal = 3ms.
+
+**SJF (Shortest Job First):** optimal average wait for given job set; requires knowing burst length.
+- Predict with **exponential averaging:** $\tau_{n+1} = \alpha t_n + (1-\alpha)\tau_n$ where $t_n$ = actual, $\tau_n$ = predicted.
+
+**SRTF (Shortest Remaining Time First):** preemptive SJF — preempt if new arrival has shorter remaining time. Optimal for average wait but more context switches.
+
+**Round Robin (RR):** each process gets quantum $q$ (10–100 ms); after $q$, preempt and append to tail.
+- $q$ too large → FCFS; $q$ too small → context-switch overhead dominates.
+- Maximum wait = $(n-1) \cdot q$ for $n$ processes.
+- Better response time than SJF; higher average turnaround.
+
+**Priority scheduling:** highest priority (lowest number) first; preemptive or non-preemptive.
+- **Starvation:** low-priority may never run.
+- **Aging:** increase priority as time passes without running. Linux priority formula:
+$$P_j(i) = \text{Base}_j + \frac{\text{CPU}_j(i)}{4} + 2 \cdot \text{nice}_j$$
+
+**Multilevel feedback queues (MLFQ):** processes move between queues based on behaviour:
+- New process enters top queue (short quantum, RR).
+- If it uses full quantum → move down (longer quantum).
+- If it blocks before quantum → stay or move up.
+- Effectively approximates SJF without knowing burst lengths.
+
+### Multiprocessor scheduling
+
+- **Processor affinity:** soft (prefer) or hard (require) specific CPU — preserves cache warmth.
+- **Load balancing:** push (overloaded CPU pushes tasks) or pull (idle CPU steals tasks).
+- **NUMA:** memory access time varies by location; OS accounts for NUMA topology.
+
+---
+
+## 5 · Memory management
+
+### Address translation
+
+- **Logical (virtual) address:** generated by CPU.
+- **Physical address:** used by memory hardware.
+- **MMU:** hardware unit that translates logical → physical at runtime.
+
+**Address binding times:**
+- **Compile time:** absolute addresses; program must run at fixed location.
+- **Load time:** relocatable code; linker patches addresses at load.
+- **Execution time:** dynamic translation by MMU; most flexible.
+
+### Contiguous allocation
+
+Each process occupies single contiguous block bounded by **base** and **limit** registers. CPU checks: `base ≤ addr < base + limit` on every access.
+
+**Allocation strategies for holes:**
+- **First-fit:** scan from start; take first hole ≥ needed. Fast.
+- **Best-fit:** smallest sufficient hole. Less waste per allocation but slower; leaves tiny unusable fragments.
+- **Worst-fit:** largest hole. Rarely used.
+
+**Fragmentation:**
+- **External:** total free memory sufficient but not contiguous.
+- **Internal:** allocated block slightly larger than needed; waste inside partition.
+- For first-fit: ~$\frac{1}{2}N$ blocks lost to fragmentation from $N$ allocated.
+- Fix: **compaction** (shuffle memory, requires dynamic relocation) or paging.
+
+### Segmentation
+
+Logical address = `⟨segment, offset⟩`. **Segment table** maps segment → `(base, limit)`. Segments vary in length → same external fragmentation problem as contiguous allocation. Used in x86 (historical), combined with paging in modern systems.
+
+---
+
+## 6 · Paging
+
+Divide physical memory into fixed-size **frames**; divide logical memory into **pages** of the same size (typically 4 KB). **Page table** maps page number $p$ → frame number $f$.
+
+**Address translation:** logical `(p, d)` → frame `f` from page table → physical `f × page_size + d`.
+
+**No external fragmentation.** Internal fragmentation: last page partially used; average $\frac{1}{2}$ frame per process.
+
+### TLB (Translation Lookaside Buffer)
+
+Hardware cache for PTEs (64–1024 entries, associative/parallel lookup). Must flush on context switch (or tag entries with ASID — Address Space ID).
+
+$$\text{EAT} = h \cdot (t_{\text{TLB}} + t_{\text{mem}}) + (1-h) \cdot (t_{\text{TLB}} + 2t_{\text{mem}})$$
+
+where $h$ = hit ratio. For $h=0.98$, $t_{\text{TLB}}=20$ ns, $t_{\text{mem}}=100$ ns: EAT = 122 ns vs 220 ns (no TLB).
+
+### Page table entries
+
+Each PTE contains: **frame number**, **valid/invalid** bit (is page mapped?), **read/write/execute** protection bits, **dirty** bit, **referenced** bit. Violation → trap → segfault.
+
+**Shared pages:** read-only reentrant code (e.g. libc) mapped into multiple processes — one physical copy, many PTEs.
+
+### Multi-level paging
+
+Problem: $2^{32}$ / 4 KB = $2^{20}$ PTEs × 4 B = 4 MB per process.
+
+**Two-level paging:** split page number into $p_1$ (outer, 10 bits) + $p_2$ (inner, 10 bits). Only allocate inner page tables for regions actually used. Works well for sparse address spaces.
+
+**Three-level / four-level paging:** 64-bit addresses; Linux x86-64 uses 4-level (PGD → PUD → PMD → PTE).
+
+---
+
+## 7 · Virtual memory
+
+Separates logical from physical address space. Pages can be **non-resident** (on disk); brought in on demand.
+
+### Demand paging
+
+All pages start invalid. First access → **page fault** → trap to OS:
+1. Verify reference is valid (segfault if not).
+2. Find a free frame (or evict a victim).
+3. Read page from disk into frame.
+4. Update page table entry (set valid).
+5. Restart faulting instruction.
+
+$$\text{EAT} = (1-p) \cdot t_{\text{mem}} + p \cdot t_{\text{fault}}$$
+
+where $t_{\text{fault}} \approx 8{,}000{,}000$ ns (disk). For $<10\%$ slowdown with $t_{\text{mem}} = 200$ ns: need $p < 0.0000025$ (1 fault per 400,000 accesses).
+
+### Copy-on-Write (CoW)
+
+After `fork()`, parent and child share pages marked read-only. On first write, OS copies that page — only to the writing process. Makes `fork()` very fast.
+
+### Page replacement algorithms
+
+| Algorithm | Basis | Bélády's anomaly? |
+|---|---|---|
+| **FIFO** | Evict oldest-loaded page | Yes — more frames can mean more faults |
+| **OPT** | Evict page used furthest in future | No — theoretical minimum |
+| **LRU** | Evict least recently used | No — stack algorithm |
+
+**LRU approximations:**
+- **Reference bit:** set on access; periodically cleared. Evict page with bit = 0 (not recently used).
+- **Second-chance (clock):** FIFO ring. On eviction: if reference bit set → clear bit + skip; else evict.
+
+### Thrashing
+
+**Thrashing:** frames too few → high page-fault rate → CPU time in page swapping → low CPU utilisation → OS schedules more processes → more competition → collapse.
+
+**Working set $\text{WSS}_i(\Delta)$:** set of pages accessed in last $\Delta$ references. Total demand $D = \sum_i \text{WSS}_i$. If $D > \text{total frames}$: thrash — suspend a process.
+
+**Global vs local replacement:** global (any victim) gives better throughput but makes one process's performance dependent on others. Local (per-process pool) gives consistency.
+
+---
+
+## 8 · I/O systems
+
+### I/O methods
+
+| Method | How | When best |
+|---|---|---|
+| **Polling** | CPU loops checking device status register | Very fast devices |
+| **Interrupt-driven** | Device raises IRQ; ISR runs | Moderate-speed devices |
+| **DMA** | Device controller transfers directly to memory; one interrupt per block | High-bandwidth transfers |
+
+**DMA:** uses **cycle stealing** — takes bus cycles from CPU during transfer (slight slowdown).
+
+### I/O modes (programmer's view)
+
+- **Blocking:** process suspends until complete. Simple.
+- **Non-blocking:** returns immediately with available data.
+- **Asynchronous:** process continues; completion notified via callback/signal.
+
+### I/O subsystem
+
+- **Buffering:** double-buffering absorbs speed mismatch; circular buffer for streams.
+- **Caching:** hot block copies to avoid repeated disk reads.
+- **Spooling:** queue for single-user devices (printers).
+- **Scatter/gather I/O:** `readv`/`writev` — single syscall for non-contiguous buffers.
+
+---
+
+## 9 · Storage, disk scheduling, file systems
+
+### Disk performance
+
+- **Average seek time:** $\approx 5$–12 ms (mechanical movement to correct track).
+- **Rotational latency:** $\frac{1}{2} \times \frac{60}{\text{RPM}}$ s (avg). At 7200 RPM: 4.17 ms.
+- **Transfer time:** data read from track.
+- **Total I/O time** = seek + rotational + transfer + controller overhead.
+- **SSD:** no seek/rotational latency; limited P/E cycles; faster random access.
+
+### Disk scheduling algorithms
+
+| Algorithm | Behaviour | Issue |
+|---|---|---|
+| **FCFS** | Service in arrival order | Inefficient head movement |
+| **SSTF** | Nearest request first | Starvation possible |
+| **SCAN (elevator)** | Sweep end-to-end, serve on way | Unfair to just-passed cylinders |
+| **C-SCAN** | One-direction sweep, jump back | Uniform wait time distribution |
+
+### Files
+
+**File** = basic abstraction for persistent storage. Has metadata: type, location, size, protection, timestamps.
+
+**File operations:** create, open, read, write, seek, delete, truncate, close.
+
+**Open-file table:**
+- Per-process: file descriptors (integers, 0 = stdin, 1 = stdout, 2 = stderr) → entries in system-wide table.
+- System-wide: file position cursor, open count, access mode, pointer to inode.
+
+### Directories
+
+- **Tree-structured:** current working directory (CWD), absolute (`/a/b`) vs relative (`b/c`) paths.
+- **Acyclic-graph:** symbolic links or hardlinks allow sharing.
+
+**Hardlink:** new directory entry pointing to existing inode. Same inode = same file. Reference count; no cross-filesystem; no directory hardlinks (prevents cycles).
+
+**Softlink (symlink):** file containing a path. Can cross filesystems; can dangle if target deleted.
+
+### Inodes (Unix)
+
+**Inode** = file control block. Stores metadata (not filename) + pointers to data blocks:
+- 12 direct block pointers (e.g. 12 × 4 KB = 48 KB)
+- 1 single-indirect (e.g. 1024 pointers → 4 MB)
+- 1 double-indirect (e.g. 4 GB)
+- 1 triple-indirect
+
+**Directory** = file mapping filenames → inode numbers (nothing else).
+
+**On-disk layout:** boot block → superblock (total/free blocks, inode table size) → inode table → data blocks.
+
+---
+
+## 10 · Linux/UNIX case study
+
+### Process model
+
+Every process = **task** with: identity (PID, UID/GID, namespace), environment (argv, envp), context (scheduling state, file table, VM, signal handlers).
+
+- `fork()`: creates new task with fresh context; CoW pages.
+- `clone()`: creates new task sharing specified structures — basis for threads (pthreads).
+- `exec()`: replaces address space with ELF binary (sections mapped as VM regions).
+- `wait()`: parent collects child exit status; prevents zombies.
+
+### CFS (Completely Fair Scheduler)
+
+No fixed time slices. Each task has **virtual runtime** (`vruntime`). Scheduler always picks task with lowest `vruntime` (leftmost node in **red-black tree**).
+
+- **nice** value $[-20, +19]$ scales `vruntime` increment rate (lower nice = slower growth = more CPU).
+- **Target latency:** interval in which every runnable task runs at least once (e.g. 10 ms).
+- **Minimum granularity:** prevents excessive context switching with many tasks.
+- **Real-time classes** (SCHED_FIFO, SCHED_RR) run at higher priority than normal tasks.
+
+### Virtual memory (Linux)
+
+VM manager maintains:
+- **Logical view:** set of non-overlapping VM areas (VMAs), each with backing store (file page or demand-zero page).
+- **Physical view:** hardware page tables, lazily populated on fault.
+
+Page-out policy uses clock algorithm with reference bits; dirty pages written back to backing store.
+
+### Memory allocators
+
+- **Buddy allocator:** heap divided into power-of-2 blocks; split/merge partners ("buddies"). Fast; some internal fragmentation.
+- **Slab allocator:** caches of frequently used kernel objects (same size); eliminates per-object init overhead and reduces fragmentation.
+
+### VFS (Virtual File System)
+
+Abstraction layer over all filesystems. Four kernel objects:
+- **Inode object:** represents a file (with method table for operations).
+- **File object:** represents an open file (has cursor position).
+- **Superblock object:** represents entire mounted filesystem.
+- **Dentry object:** represents a directory entry (name → inode).
+
+Each object has a **function-pointer table** implementing filesystem-specific logic (ext4, NTFS, procfs, etc.).
+
+### Access control
+
+- Per-file **protection mask:** rwx for owner / group / others (9 bits + setuid/setgid/sticky).
+- `setuid` bit: process runs with file owner's UID rather than caller's.
+- UID 0 (root) overrides all permission checks.
+
+### I/O and buffer cache
+
+**Buffer cache** (Linux: unified page cache): maintains copies of file blocks/pages in memory.
+- Reads check cache first (~85% hit rate saves disk access).
+- Writes: update cache, mark dirty; periodic flush (`pdflush`/`flusher` threads, typically 30 s).
+- Unified with VM page cache since Linux 2.4 — same pool for file data and anonymous pages.
+
+### Boot sequence
+
+BIOS/UEFI → bootloader (GRUB) → kernel loaded into memory → mounts root filesystem → PID 1 (`systemd`/`init`) → starts services → `login` → shell.
+
+### Shell and redirection
+
+Shell is a normal process. Redirects (`>`, `<`, `>>`, `2>`) change which fd points to which file/pipe. Pipeline `cmd1 | cmd2` connects stdout of cmd1 to stdin of cmd2 via a kernel pipe — created before `fork()`, inherited by child.
+
+---
 
 ## Common pitfalls
 
-- **Belady's anomaly** is FIFO-specific. LRU is anomaly-free.
-- TLB miss vs page fault: TLB miss is fast (table walk); page fault triggers OS handler.
-- Optimal page replacement is unimplementable — use as lower bound for benchmarking.
-- **`wait()`** must be called or zombies accumulate.
-- Locks taken in different orders by different threads → deadlock.
+- **Dual-mode is not enough alone:** memory protection requires MMU; I/O protection requires memory protection too (memory-mapped devices).
+- **Segmentation vs paging:** segmentation has external fragmentation; paging has internal; most systems use both.
+- **TLB hit ratio matters a lot:** 98% vs 80% hit ratio only gives modest EAT improvement — the miss penalty (2 memory accesses) is the real cost.
+- **Bélády's anomaly is FIFO-specific:** LRU and OPT are stack algorithms — more frames always ≤ faults.
+- **Thrashing is demand-driven:** total working set must fit in frames. Adding more processes past this point causes collapse.
+- **CoW pages are shared until written:** read-only shared pages (e.g. libc text) are never copied; only dirty CoW pages are.
+- **Zombie ≠ orphan:** zombie = dead child waiting for `wait()`; orphan = live child whose parent died.
+- **SJF is theoretically optimal** for average waiting time but unimplementable (requires knowing future burst lengths).
+- **Context switch is pure overhead** — tune quantum to balance response time and context-switch cost.
+- **DMA uses cycle stealing** — CPU cannot assume exclusive bus ownership during transfer.
+- **Buffer cache writes are asynchronous** by default — use `fsync()` / `O_SYNC` for durability.
+
+---
 
 ## Exam strategy
 
-- For scheduling: draw a Gantt chart, then compute waiting/turnaround.
-- For paging: state the page-table format and TLB hit ratio assumed.
-- Quote the four deadlock conditions verbatim if invoked.
-- Compare disk-scheduling algorithms with a worked seek-time example.
+- **Scheduling:** draw a Gantt chart first, then compute waiting/turnaround from it — never guess.
+- **Quote SRTF vs SJF** if asked for optimal: SRTF minimises average wait for preemptive case; SJF for batch.
+- **Paging arithmetic:** split logical address explicitly into `(p, d)` before applying page table.
+- **TLB EAT:** write the two-case weighted average formula before substituting numbers.
+- **Virtual memory:** for a page-fault diagram, list all 5–7 steps (fault → find frame → read disk → update PTE → restart).
+- **Disk scheduling:** draw head movement diagram showing cylinder numbers for FCFS vs SCAN.
+- **Inode vs directory:** directory maps name → inode number; inode maps number → data blocks.
+- **ACL vs capability:** ACL stored per object (easy revocation, auditing); capability stored per domain (fast check, distributable).
