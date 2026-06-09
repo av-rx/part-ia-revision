@@ -1,0 +1,82 @@
+---
+module: algorithms-1
+title: "Algorithms 1 — Cheat Sheet"
+paper: paper-1
+updated: "2026-05-10"
+---
+
+## Asymptotic notation
+
+| Symbol | Meaning |
+|---|---|
+| $f = O(g)$ | $\exists c, n_0: f(n) \le c \cdot g(n)\ \forall n \ge n_0$ — upper bound |
+| $f = \Omega(g)$ | $\exists c, n_0: f(n) \ge c \cdot g(n)$ — lower bound |
+| $f = \Theta(g)$ | both — tight bound |
+| $f = o(g)$ | $\lim f/g = 0$ — strict upper |
+
+## Sorting (key complexities, in-place?, stable?)
+
+| Algorithm | Best | Avg | Worst | Space | Stable |
+|---|---|---|---|---|---|
+| Insertion sort | $\Theta(n)$ | $\Theta(n^2)$ | $\Theta(n^2)$ | $O(1)$ | yes |
+| Selection sort | $\Theta(n^2)$ | $\Theta(n^2)$ | $\Theta(n^2)$ | $O(1)$ | no |
+| Bubble sort | $\Theta(n)$ | $\Theta(n^2)$ | $\Theta(n^2)$ | $O(1)$ | yes |
+| Mergesort | $\Theta(n\log n)$ | $\Theta(n\log n)$ | $\Theta(n\log n)$ | $O(n)$ | yes |
+| Quicksort | $\Theta(n\log n)$ | $\Theta(n\log n)$ | $\Theta(n^2)$ | $O(\log n)$ | no |
+| Heapsort | $\Theta(n\log n)$ | $\Theta(n\log n)$ | $\Theta(n\log n)$ | $O(1)$ | no |
+| Counting sort | $\Theta(n+k)$ | $\Theta(n+k)$ | $\Theta(n+k)$ | $O(n+k)$ | yes |
+| Radix sort | $\Theta(d(n+k))$ | — | — | $O(n+k)$ | yes |
+
+**Lower bound for comparison sort:** $\Omega(n \log n)$ — proof via decision tree with $n!$ leaves and depth $\ge \log_2(n!) = \Theta(n\log n)$.
+
+## Loop-invariant proof template (insertion sort exemplar)
+
+1. **Initialisation** — invariant holds before first iteration.
+2. **Maintenance** — if it holds before an iteration, it holds after.
+3. **Termination** — when the loop ends, the invariant gives the postcondition.
+
+For insertion sort: "After iteration $j$, $A[1..j]$ is a sorted permutation of original $A[1..j]$."
+
+## Strategies for algorithm design
+
+- **Divide and conquer** — split, solve recursively, combine. Master Theorem: $T(n) = aT(n/b) + f(n)$, three cases on comparison of $f(n)$ to $n^{\log_b a}$.
+- **Dynamic programming** — overlapping subproblems + optimal substructure; memoise or tabulate.
+- **Greedy** — locally optimal choice; needs *exchange argument* or *matroid* proof of optimality.
+- **Backtracking / branch-and-bound** — DFS over solution tree with pruning.
+- **Amortised analysis** — aggregate, accounting, potential-function methods.
+
+### Master theorem (regularity condition omitted)
+
+For $T(n) = a T(n/b) + f(n)$ with $a \ge 1, b > 1$:
+- if $f(n) = O(n^{\log_b a - \varepsilon})$: $T(n) = \Theta(n^{\log_b a})$
+- if $f(n) = \Theta(n^{\log_b a})$: $T(n) = \Theta(n^{\log_b a} \log n)$
+- if $f(n) = \Omega(n^{\log_b a + \varepsilon})$: $T(n) = \Theta(f(n))$
+
+## Data structures
+
+| Structure | Insert | Find | Delete | Notes |
+|---|---|---|---|---|
+| Sorted array | $O(n)$ | $O(\log n)$ | $O(n)$ | binary search |
+| Linked list | $O(1)$ head | $O(n)$ | $O(1)$ given ptr | |
+| Stack / queue | $O(1)$ | — | $O(1)$ | LIFO / FIFO |
+| BST (balanced) | $O(\log n)$ | $O(\log n)$ | $O(\log n)$ | AVL, red-black |
+| Hash table | $O(1)$* | $O(1)$* | $O(1)$* | * amortised, good hash |
+| Binary heap | $O(\log n)$ | $O(1)$ min | $O(\log n)$ | array-backed |
+
+**BST property:** for every node, left-subtree keys < node key < right-subtree keys. In-order traversal yields sorted order.
+
+**Hashing:** open addressing (linear / quadratic / double); chaining; load factor $\alpha = n/m$.
+
+## Common pitfalls
+
+- Quicksort's worst case is $O(n^2)$, not $O(n \log n)$ — random pivot or median-of-three to mitigate.
+- Mergesort needs $\Theta(n)$ extra space — a non-trivial caveat versus quicksort's in-place behaviour.
+- Counting/radix sort sidesteps the comparison lower bound because they're not comparison-based.
+- "Optimal substructure" is necessary but not sufficient for greedy correctness — also need the greedy-choice property.
+- In Master Theorem, $\varepsilon > 0$ is strict — borderline cases (e.g. $f(n) = n^{\log_b a} \log n$) need extended Master Theorem (Akra–Bazzi).
+
+## Exam strategy (Tripos)
+
+- **State complexity bounds with reasons** — never just say "$O(n \log n)$"; give a one-line argument.
+- **Justify correctness** — invariants for iteration, induction for recursion.
+- **Cite the strategy** — "this is divide-and-conquer with $T(n) = 2T(n/2) + O(n)$, giving $\Theta(n \log n)$ by Master Theorem case 2".

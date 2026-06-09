@@ -1,0 +1,133 @@
+---
+module: object-oriented-programming
+title: "Object-Oriented Programming — Cheat Sheet"
+paper: paper-1
+updated: "2026-05-10"
+---
+
+## Pillars of OOP
+
+| Pillar | What | Example |
+|---|---|---|
+| **Encapsulation** | Hide state, expose API | `private` fields + getters/setters |
+| **Inheritance** | Subclass extends superclass | `class Dog extends Animal` |
+| **Polymorphism** | One interface, many forms | overriding `toString()`; `List<? extends Number>` |
+| **Abstraction** | Model the essential | `abstract class`, `interface` |
+
+## Java basics
+
+```java
+public class Point {
+    private final double x, y;          // immutable
+    public Point(double x, double y) { this.x = x; this.y = y; }
+    public double distanceTo(Point p) { return Math.hypot(x - p.x, y - p.y); }
+
+    @Override public boolean equals(Object o) {
+        if (!(o instanceof Point p)) return false;
+        return Double.compare(x, p.x) == 0 && Double.compare(y, p.y) == 0;
+    }
+    @Override public int hashCode() { return Objects.hash(x, y); }
+}
+```
+
+- `equals` + `hashCode` must agree: equal objects must have equal hashes.
+- Override `toString` for debug.
+
+## Memory model
+
+- **Stack:** local primitives + reference variables. Frame per call.
+- **Heap:** all objects. Garbage-collected.
+- A reference-typed variable holds a *pointer* to an object on the heap (Java has no explicit pointer arithmetic).
+- `==` on references = identity; `.equals()` = value comparison.
+
+## Inheritance
+
+```java
+class Animal { String name; void speak() { System.out.println("..."); } }
+class Dog extends Animal { @Override void speak() { System.out.println("Woof"); } }
+```
+
+- `super(...)` to call superclass constructor (must be first line).
+- `final class` — un-extendable. `final method` — un-overridable.
+- Java is **single inheritance** for classes, **multiple** for interfaces.
+- **Diamond problem** in C++ multiple inheritance — Java sidesteps via interfaces (no state) + `default` methods (since Java 8) with explicit conflict resolution.
+
+## Polymorphism
+
+- **Subtype polymorphism:** `Animal a = new Dog(); a.speak();` calls `Dog.speak`.
+- **Method overloading:** same name, different signatures (compile-time).
+- **Method overriding:** subclass replaces superclass method (run-time dispatch via vtable).
+- **Parametric polymorphism (generics):** `class Box<T>`; type-erasure at runtime.
+- **Bounded:** `T extends Number`; **wildcards:** `List<? extends Number>` (covariant), `List<? super Integer>` (contravariant). PECS: Producer-Extends, Consumer-Super.
+
+## Object lifecycle
+
+1. Allocate on heap.
+2. Default-init fields (zero/null/false).
+3. Run instance initialiser blocks.
+4. Run constructor (after `super(...)`).
+5. ... use ...
+6. Become unreachable.
+7. GC reclaims.
+
+- **Garbage collection:** mark-and-sweep; generational (young/old); `finalize()` deprecated.
+- **Cloning:** `clone()` does shallow copy by default — override for deep copy.
+
+## Collections
+
+| Interface | Implementation | Notes |
+|---|---|---|
+| `List<E>` | `ArrayList`, `LinkedList` | ordered, indexed |
+| `Set<E>` | `HashSet`, `TreeSet` | no duplicates; tree = sorted |
+| `Map<K,V>` | `HashMap`, `TreeMap` | key→value |
+| `Queue<E>` | `LinkedList`, `PriorityQueue` | head/tail |
+| `Deque<E>` | `ArrayDeque` | both ends |
+
+`Comparable<T>` — natural order; `Comparator<T>` — alternative.
+
+## Exceptions
+
+- **Checked** (`Exception` minus `RuntimeException`): must declare/handle. Use sparingly; prefer for *recoverable* IO/parse errors.
+- **Unchecked** (`RuntimeException`, `Error`): programming errors (NPE, IOOBE).
+- `try / catch / finally`; `try-with-resources` auto-closes.
+
+## Design patterns (highlights)
+
+| Pattern | Idea |
+|---|---|
+| **Singleton** | One instance globally |
+| **Factory** | Object creation behind a method |
+| **Builder** | Stepwise immutable construction |
+| **Observer** | Subjects notify listeners |
+| **Strategy** | Interchangeable algorithms |
+| **Decorator** | Wrap to add behaviour |
+| **Adapter** | Convert one interface to another |
+| **MVC** | Separate model / view / controller |
+
+## Lambdas & streams
+
+```java
+list.stream()
+    .filter(x -> x > 0)
+    .map(x -> x * x)
+    .reduce(0, Integer::sum);
+```
+
+- **Functional interface:** single abstract method (`Predicate`, `Function`, `Consumer`, `Supplier`).
+- **Method reference:** `String::toUpperCase`.
+- **Streams** are lazy; terminal op (`forEach`, `collect`, `reduce`) triggers evaluation.
+
+## Common pitfalls
+
+- Mutable `equals`/`hashCode` ⇒ object lost from `HashSet`/`HashMap`.
+- Returning a mutable collection breaks encapsulation — use `Collections.unmodifiableList`.
+- Stream pipelines are **single-use**; can't iterate twice.
+- `int` ≠ `Integer` — autoboxing pitfalls (NPE on `null` Integer; `==` between Integers).
+- Generics are erased at runtime — `instanceof List<String>` not allowed; use `List<?>`.
+- Constructor chaining: a constructor cannot call both `this(...)` and `super(...)`.
+
+## Exam strategy
+
+- **State the type signature** before defining methods — it constrains your answer.
+- **Justify your design** — why an interface here, not abstract class.
+- For "explain" questions, pair the term with a one-line code snippet.

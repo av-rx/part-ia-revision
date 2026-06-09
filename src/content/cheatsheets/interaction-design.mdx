@@ -1,0 +1,116 @@
+---
+module: interaction-design
+title: "Interaction Design — Cheat Sheet"
+paper: paper-3
+updated: "2026-05-10"
+---
+
+## User-centred design (UCD)
+
+Iterative cycle:
+
+1. **Understand context of use** — who, what, where, why.
+2. **Specify user requirements** — derived from research.
+3. **Produce design solutions** — sketches, wireframes, prototypes.
+4. **Evaluate against requirements** — usability test, expert review.
+
+Cycle until requirements met.
+
+## User research methods
+
+| Method | Strength | Weakness |
+|---|---|---|
+| Interviews | Rich qualitative | Small sample, recall bias |
+| Surveys | Many users, quantitative | Limited depth |
+| Contextual inquiry | Real environment | Time-intensive |
+| Diary studies | Longitudinal | Requires participant discipline |
+| Focus groups | Group dynamics | Groupthink, dominant voices |
+| Observation (ethnography) | Authentic behaviour | Hawthorne effect |
+| Analytics / clickstream | Real, large-scale | Lacks "why" |
+
+## Data analysis
+
+- **Affinity diagramming** — cluster sticky notes by emergent themes.
+- **Personas** — fictional archetypes grounded in research.
+- **Journey maps** — phases × touchpoints × emotions.
+- **Jobs-to-be-done** — what task is the user "hiring" the product for?
+- **Quantitative** — descriptive stats, significance tests.
+
+## Requirements & design space
+
+- Functional + non-functional reqs (cf. SwSec).
+- **Design space exploration:** sketch many alternatives before committing — diverge, then converge.
+- **Constraints inform creativity** — list hard, soft, and self-imposed.
+
+## Prototyping
+
+| Fidelity | Examples | Use |
+|---|---|---|
+| Low | paper, sketches | early concept, fast iteration |
+| Medium | wireframes (Balsamiq, Figma greyscale) | flow + structure |
+| High | clickable interactive | usability tests, pre-development |
+
+- **Wizard of Oz** — human simulates system response (great for AI prototyping).
+- **Throw-away** vs **evolutionary** prototyping.
+
+## Heuristic evaluation (Nielsen's 10)
+
+1. Visibility of system status.
+2. Match between system and the real world.
+3. User control and freedom.
+4. Consistency and standards.
+5. Error prevention.
+6. Recognition rather than recall.
+7. Flexibility and efficiency of use.
+8. Aesthetic and minimalist design.
+9. Help users recognise, diagnose, and recover from errors.
+10. Help and documentation.
+
+**Severity (Nielsen):** 0 (not a problem) → 4 (catastrophe). Use 3–5 evaluators for ~75% issue coverage.
+
+## Cognitive walkthrough
+
+For each task, at each step ask:
+1. Will the user try to achieve the right effect?
+2. Will the user notice the correct action is available?
+3. Will the user associate the correct action with the effect?
+4. If correct action performed, will the user see progress toward the goal?
+
+Best for **first-use** scenarios (onboarding).
+
+## Usability testing
+
+- **Formative** (during development) vs **summative** (final assessment).
+- **Think-aloud protocol** — participants verbalise.
+- **Task-based scenarios.**
+- **Metrics:** success rate, time-on-task, errors, **SUS** (System Usability Scale, 10 items, 0–100).
+- **Sample size:** 5 users find ~80% of issues for a single iteration; full coverage needs more.
+
+## Accessibility
+
+- **WCAG** levels: A, AA (legal baseline often), AAA.
+- **Keyboard navigation, focus indicators, semantic HTML.**
+- **Colour contrast** ≥ 4.5:1 for body text; 3:1 for large text.
+- **Screen-reader testing** with VoiceOver / NVDA.
+- **Universal design** — usable by all without adaptation.
+
+## Mental models & metaphors
+
+- **Norman:** designer's model → system image → user's mental model. Mismatches produce confusion.
+- **Affordances** — perceived possible actions.
+- **Signifiers** — perceptible cues to affordances.
+- **Feedback loops** — system tells user about its state.
+
+## Common pitfalls
+
+- "User likes it" ≠ "user can use it" — preference and performance dissociate.
+- Recruiting friends/colleagues biases findings.
+- Heuristic eval finds violations but not necessarily impact — pair with usability testing.
+- Skipping low-fi prototyping leads to costly late-stage changes.
+- Testing too late — "design it then test it" → costly.
+
+## Exam strategy
+
+- For "evaluate this design": pick 3 Nielsen heuristics + cite specific UI elements.
+- For "design a study": research question → method → participants → metrics → analysis → ethics.
+- Quote the UCD cycle steps verbatim if asked.

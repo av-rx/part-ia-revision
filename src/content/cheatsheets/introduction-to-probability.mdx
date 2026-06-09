@@ -1,0 +1,86 @@
+---
+module: introduction-to-probability
+title: "Introduction to Probability — Cheat Sheet"
+paper: paper-1
+updated: "2026-05-10"
+---
+
+## Foundations
+
+- **Sample space** $\Omega$: set of outcomes. **Event** $A \subseteq \Omega$.
+- **Axioms:** $P(A) \ge 0$, $P(\Omega) = 1$, countable additivity for disjoint events.
+- $P(A^c) = 1 - P(A)$; $P(A \cup B) = P(A) + P(B) - P(A \cap B)$.
+- **Inclusion–exclusion:** $P(\bigcup A_i) = \sum P(A_i) - \sum P(A_i \cap A_j) + \cdots$.
+
+## Conditional probability & independence
+
+$$ P(A \mid B) = \frac{P(A \cap B)}{P(B)}, \quad P(B) > 0 $$
+
+- **Multiplication rule:** $P(A \cap B) = P(A \mid B) P(B)$.
+- **Independence:** $A \perp B \iff P(A \cap B) = P(A) P(B) \iff P(A \mid B) = P(A)$.
+- **Pairwise vs mutual independence** — pairwise does not imply mutual.
+
+## Bayes' theorem
+
+$$ P(A_i \mid B) = \frac{P(B \mid A_i) P(A_i)}{\sum_j P(B \mid A_j) P(A_j)} $$
+
+(law of total probability in the denominator). For two hypotheses,
+
+$$ P(H \mid E) = \frac{P(E \mid H) P(H)}{P(E \mid H) P(H) + P(E \mid \neg H) P(\neg H)}. $$
+
+## Random variables
+
+- **Discrete RV** $X: \Omega \to \mathbb{R}$ with countable image.
+- **PMF** $p_X(x) = P(X = x)$, $\sum p_X(x) = 1$.
+- **CDF** $F_X(x) = P(X \le x)$, non-decreasing, right-continuous.
+
+## Expectation & variance
+
+$$ \mathbb{E}[X] = \sum_x x\, p_X(x) $$
+
+- **Linearity:** $\mathbb{E}[aX + bY] = a \mathbb{E}[X] + b \mathbb{E}[Y]$ — *no independence needed*.
+- **Law of the unconscious statistician:** $\mathbb{E}[g(X)] = \sum_x g(x)\, p_X(x)$.
+
+$$ \mathrm{Var}(X) = \mathbb{E}[(X - \mu)^2] = \mathbb{E}[X^2] - \mathbb{E}[X]^2 $$
+
+- $\mathrm{Var}(aX + b) = a^2 \mathrm{Var}(X)$.
+- **Independence:** $X \perp Y \Rightarrow \mathbb{E}[XY] = \mathbb{E}[X]\mathbb{E}[Y]$ and $\mathrm{Var}(X+Y) = \mathrm{Var}(X) + \mathrm{Var}(Y)$.
+- **Standard deviation** $\sigma = \sqrt{\mathrm{Var}(X)}$.
+
+## Discrete distributions
+
+| Distribution | PMF / Range | $\mathbb{E}[X]$ | $\mathrm{Var}(X)$ |
+|---|---|---|---|
+| Bernoulli$(p)$ | $p^x(1-p)^{1-x}$, $x\in\{0,1\}$ | $p$ | $p(1-p)$ |
+| Binomial$(n, p)$ | $\binom{n}{x} p^x (1-p)^{n-x}$ | $np$ | $np(1-p)$ |
+| Geometric$(p)$ | $(1-p)^{x-1} p$, $x\ge 1$ | $1/p$ | $(1-p)/p^2$ |
+| Poisson$(\lambda)$ | $\frac{e^{-\lambda} \lambda^x}{x!}$ | $\lambda$ | $\lambda$ |
+| Uniform$\{1,\ldots,n\}$ | $1/n$ | $(n+1)/2$ | $(n^2-1)/12$ |
+
+- Binomial is sum of $n$ independent Bernoullis; in the limit $n \to \infty$, $p \to 0$, $np \to \lambda$, it's Poisson.
+
+## Useful inequalities
+
+- **Markov:** $X \ge 0 \Rightarrow P(X \ge a) \le \mathbb{E}[X]/a$.
+- **Chebyshev:** $P(|X - \mu| \ge k\sigma) \le 1/k^2$.
+
+## Common worked examples
+
+- **Birthday problem:** $P(\text{collision in } n) \approx 1 - e^{-n^2/(2 \cdot 365)}$. About 50% by 23 people.
+- **Monty Hall:** switching wins with $P = 2/3$.
+- **Coupon collector:** expected $n H_n \approx n \ln n + \gamma n$ trials to collect $n$ distinct coupons.
+
+## Common pitfalls
+
+- **Independence is symmetric:** if $A \perp B$ then $B \perp A$.
+- **Conditional independence is not transitive.** $A \perp B \mid C$ does not imply $A \perp B$.
+- **Linearity of expectation always holds**; linearity of variance requires independence (or pairwise uncorrelation).
+- $P(A \mid B) \ne P(B \mid A)$ in general — base-rate fallacy.
+- $\mathbb{E}[X^2] \ne (\mathbb{E}[X])^2$ — and the Variance formula relates them.
+
+## Exam strategy
+
+- Always **define the sample space** at the start of a calculation.
+- **Identify the distribution** before computing — it tells you the formulas.
+- For Bayes problems, write out the **prior**, **likelihood**, **evidence**, and **posterior** explicitly.
+- Give intuition checks: probabilities in $[0, 1]$, expectations within the range of $X$.

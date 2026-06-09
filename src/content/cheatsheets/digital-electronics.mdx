@@ -1,0 +1,110 @@
+---
+module: digital-electronics
+title: "Digital Electronics — Cheat Sheet"
+paper: paper-2
+updated: "2026-05-10"
+---
+
+## Boolean algebra identities
+
+| Law | Form |
+|---|---|
+| Identity | $A + 0 = A$, $A \cdot 1 = A$ |
+| Null | $A + 1 = 1$, $A \cdot 0 = 0$ |
+| Idempotent | $A + A = A$, $A \cdot A = A$ |
+| Inverse | $A + \bar A = 1$, $A \cdot \bar A = 0$ |
+| Commutative | $A + B = B + A$, $AB = BA$ |
+| Associative | $(A + B) + C = A + (B + C)$ |
+| Distributive | $A(B + C) = AB + AC$, $A + BC = (A+B)(A+C)$ |
+| **De Morgan** | $\overline{A + B} = \bar A \bar B$, $\overline{AB} = \bar A + \bar B$ |
+| Absorption | $A + AB = A$, $A(A + B) = A$ |
+| Consensus | $AB + \bar A C + BC = AB + \bar A C$ |
+
+## Logic gates
+
+| Gate | Symbol | Boolean | Comments |
+|---|---|---|---|
+| AND | `&` | $A \cdot B$ | |
+| OR | `≥1` | $A + B$ | |
+| NOT | inverter | $\bar A$ | |
+| NAND | `&` + bubble | $\overline{AB}$ | universal |
+| NOR | `≥1` + bubble | $\overline{A+B}$ | universal |
+| XOR | `=1` | $A \oplus B = A\bar B + \bar A B$ | parity |
+| XNOR | | $\overline{A \oplus B}$ | equality |
+
+NAND and NOR each are **functionally complete** — any boolean fn realisable from one alone.
+
+## Minimisation: Karnaugh maps
+
+- For $n \le 4$ variables draw a 2D Gray-coded grid.
+- Combine adjacent 1s in groups of $2^k$ (1, 2, 4, 8…).
+- Each group → one product term; OR them.
+- **Don't-cares** (X) used for either value to enlarge groups.
+- Quine–McCluskey: tabular method for larger $n$ — produces same minimal SOP.
+
+## Adders
+
+### Half adder
+$S = A \oplus B,\quad C_{out} = AB$
+
+### Full adder
+$S = A \oplus B \oplus C_{in}, \quad C_{out} = AB + C_{in}(A \oplus B)$
+
+- **Ripple carry:** $n$ FAs in series — propagation delay $\Theta(n)$.
+- **Carry-look-ahead:** generate $G_i = A_i B_i$, propagate $P_i = A_i \oplus B_i$; carries computed in $\Theta(\log n)$.
+
+## Multilevel logic & hazards
+
+- **Static-1 hazard:** output should remain 1 but glitches to 0 — covered by an extra prime implicant.
+- **Static-0 hazard:** symmetric.
+- **Dynamic hazard:** output transitions ≥3 times.
+
+## Latches & flip-flops
+
+| Element | Symbol | Behaviour |
+|---|---|---|
+| SR latch | NAND/NOR cross-coupled | $S=R=0$ hold; $SR$ forbidden |
+| D latch | level-triggered | $Q$ follows $D$ when enable high |
+| D flip-flop | edge-triggered | $Q \leftarrow D$ on clock edge |
+| JK flip-flop | edge | $J=K=1$ toggles |
+| T flip-flop | edge | toggle on clock if $T=1$ |
+
+**Setup time** $t_{su}$ — input must be stable before edge.
+**Hold time** $t_h$ — input must remain stable after edge.
+**Propagation delay** $t_{pd}$ — clock-edge to $Q$ change.
+**Min clock period** $T \ge t_{pd} + t_{comb} + t_{su}$.
+
+## Synchronous state machines
+
+- **Mealy:** output depends on (state, input). Can react in same cycle.
+- **Moore:** output depends on state only. More registers but glitch-free output.
+
+Design steps: state diagram → state table → encode states → derive next-state and output equations → realise with FFs + combinational logic.
+
+## Transistors & gates (CMOS)
+
+- nMOS: conducts when gate high. pMOS: conducts when gate low.
+- CMOS gate: pull-up network (pMOS) + pull-down network (nMOS), duals of each other.
+- NAND2: 2 nMOS in series + 2 pMOS in parallel (4 transistors).
+- Power: $P = C V^2 f + I_{leak} V$. Quadratic in voltage.
+
+## Processor architecture (introductory)
+
+- Datapath: registers + ALU + buses.
+- Control unit: micro-instructions / hard-wired.
+- Fetch–decode–execute cycle.
+- Memory hierarchy: registers ↔ cache ↔ RAM ↔ disk; speed/cost tradeoff.
+
+## Common pitfalls
+
+- $A + AB \ne A + B$ — it's $A$ (absorption).
+- De Morgan: $\overline{A+B} = \bar A \bar B$ NOT $\bar A + \bar B$.
+- A K-map group must be a power-of-2 size — don't draw diagonals or 3-cell groups.
+- Static hazards arise only for SOP/POS realisations; Mealy outputs can glitch on input changes.
+- Setup/hold violations are about flip-flop input timing, not clock distribution.
+
+## Exam strategy
+
+- Draw the K-map *clearly* — examiners check minimal cover.
+- For sequential design, always present (a) state diagram, (b) state table, (c) encoding, (d) logic equations.
+- Quote propagation-delay equations when asked about clock-frequency limits.

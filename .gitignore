@@ -9,7 +9,6 @@ scripts/.cache/
 
 # Synced from Obsidian vault — derived content, not source of truth
 src/content/notes/
-src/content/cheatsheets/
 src/content/flashcards/
 src/content/quizzes/
 src/content/supplements/

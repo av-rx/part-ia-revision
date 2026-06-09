@@ -1,0 +1,102 @@
+---
+module: operating-systems
+title: "Operating Systems — Cheat Sheet"
+paper: paper-2
+updated: "2026-05-10"
+---
+
+## Roles of an OS
+
+- **Resource manager** — CPU, memory, devices, storage.
+- **Abstraction provider** — files, processes, virtual memory.
+- **Protection** — isolate user processes; control hardware access via privileged modes.
+
+## Processes
+
+- **Process** = program + state (registers, stack, heap, PCB).
+- **PCB** stores PID, registers, page tables, open files, scheduling info.
+- States: new → ready → running → waiting → terminated.
+- **Context switch:** save current PCB, restore next.
+- **Threads:** share address space, file descriptors; private stack + registers.
+
+## Scheduling
+
+| Algorithm | Preemptive | Avg-wait | Notes |
+|---|---|---|---|
+| FCFS | no | poor (convoy) | simple |
+| SJF | optional | optimal avg-wait | needs burst length |
+| Shortest Remaining | yes | optimal | preemptive SJF |
+| Round Robin | yes | depends on $q$ | fairness |
+| Priority | yes/no | starvation possible — aging fixes |
+| Multilevel feedback | yes | adaptive | Linux CFS in spirit |
+
+- **Throughput:** jobs/time. **Turnaround:** finish − arrival. **Waiting:** ready-queue time. **Response:** arrival → first run.
+- **CFS (Linux):** red–black tree of vruntime; pick smallest.
+
+## Synchronisation
+
+- **Race condition** — outcome depends on schedule.
+- **Mutex / lock:** lock/unlock; deadlock if held + acquire other.
+- **Semaphore:** counting; `P()` wait, `V()` signal.
+- **Monitor:** lock + condition variables; `wait`, `signal`/`notify`.
+- **Producer–consumer, readers–writers, dining philosophers** — classic patterns.
+
+**Deadlock conditions (all four needed):** mutual exclusion, hold-and-wait, no-preemption, circular wait. Banker's algorithm avoids by checking safety before granting.
+
+## Memory management
+
+- **Address spaces:** logical (process view) → physical via MMU.
+- **Contiguous allocation:** first-fit / best-fit / worst-fit; external fragmentation.
+- **Paging:** logical address = (page number, offset). Page table maps page → frame. No external frag; internal frag in last page.
+- **TLB:** cached recent translations. Hit ratio dominates effective access time:
+  $$ t_{eff} = h \cdot t_{TLB} + (1 - h)(t_{TLB} + t_{mem}) + t_{mem}. $$
+- **Multi-level page tables:** save space when address space is sparse.
+
+## Virtual memory
+
+- **Demand paging:** load on first reference; minor vs major page fault.
+- **Page replacement:**
+  - **FIFO** — Belady's anomaly (more frames can mean more faults).
+  - **Optimal (Belady)** — replace page used furthest in future. Theoretical lower bound.
+  - **LRU** — least recently used; expensive in pure form, approximated with reference bits / clock.
+  - **Clock / Second-chance** — circular scan respecting reference bit.
+- **Working set:** pages used in a window. Thrashing = working sets exceed memory.
+
+## I/O systems
+
+- **Polling vs interrupt** — polling spins; interrupts notify.
+- **DMA:** device transfers directly to memory, freeing CPU.
+- **Block vs character** devices.
+- **I/O scheduling:** FCFS, SSTF, SCAN/elevator, C-SCAN.
+
+## Storage & file systems
+
+- **Inode:** metadata + pointers (direct, indirect, double, triple).
+- **File allocation:** contiguous (frag), linked (no random), indexed (FAT, inode).
+- **Directories:** hash, B-tree.
+- **Journaling:** write-ahead log for crash consistency.
+- **RAID:** 0 (stripe, no redundancy), 1 (mirror), 5 (block-level parity), 10 (mirror+stripe).
+
+## UNIX / Linux essentials
+
+- Everything is a file (devices in `/dev`, sysfs in `/sys`).
+- `fork()` — copy process; `exec()` — replace image; `wait()` — reap child.
+- File descriptors 0/1/2 = stdin/stdout/stderr; pipes via `pipe()`.
+- Signals (SIGINT, SIGTERM, SIGKILL) — async control.
+- Capability/permission model: rwx for user/group/other.
+- Linux scheduler: CFS for normal tasks, real-time classes (FIFO, RR) above.
+
+## Common pitfalls
+
+- **Belady's anomaly** is FIFO-specific. LRU is anomaly-free.
+- TLB miss vs page fault: TLB miss is fast (table walk); page fault triggers OS handler.
+- Optimal page replacement is unimplementable — use as lower bound for benchmarking.
+- **`wait()`** must be called or zombies accumulate.
+- Locks taken in different orders by different threads → deadlock.
+
+## Exam strategy
+
+- For scheduling: draw a Gantt chart, then compute waiting/turnaround.
+- For paging: state the page-table format and TLB hit ratio assumed.
+- Quote the four deadlock conditions verbatim if invoked.
+- Compare disk-scheduling algorithms with a worked seek-time example.

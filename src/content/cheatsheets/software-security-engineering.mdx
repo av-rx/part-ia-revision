@@ -1,0 +1,103 @@
+---
+module: software-security-engineering
+title: "Software & Security Engineering — Cheat Sheet"
+paper: paper-2
+updated: "2026-05-10"
+---
+
+## Engineering mindset
+
+- **Engineering vs. craft:** budget, schedule, accountability, discipline.
+- **80/20 rule** — 80% of cost in maintenance, not development.
+- **Brooks's law:** "adding manpower to a late software project makes it later." Ramp-up + communication overhead.
+- **Cost of fixing** (Boehm): roughly 10× per phase moved later (req → design → impl → test → prod).
+- **NATO 1968** — birth of software engineering as a discipline.
+
+## Requirements
+
+- **Functional:** what the system does (use cases, behaviours).
+- **Non-functional / quality:** performance, reliability, usability, security, maintainability.
+- **Constraints:** regulatory, hardware, interface.
+- **Sources:** stakeholders, domain docs, observation, prototyping.
+- **Hierarchy:** business → user → system → software requirements.
+
+### Specifications
+- Should be **complete, consistent, unambiguous, verifiable, traceable, modifiable**.
+- **MoSCoW:** Must, Should, Could, Won't.
+- **Formal:** Z, B, Alloy — mathematical precision; high cost.
+- **Semi-formal:** UML use-case + sequence + state diagrams.
+
+## Lifecycle models
+
+| Model | When |
+|---|---|
+| Waterfall | well-understood, fixed reqs |
+| V-model | safety-critical, with verification per phase |
+| Iterative / spiral | risk-driven |
+| Agile (Scrum, XP) | uncertain reqs, fast feedback |
+| DevOps / CI-CD | continuous delivery |
+
+## Testing
+
+- **Unit:** smallest behaviour unit (function/class).
+- **Integration:** modules together.
+- **System:** end-to-end against requirements.
+- **Acceptance:** stakeholder sign-off.
+- **Regression:** ensure fixes don't break old behaviour.
+- **TDD:** red → green → refactor.
+- **Coverage:** statement, branch, MC/DC (high-integrity).
+- **Mutation testing:** measures test-suite quality by injecting bugs.
+- **Property-based** (QuickCheck): generate random inputs from spec.
+
+## Security principles
+
+- **CIA:** Confidentiality, Integrity, Availability.
+- **Defence in depth:** layered, redundant controls.
+- **Least privilege:** minimum rights for the task.
+- **Separation of duties:** no one person can complete a critical action alone.
+- **Fail-safe defaults:** deny unless explicitly allowed.
+- **Economy of mechanism:** keep security-critical code small.
+- **Open design** (Kerckhoffs): security through key, not algorithm secrecy.
+- **Complete mediation:** every access checked.
+- **Psychological acceptability:** if it's hard to use securely, it'll be used insecurely.
+- **Threat modelling:** STRIDE (Spoofing, Tampering, Repudiation, Info-disclosure, DoS, Elevation).
+
+## Common vulnerabilities (overview)
+
+- **Buffer overflow** — write past array; smashed return address; use bounds-checked types.
+- **SQL injection** — concatenated queries; parameterise.
+- **XSS** — untrusted input reflected/stored in HTML; escape on output.
+- **CSRF** — exploit logged-in user's session; tokens.
+- **Auth flaws** — weak passwords, missing MFA, session fixation.
+- **Race conditions / TOCTOU** — check-then-use under concurrency.
+- **Insecure deserialisation** — attacker-controlled object graphs.
+
+## Designing for failure
+
+- **Redundancy** — RAID, hot-standby, geographically distributed.
+- **Graceful degradation** — partial service is better than none.
+- **Circuit breakers** — fail fast when dependent service is down.
+- **Backups + restore tested** — not just taken.
+- **Postmortems** — blameless, focused on systemic causes.
+- **MTBF / MTTR** — reliability metrics.
+
+## Ethics & professionalism
+
+- **BCS Code of Conduct, ACM Code of Ethics.**
+- **Privacy by design** — minimise data collection.
+- **Whistleblowing** — duty when public harm is at stake.
+- **Dual use** — research can be misused; consider before publishing.
+- **AI ethics** — bias, accountability, opacity.
+
+## Common pitfalls
+
+- "Tested" ≠ "verified" — passing tests don't guarantee absence of bugs (Dijkstra).
+- Security as an afterthought — orders of magnitude more expensive than baked-in.
+- Confusing reliability (works correctly) with availability (is reachable) with integrity (data correct).
+- Patching a symptom without root-cause analysis ⇒ recurrence.
+
+## Exam strategy
+
+- Quote the principle by name (least privilege, defence in depth) before applying.
+- For "engineering" questions, anchor in the cost-of-fixing curve and Brooks's law.
+- For "design a system" questions, list 3 functional + 3 non-functional reqs, then 2 threat-model entries.

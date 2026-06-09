@@ -1,0 +1,116 @@
+---
+module: introduction-to-graphics
+title: "Introduction to Graphics — Cheat Sheet"
+paper: paper-3
+updated: "2026-05-10"
+---
+
+## Light and image formation
+
+- Light = EM radiation $\sim$ 380–780 nm.
+- Image: 2D array of intensities; **stride** = bytes/row, often padded.
+- **Sampling**: pixels at sampling intervals $\Delta x, \Delta y$.
+- **Aliasing**: Nyquist — must sample $> 2\times$ highest frequency.
+
+## Rendering equation (Kajiya)
+
+$$ L_o(x, \omega_o) = L_e(x, \omega_o) + \int_\Omega f_r(x, \omega_i, \omega_o)\, L_i(x, \omega_i)\, (\omega_i \cdot n)\, d\omega_i $$
+
+- $L_o$ outgoing radiance; $L_e$ emitted; $f_r$ BRDF.
+- All physically-based renderers approximate this integral.
+
+## Shading models
+
+- **Lambertian (diffuse):** $I = k_d (\vec L \cdot \vec N)$.
+- **Phong specular:** $k_s (\vec R \cdot \vec V)^n$.
+- **Blinn–Phong:** uses half-vector $\vec H = (\vec L + \vec V)/|\vec L + \vec V|$, then $k_s (\vec H \cdot \vec N)^n$ — cheaper.
+- **Phong illumination:** $I = k_a I_a + k_d (\vec L \cdot \vec N) I_l + k_s (\vec R \cdot \vec V)^n I_l$.
+
+## Graphics pipeline (real-time)
+
+1. **Vertex processing** — model → world → view → clip-space (matrices).
+2. **Primitive assembly** — points, lines, triangles.
+3. **Clipping & culling** — discard outside view frustum / back-faced.
+4. **Rasterisation** — primitives → fragments.
+5. **Fragment shading** — per-fragment colour (texturing, lighting).
+6. **Per-fragment ops** — depth/stencil/alpha test, blending.
+7. **Framebuffer** — final image.
+
+### Transforms (homogeneous coordinates)
+
+- Translation:
+$$ T = \begin{pmatrix} 1 & 0 & 0 & t_x \\ 0 & 1 & 0 & t_y \\ 0 & 0 & 1 & t_z \\ 0 & 0 & 0 & 1 \end{pmatrix} $$
+- Rotation, scale: similar 4×4.
+- Composition is *right-to-left* matrix multiply when applied to column vectors.
+
+### Projection
+
+- **Orthographic:** parallel rays.
+- **Perspective:** $x' = x f / z$, $y' = y f / z$ (after the matrix divides by $w = z$).
+
+## Rasterisation
+
+- **Bresenham's line algorithm** — integer arithmetic, decision parameter.
+- **Scanline polygon fill** — edge table + active edge table.
+- **Triangle rasterisation** — barycentric coords; interpolate attributes by barycentric weights.
+
+## Hidden surface removal
+
+- **Z-buffer** — per-pixel depth; simplest, supported in HW.
+- **Painter's algorithm** — back-to-front; fails for cyclic overlap.
+- **BSP tree** — pre-computed traversal order.
+
+## Textures
+
+- **Texture mapping** — $(u, v)$ coords interpolated over surface.
+- **Filtering:** nearest, bilinear, trilinear (mipmap), anisotropic.
+- **Mipmaps** — pre-filtered downscales for minification.
+
+## OpenGL essentials
+
+```glsl
+// Vertex shader (GLSL)
+#version 330 core
+layout(location = 0) in vec3 pos;
+layout(location = 1) in vec3 normal;
+uniform mat4 mvp;
+out vec3 vN;
+void main() {
+  gl_Position = mvp * vec4(pos, 1.0);
+  vN = normal;
+}
+```
+
+- **Buffers:** VBO (vertex), EBO (index), FBO (framebuffer).
+- **VAO:** captures attribute layout.
+- **Shaders compiled and linked into a program.**
+- **Pipeline:** vertex → tessellation → geometry → rasteriser → fragment → blending.
+
+## Human vision
+
+- **Retina** — rods (low-light, no colour) + cones (S, M, L for blue, green, red).
+- **Trichromatic theory** + **opponent process** (red-green, blue-yellow, light-dark).
+- **CIE 1931 XYZ** — perceptually-grounded colour space.
+- **sRGB** — display-referred; gamma ≈ 2.2.
+- **Just-noticeable difference:** humans more sensitive to luminance than chrominance.
+
+## Tone mapping
+
+- **Linear scaling, Reinhard, Drago, ACES.**
+- HDR → SDR: preserve perceptual response, avoid clipping.
+- **Gamma correction:** $V_{out} = V_{in}^{1/\gamma}$.
+
+## Common pitfalls
+
+- Multiplying `(model)(view)(projection)` is **NOT** the same as `(projection)(view)(model)` — order matters; Cambridge convention is column vectors with right-multiplied matrices.
+- Forgetting perspective divide: clip space ≠ NDC.
+- Z-buffer precision worst near far plane — use reasonable near/far ratios.
+- Texture filtering at minification needs mipmaps to avoid aliasing.
+- sRGB textures must be sampled in linear space for correct shading; output gamma-corrected.
+
+## Exam strategy
+
+- Sketch the pipeline stages with arrows.
+- For lighting, write the full Phong term and identify each component.
+- For projection: derive the perspective matrix from similar triangles.
+- For colour: explain why XYZ is device-independent and sRGB isn't.

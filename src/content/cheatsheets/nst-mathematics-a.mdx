@@ -1,0 +1,119 @@
+---
+module: nst-mathematics-a
+title: "NST Mathematics A — Cheat Sheet"
+paper: maths-1
+updated: "2026-05-10"
+---
+
+## Methods I
+
+### Vectors
+
+- Dot product: $\vec a \cdot \vec b = |a||b|\cos\theta$. Scalar.
+- Cross: $\vec a \times \vec b = |a||b|\sin\theta\, \hat n$. Anti-commutative.
+- Triple scalar: $\vec a \cdot (\vec b \times \vec c)$ — volume of parallelepiped.
+- Vector triple: $\vec a \times (\vec b \times \vec c) = (\vec a \cdot \vec c) \vec b - (\vec a \cdot \vec b) \vec c$ (BAC-CAB).
+- Line: $\vec r = \vec a + t \vec b$. Plane: $\vec r \cdot \vec n = d$.
+
+### Complex numbers
+
+- $z = x + iy = r(\cos\theta + i \sin\theta) = re^{i\theta}$ (Euler).
+- $|z| = r$, $\arg z = \theta$, $\bar z = x - iy$.
+- De Moivre: $(\cos\theta + i\sin\theta)^n = \cos n\theta + i \sin n\theta$.
+- Roots of unity: $z^n = 1 \Rightarrow z = e^{2\pi i k/n}$, $k = 0, \ldots, n-1$.
+- $\sin x = \frac{e^{ix} - e^{-ix}}{2i}$, $\cos x = \frac{e^{ix} + e^{-ix}}{2}$.
+
+### Hyperbolics
+
+- $\sinh x = \frac{e^x - e^{-x}}{2}$, $\cosh x = \frac{e^x + e^{-x}}{2}$, $\tanh x = \sinh x / \cosh x$.
+- Identities: $\cosh^2 x - \sinh^2 x = 1$.
+- Derivatives: $(\sinh x)' = \cosh x$, $(\cosh x)' = \sinh x$, $(\tanh x)' = \mathrm{sech}^2 x$.
+
+### Differentiation
+
+- Product: $(uv)' = u'v + uv'$. Quotient: $(u/v)' = (u'v - uv')/v^2$.
+- Chain: $\frac{dy}{dx} = \frac{dy}{du}\frac{du}{dx}$.
+- Implicit, parametric, logarithmic.
+- Leibniz: $(uv)^{(n)} = \sum_{k=0}^n \binom{n}{k} u^{(k)} v^{(n-k)}$.
+
+### Integration
+
+- Substitution, parts: $\int u\, dv = uv - \int v\, du$.
+- Partial fractions for rationals.
+- Trigonometric subs: $x = a \sin\theta$ for $\sqrt{a^2 - x^2}$, etc.
+- Reduction formulas.
+
+### Taylor series
+
+$$ f(x) = \sum_{n=0}^\infty \frac{f^{(n)}(a)}{n!} (x - a)^n $$
+
+- Common: $e^x = \sum x^n/n!$, $\sin x = \sum (-1)^n x^{2n+1}/(2n+1)!$, $\cos x = \sum (-1)^n x^{2n}/(2n)!$, $\ln(1+x) = \sum (-1)^{n-1} x^n/n$ for $|x| < 1$, $(1+x)^p = \sum \binom{p}{n} x^n$.
+
+### Elementary probability
+
+(See dedicated Probability cheat sheet.)
+
+## Methods II
+
+### ODEs
+
+- **Separable:** $\frac{dy}{dx} = f(x)g(y) \Rightarrow \int \frac{dy}{g(y)} = \int f(x) dx$.
+- **Linear 1st order:** $y' + P(x) y = Q(x)$. Integrating factor $\mu = e^{\int P\, dx}$, then $(\mu y)' = \mu Q$.
+- **Constant-coefficient 2nd order:** $y'' + p y' + q y = f(x)$. Solve characteristic $\lambda^2 + p \lambda + q = 0$.
+  - Distinct real $\lambda_1, \lambda_2$: $y = A e^{\lambda_1 x} + B e^{\lambda_2 x}$.
+  - Repeated $\lambda$: $y = (A + Bx) e^{\lambda x}$.
+  - Complex $\alpha \pm \beta i$: $y = e^{\alpha x}(A\cos\beta x + B \sin\beta x)$.
+- Particular integral: trial solution matching $f(x)$ form.
+
+### Multivariable calculus
+
+- Partial derivatives $\partial f / \partial x$, treating other vars as constants.
+- **Gradient** $\nabla f = (\partial_x f, \partial_y f, \partial_z f)$.
+- **Divergence** $\nabla \cdot \vec F$, **Curl** $\nabla \times \vec F$.
+- **Laplacian** $\nabla^2 f = \partial_{xx} f + \partial_{yy} f + \partial_{zz} f$.
+- **Total derivative:** $df = f_x dx + f_y dy$. Chain rule for $f(x(t), y(t))$.
+
+### Multiple integration
+
+- Double: $\iint_D f\, dA$.
+- Change of order: be careful with bounds.
+- **Polar:** $dA = r\, dr\, d\theta$.
+- **Cylindrical:** $dV = r\, dr\, d\theta\, dz$.
+- **Spherical:** $dV = r^2 \sin\theta\, dr\, d\theta\, d\phi$.
+- **Jacobian:** $dA = |J|\, du\, dv$ where $J = \partial(x, y)/\partial(u, v)$.
+
+## Methods III
+
+### Matrices
+
+- $A B \ne B A$ in general.
+- **Determinant** $\det A$, $\det(AB) = \det A \det B$, $\det(A^T) = \det A$, $\det(A^{-1}) = 1/\det A$.
+- **Inverse** $A^{-1}$ exists iff $\det A \ne 0$. $A^{-1} = \mathrm{adj}(A)/\det A$.
+- **Eigenvalues:** $\det(A - \lambda I) = 0$. Eigenvectors solve $A v = \lambda v$.
+- $\mathrm{tr}(A) = \sum \lambda_i$; $\det A = \prod \lambda_i$.
+- **Diagonalisation** $A = P D P^{-1}$ if $A$ has $n$ linearly independent eigenvectors.
+- Symmetric matrices: real eigenvalues, orthogonal eigenvectors.
+
+### Fourier series (see dedicated supplement)
+
+For period $2L$:
+$$ f(x) = \frac{a_0}{2} + \sum_{n=1}^\infty \Big(a_n \cos\frac{n\pi x}{L} + b_n \sin\frac{n\pi x}{L}\Big) $$
+- $a_n = \frac{1}{L} \int_{-L}^{L} f(x) \cos\frac{n\pi x}{L} dx$
+- $b_n = \frac{1}{L} \int_{-L}^{L} f(x) \sin\frac{n\pi x}{L} dx$
+- Even $f$: only cosines. Odd $f$: only sines.
+- **Parseval:** $\frac{1}{L} \int_{-L}^L |f|^2\, dx = \frac{a_0^2}{2} + \sum (a_n^2 + b_n^2)$.
+
+## Common pitfalls
+
+- $\int 1/x\, dx = \ln|x|$ — absolute value!
+- Eigenvalues of a matrix are *not* invariant under row reduction.
+- Multivariable: chain rule needs all paths; total vs partial derivative distinction.
+- For ODEs, the homogeneous solution is added to a particular integral.
+- Fourier coefficient integrals split if $f$ is even/odd to save work.
+
+## Exam strategy
+
+- Show working **at every step** — most marks for method, not final answer.
+- For ODEs, identify the type (separable, linear, exact, …) before solving.
+- For matrices, double-check the characteristic polynomial expansion.
+- For Fourier, exploit symmetry early — saves time.

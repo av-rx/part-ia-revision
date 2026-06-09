@@ -1,0 +1,574 @@
+---
+module: foundations-of-computer-science
+title: "Foundations of Computer Science — Cheat Sheet"
+paper: paper-1
+updated: "2026-06-09"
+---
+
+## 1 · OCaml syntax quick reference
+
+```ocaml
+(* Bindings *)
+let x = 42
+let f x y = x + y          (* curried: f : int -> int -> int *)
+let rec fact n = ...
+let x = e1 in e2            (* local binding: x only in scope of e2 *)
+
+(* Pattern matching *)
+match v with
+| [] -> 0
+| x :: xs -> 1 + length xs
+
+(* function — one argument, pattern-matched *)
+let null = function [] -> true | _ -> false
+
+(* fun — anonymous, no pattern matching *)
+let double = fun n -> n * 2
+
+(* Sequencing (side-effecting) *)
+e1 ; e2          (* evaluate e1 for effects, return e2 *)
+begin e1 ; e2 end   (* same, with explicit grouping *)
+
+(* Exceptions *)
+exception Fail
+exception NoChange of int
+raise Fail
+try ... with Fail -> ... | NoChange n -> ...
+```
+
+**Key facts:**
+- `'a` is a type variable — code is polymorphic over any type
+- `;;` ends an expression in the REPL; omit in source files
+- `=` is **structural equality**; `==` is physical (pointer) equality — almost never what you want
+- `[1, 2, 3]` is `[(1, 2, 3)]` — a 1-element list of a triple. Lists use **semicolons**: `[1; 2; 3]`
+- `fun` takes multiple args; `function` takes exactly one (but can pattern-match it)
+
+---
+
+## 2 · Recursion & efficiency
+
+### Linear vs tail recursion
+
+```ocaml
+(* Linear — recursive call has pending work (+) after it; stack grows O(n) *)
+let rec nsum n = if n = 0 then 0 else n + nsum (n - 1)
+(* nsum 3  ⟹  3 + (2 + (1 + 0))  — additions stacked up *)
+
+(* Tail-recursive — recursive call IS the final result; O(1) stack *)
+let rec summing n acc = if n = 0 then acc else summing (n - 1) (n + acc)
+(* summing 3 0  ⟹  summing 2 3  ⟹  summing 1 5  ⟹  summing 0 6  ⟹  6 *)
+```
+
+**Rule:** a recursive call is in **tail position** iff no computation remains after it returns. Any operation applied to the return value (`+`, `::`, `@`) breaks tail position.
+
+Tail-recursive functions use **constant stack space** (compiler reuses the frame). Non-tail functions risk stack overflow for large inputs.
+
+**Accumulator pattern:** introduce an extra argument to carry the partial result, enabling tail recursion.
+
+### Recurrence table
+
+| Recurrence | Complexity |
+|---|---|
+| $T(n) = T(n-1) + 1$ | $O(n)$ |
+| $T(n) = T(n-1) + n$ | $O(n^2)$ |
+| $T(n) = T(n/2) + 1$ | $O(\log n)$ |
+| $T(n) = 2T(n/2) + n$ | $O(n \log n)$ |
+| $T(n) = 2T(n-1)$ | $O(2^n)$ |
+
+Space complexity never exceeds time complexity.
+
+---
+
+## 3 · Lists
+
+```ocaml
+[]          (* empty list *)
+x :: xs     (* cons: O(1) — adds x to front of xs *)
+xs @ ys     (* append: O(|xs|) — cost depends only on left list *)
+```
+
+### Length
+
+```ocaml
+(* Naïve — not tail-recursive, O(n) stack *)
+let rec nlength = function [] -> 0 | _ :: xs -> 1 + nlength xs
+
+(* Efficient — tail-recursive, O(1) stack *)
+let rec addlen n = function [] -> n | _ :: xs -> addlen (n + 1) xs
+let length xs = addlen 0 xs
+```
+
+### Reverse
+
+```ocaml
+(* Naïve — O(n²): append costs O(n) called n times *)
+let rec nrev = function [] -> [] | x :: xs -> nrev xs @ [x]
+
+(* Efficient — O(n): one cons per element *)
+let rec rev_app xs acc = match xs with
+  | [] -> acc
+  | x :: xs -> rev_app xs (x :: acc)
+let rev xs = rev_app xs []
+(* rev [a;b;c]  ⟹  rev_app [b;c] [a]  ⟹  rev_app [c] [b;a]  ⟹  [c;b;a] *)
+```
+
+**Reduction in strength:** replacing repeated `@` (expensive) with a series of `::` (cheap), then one final reverse.
+
+### Take / Drop
+
+```ocaml
+let rec take n = function
+  | x :: xs when n > 0 -> x :: take (n - 1) xs
+  | _ -> []
+
+let rec drop n = function
+  | _ :: xs when n > 0 -> drop (n - 1) xs
+  | xs -> xs
+```
+
+### Membership & intersection
+
+```ocaml
+let rec member x = function
+  | [] -> false
+  | y :: ys -> x = y || member x ys    (* short-circuits on first match *)
+
+let rec inter xs ys = match xs with
+  | [] -> []
+  | x :: xs -> if member x ys then x :: inter xs ys else inter xs ys
+```
+
+**Cost of `append`:** `@` rebuilds the left list — never append inside a loop without collecting with `::` and reversing once at the end.
+
+---
+
+## 4 · Sorting
+
+**Comparison-sort lower bound: $\Omega(n \log n)$.**
+There are $n!$ permutations. Each comparison eliminates at most half, so we need $\ge \log_2(n!) \approx n \log n - 1.44n$ comparisons.
+
+### Insertion sort — $O(n^2)$
+
+```ocaml
+let rec ins x = function
+  | [] -> [x]
+  | y :: ys -> if x <= y then x :: y :: ys else y :: ins x ys
+
+let rec insort = function
+  | [] -> []
+  | x :: xs -> ins x (insort xs)
+```
+
+`ins` scans up to $n$ elements: $O(n)$. Called $n$ times → $O(n^2)$.
+
+### Quicksort — $O(n \log n)$ average, $O(n^2)$ worst
+
+```ocaml
+let rec quick = function
+  | [] -> [] | [x] -> [x]
+  | a :: bs ->
+    let rec part l r = function
+      | [] -> quick l @ (a :: quick r)
+      | x :: xs -> if x <= a then part (x :: l) r xs else part l (x :: r) xs
+    in part [] [] bs
+```
+
+- **Average:** pivot roughly halves — $\log n$ levels × $O(n)$ per level = $O(n \log n)$.
+- **Worst case:** sorted input — pivot is always min/max → $n$ levels of size $n, n-1, \ldots$ → $O(n^2)$.
+
+### Mergesort — $O(n \log n)$ always
+
+```ocaml
+let rec merge = function
+  | [], ys -> ys | xs, [] -> xs
+  | x :: xs, y :: ys ->
+    if x <= y then x :: merge (xs, y :: ys) else y :: merge (x :: xs, ys)
+
+let rec tmergesort = function
+  | [] -> [] | [x] -> [x]
+  | xs ->
+    let k = List.length xs / 2 in
+    merge (tmergesort (take k xs), tmergesort (drop k xs))
+```
+
+**Trade-off:** mergesort is $O(n \log n)$ worst-case but uses $O(n)$ extra space. Quicksort is in-place (approximately) but $O(n^2)$ worst-case.
+
+---
+
+## 5 · Datatypes & trees
+
+### Type definitions
+
+```ocaml
+(* Enumeration *)
+type suit = Clubs | Diamonds | Hearts | Spades
+
+(* Data-carrying constructors *)
+type vehicle = Bike | Motorbike of int | Car of bool | Lorry of int
+
+(* Polymorphic *)
+type 'a option = None | Some of 'a
+
+(* Recursive — no 'rec' needed *)
+type 'a tree = Lf | Br of 'a * 'a tree * 'a tree
+```
+
+### Binary trees
+
+```ocaml
+let rec count = function
+  | Lf -> 0
+  | Br (_, l, r) -> 1 + count l + count r
+
+let rec depth = function
+  | Lf -> 0
+  | Br (_, l, r) -> 1 + max (depth l) (depth r)
+```
+
+### Exceptions & backtracking
+
+```ocaml
+exception Change
+
+let rec change till amt =
+  if amt = 0 then []
+  else match till with
+    | [] -> raise Change
+    | c :: till ->
+      if amt < c then change till amt
+      else
+        try c :: change (c :: till) (amt - c)
+        with Change -> change till amt
+```
+
+`raise` jumps dynamically to the nearest enclosing `try/with` that matches. The `try` block allows backtracking: if using coin `c` fails, try without it.
+
+---
+
+## 6 · Dictionaries & BSTs
+
+### Association list — $O(n)$ lookup, $O(1)$ insert
+
+```ocaml
+exception Missing
+
+let rec lookup = function
+  | [], _ -> raise Missing
+  | (k, v) :: _, a when k = a -> v
+  | _ :: rest, a -> lookup (rest, a)
+
+let update (dict, k, v) = (k, v) :: dict   (* prepend — shadows old entry *)
+```
+
+### Binary search tree (BST) — $O(\log n)$ balanced, $O(n)$ worst
+
+```ocaml
+let rec lookup = function
+  | Lf, b -> raise Missing
+  | Br ((a, x), l, r), b ->
+    if b < a then lookup (l, b)
+    else if b > a then lookup (r, b)
+    else x
+
+let rec update k v = function
+  | Lf -> Br ((k, v), Lf, Lf)
+  | Br ((a, x), l, r) ->
+    if k < a then Br ((a, x), update k v l, r)
+    else if k > a then Br ((a, x), l, update k v r)
+    else Br ((a, v), l, r)          (* replace value at existing key *)
+```
+
+**Persistent (immutable):** `update` creates new nodes along the path; unchanged branches are **shared** with the original. Old trees remain valid.
+
+**Worst case:** inserting keys in sorted order gives a degenerate tree — essentially a linked list, $O(n)$ per op.
+
+### Tree traversals
+
+| Order | Visit sequence | OCaml | Use |
+|---|---|---|---|
+| Pre-order | Root → Left → Right | `[v] @ pre l @ pre r` | Copy tree |
+| In-order | Left → Root → Right | `in l @ [v] @ in r` | **Sorted list** from BST |
+| Post-order | Left → Right → Root | `post l @ post r @ [v]` | RPN / free tree |
+
+**Efficient traversal** — avoid $O(n^2)$ repeated `@` by using an accumulator:
+
+```ocaml
+let rec inord = function
+  | Lf, vs -> vs
+  | Br (v, l, r), vs -> inord (l, v :: inord (r, vs))
+
+inord (tree, [])   (* returns in-order list in O(n) *)
+```
+
+### Functional arrays (binary-tree encoding)
+
+Index the nodes: root = 1; node $k$'s children are $2k$ (left) and $2k+1$ (right).
+
+```ocaml
+let rec sub = function
+  | Lf, _ -> raise Subscript
+  | Br (v, _, _), 1 -> v
+  | Br (_, l, _), k when k mod 2 = 0 -> sub (l, k / 2)
+  | Br (_, _, r), k -> sub (r, k / 2)
+```
+
+$O(\log n)$ access. Always balanced by construction.
+
+---
+
+## 7 · Currying & higher-order functions
+
+```ocaml
+(* fun — anonymous, cannot pattern-match *)
+let double = fun n -> n * 2
+
+(* function — anonymous, exactly one argument, can pattern-match *)
+let safe_hd = function [] -> None | x :: _ -> Some x
+
+(* Curried multi-arg: f : int -> int -> int *)
+let f a b = a + b
+let add3 = f 3           (* partial application: int -> int *)
+add3 5                   (* 8 *)
+
+(* Infix operators as values *)
+insort ( <= ) [5; 3; 9]
+```
+
+**Type notation:** `'a -> 'b -> 'c` means `'a -> ('b -> 'c)` — function application is left-associative, `->` is right-associative.
+
+### Standard list functionals
+
+```ocaml
+let rec map f = function [] -> [] | x :: xs -> f x :: map f xs
+
+let rec filter p = function
+  | [] -> []
+  | x :: xs -> if p x then x :: filter p xs else filter p xs
+
+let rec exists p = function [] -> false | x :: xs -> p x || exists p xs
+
+let rec all p = function [] -> true | x :: xs -> p x && all p xs
+```
+
+### Matrix operations
+
+```ocaml
+(* Transpose: swap rows and columns *)
+let rec transp = function
+  | [] :: _ -> []
+  | rows -> map List.hd rows :: transp (map List.tl rows)
+
+(* Dot product *)
+let rec dotprod xs ys = match xs, ys with
+  | [], [] -> 0.0
+  | x :: xs, y :: ys -> x *. y +. dotprod xs ys
+  | _ -> failwith "Unequal lengths"
+
+(* Matrix multiply: (m×k) × (k×n) → (m×n) *)
+let matprod a b =
+  let cols = transp b in
+  map (fun row -> map (dotprod row) cols) a
+```
+
+---
+
+## 8 · Lazy lists (sequences)
+
+**Key idea:** wrap the tail in `unit -> 'a seq` — a function that is only evaluated when called, delaying computation.
+
+```ocaml
+type 'a seq = Nil | Cons of 'a * (unit -> 'a seq)
+
+let head = function Cons (x, _) -> x | Nil -> failwith "head"
+let tail = function Cons (_, f) -> f () | Nil -> failwith "tail"
+```
+
+### Core operations
+
+```ocaml
+(* Infinite sequence k, k+1, k+2, ... *)
+let rec from k = Cons (k, fun () -> from (k + 1))
+
+(* Take first n elements *)
+let rec get n s = match s with
+  | _ when n = 0 -> []
+  | Nil -> []
+  | Cons (x, f) -> x :: get (n - 1) (f ())
+
+(* Filter: demands elements until one satisfies p *)
+let rec filterq p = function
+  | Nil -> Nil
+  | Cons (x, f) ->
+    if p x then Cons (x, fun () -> filterq p (f ()))
+    else filterq p (f ())
+
+(* Interleave two sequences — handles infinite lists *)
+let rec interleave xq yq = match xq with
+  | Nil -> yq
+  | Cons (x, f) -> Cons (x, fun () -> interleave yq (f ()))
+
+(* x, f(x), f(f(x)), ... *)
+let rec iterates f x = Cons (x, fun () -> iterates f (f x))
+```
+
+### Numerical example: Newton's method for $\sqrt{k}$
+
+```ocaml
+let next a x = (a /. x +. x) /. 2.0        (* one Newton step *)
+let approxsqrt k = iterates (next k) 1.0   (* infinite sequence of approximations *)
+
+(* Stop when two successive values differ by < eps *)
+let rec within eps = function
+  | Cons (x, f) -> (match f () with
+    | Cons (y, g) ->
+      if abs_float (x -. y) <= eps then y
+      else within eps (Cons (y, g))
+    | _ -> failwith "within")
+  | _ -> failwith "within"
+
+let root k = within 1e-6 (approxsqrt k)
+root 2.0   (* ≈ 1.41421356 *)
+```
+
+**Warning:** `filterq` on an infinite sequence with **no** satisfying element loops forever.
+
+---
+
+## 9 · Queues & search
+
+### Functional queue — amortised $O(1)$ per operation
+
+**Representation:** `Q(front, back)` where `back` stores elements in **reverse** order.
+
+- **Enqueue** `x`: cons onto `back`.
+- **Dequeue**: take head of `front`; if `front` is empty, reverse `back` and move it to `front`.
+
+```ocaml
+type 'a queue = Q of 'a list * 'a list
+
+let norm = function
+  | Q ([], back) -> Q (List.rev back, [])
+  | q -> q
+
+let qempty = Q ([], [])
+let qnull = function Q ([], []) -> true | _ -> false
+let qhd   = function Q (x :: _, _) -> x | _ -> raise Empty
+let enq (Q (f, b)) x = norm (Q (f, x :: b))
+let deq   = function Q (_ :: f, b) -> norm (Q (f, b)) | _ -> raise Empty
+```
+
+**Why $O(1)$ amortised:** each element is cons'd once (enqueue) and reversed once (when `front` runs out). Over $n$ operations: $2n$ total conses → $O(1)$ per operation.
+
+### BFS using queue
+
+```ocaml
+let rec breadth q =
+  if qnull q then []
+  else match qhd q with
+    | Lf -> breadth (deq q)
+    | Br (v, l, r) -> v :: breadth (enq (enq (deq q) l) r)
+```
+
+### Search strategy comparison
+
+| Strategy | Data structure | Space | Complete? | Notes |
+|---|---|---|---|---|
+| Depth-first | Stack / recursion | $O(d)$ | No (can loop) | Fast, low memory |
+| Breadth-first | Queue | $O(b^d)$ | Yes | Finds shortest path |
+| Iterative deepening | DFS + depth limit | $O(d)$ | Yes | Best of both |
+
+**Iterative deepening:** repeat DFS with limits $0, 1, 2, \ldots$ Cost at limit $d$ is $O(b^d)$; total dominated by last level → still $O(b^d)$. Space is $O(d)$ — depth-first stack only.
+
+**The data structure determines the search:** swap the queue for a stack → DFS; swap for a priority queue → best-first / A*.
+
+---
+
+## 10 · Procedural programming
+
+### References
+
+```ocaml
+let r = ref 5      (* create: r : int ref, holds 5 *)
+!r                 (* read (dereference): 5 *)
+r := !r + 1        (* update: r now holds 6; returns unit *)
+```
+
+- `ref E` allocates a fresh box containing the value of `E`
+- `!r` reads the box; `r := e` writes it
+- Aliasing: `let s = r` makes `s` and `r` point to the **same** box
+
+### Arrays
+
+```ocaml
+let a = Array.make 5 0              (* [|0;0;0;0;0|] *)
+let b = Array.init 5 (fun i -> i * 10)  (* [|0;10;20;30;40|] *)
+b.(2)                               (* read index 2: 20 *)
+b.(2) <- 99                         (* update index 2 *)
+```
+
+Out-of-bounds access raises `Invalid_argument "index out of bounds"`.
+
+### While loops
+
+```ocaml
+while <condition> do
+  <body>
+done
+```
+
+### Private state (simulating objects)
+
+```ocaml
+let makeAccount init =
+  let balance = ref init in
+  fun amt ->
+    if amt > !balance then raise (TooMuch (amt - !balance))
+    else begin balance := !balance - amt; !balance end
+
+let my_acct = makeAccount 100
+my_acct 30   (* returns 70 *)
+my_acct 80   (* raises TooMuch 10 *)
+```
+
+Each call to `makeAccount` creates a **fresh** `ref`. Multiple accounts are fully independent — the closure captures its own private `balance`.
+
+### Mutable linked lists
+
+```ocaml
+type 'a mlist = Nil | Cons of 'a * 'a mlist ref
+
+(* Destructive append: O(n) traversal, O(1) splice — no copy *)
+let rec joining mlp ml2 = match !mlp with
+  | Nil -> mlp := ml2
+  | Cons (_, next) -> joining next ml2
+```
+
+vs functional lists: mutable `Cons` cells allow $O(1)$ append at end if you hold a pointer to the last `Nil` cell.
+
+---
+
+## Common pitfalls
+
+- `[1, 2, 3]` is `[(1, 2, 3)]` (tuple in a list). Always use `;` for list elements.
+- `@` costs $O(n)$ on the **left** argument — avoid inside loops; collect with `::` and reverse once.
+- `1 + f (n-1)` is **not** tail-recursive — the `+` is pending. Only `f (n-1)` with nothing after it is in tail position.
+- Quicksort worst case is $O(n^2)$ on sorted input — pivot is always the minimum.
+- BST worst case is $O(n)$ — inserting keys in sorted order creates a degenerate chain.
+- `p := p + 1` is a type error: `p` has type `int ref`, not `int`. Write `p := !p + 1`.
+- Semicolon binds loosely: `if b then e1 else e2; e3` parses as `(if b then e1 else e2); e3` — `e3` always runs. Wrap with `begin...end` when needed.
+- `filterq` on an infinite sequence whose predicate is never satisfied will **not terminate**.
+- Functional queue: `norm` must be called after `deq` when `front` becomes empty — otherwise `qhd` will raise on a logically non-empty queue.
+- `function` takes **one** argument; multi-arg lambdas need `fun x y -> ...`.
+- Structural sharing means updating a tree does not affect other bindings to the original — this is intentional (persistence), not a bug.
+- `List.rev` on `back` in the queue implementation is $O(n)$ but amortised over the lifetime of those elements — do not confuse with per-operation cost.
+
+---
+
+## Exam strategy
+
+- **Trace evaluations** step-by-step with `⟹`: show how accumulators grow and where the stack would build up in non-tail-recursive code.
+- **Give complexity arguments**, not just bounds: "each element is cons'd exactly once, so total cost is $O(n)$."
+- **Structural induction** for correctness proofs: base case on `[]`/`Lf`, inductive step on `x::xs`/`Br(...)`.
+- **Name persistent data structures** explicitly — say "structural sharing" or "path copying" when updating trees or lists.
+- Prefer `match` over `if`/`hd`/`tl` chains — examiners reward idiomatic OCaml, and exhaustiveness checking catches missing cases.
+- Always give types where asked: `'a list -> int`, not "takes a list".

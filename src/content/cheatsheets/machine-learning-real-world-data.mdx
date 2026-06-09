@@ -1,0 +1,117 @@
+---
+module: machine-learning-real-world-data
+title: "Machine Learning & Real-World Data — Cheat Sheet"
+paper: paper-3
+updated: "2026-05-10"
+---
+
+## Sentiment classification
+
+### Naïve Bayes
+
+- Document $d$, classes $c \in C$. Predict
+$$ \hat c = \arg\max_c P(c) \prod_{w \in d} P(w \mid c). $$
+- Estimate $P(w \mid c)$ from training counts.
+- **Smoothing (Laplace add-1):** $P(w \mid c) = \frac{n(w, c) + 1}{n(c) + |V|}$.
+
+### Evaluation
+
+| Metric | Definition |
+|---|---|
+| Accuracy | $(TP + TN) / n$ |
+| Precision | $TP / (TP + FP)$ |
+| Recall | $TP / (TP + FN)$ |
+| $F_1$ | $2 PR / (P + R)$ harmonic mean |
+
+- **Confusion matrix.** TP, FP, FN, TN.
+- **Cross-validation** — $k$-fold for stable estimates.
+- **Sign test** — paired non-parametric: how often classifier A beats B; binomial test on the count.
+
+### Statistical hypothesis testing
+
+- $H_0$ (null), $H_1$ (alternative).
+- $p$-value = probability of observed result if $H_0$ true.
+- Reject $H_0$ if $p < \alpha$ (typically $0.05$).
+- **Type I:** false rejection. **Type II:** false acceptance.
+
+## Hidden Markov Models
+
+### Definitions
+- States $S = \{s_1, \ldots, s_N\}$.
+- **Transition** $a_{ij} = P(q_{t+1} = s_j \mid q_t = s_i)$.
+- **Emission** $b_i(o) = P(o \mid q_t = s_i)$.
+- **Initial** $\pi_i = P(q_1 = s_i)$.
+
+### Three problems
+
+| Problem | Algorithm | Cost |
+|---|---|---|
+| Likelihood $P(O \mid \lambda)$ | Forward | $O(N^2 T)$ |
+| Decoding $\arg\max P(Q \mid O)$ | Viterbi | $O(N^2 T)$ |
+| Learning $\arg\max P(O \mid \lambda)$ | Baum-Welch (EM) | iterative |
+
+### Viterbi
+$$ v_t(j) = \max_i \big[v_{t-1}(i) \, a_{ij}\big] \, b_j(o_t) $$
+backpointer $\psi_t(j) = \arg\max_i [v_{t-1}(i)\, a_{ij}]$.
+
+### Forward
+$$ \alpha_t(j) = \Big[\sum_i \alpha_{t-1}(i) a_{ij}\Big] b_j(o_t) $$
+
+## Clustering
+
+### k-means
+1. Pick $k$ initial centroids.
+2. Assign each point to nearest centroid.
+3. Recompute centroids as cluster means.
+4. Repeat until convergence.
+
+- Minimises within-cluster sum of squares; locally optimal; depends on init (k-means++).
+
+### Agglomerative hierarchical
+- Start with each point a cluster; merge closest pair iteratively.
+- Distance measures between clusters: single, complete, average, Ward.
+
+### Evaluation
+- **Silhouette score**, **rand index**, manual inspection.
+
+## Social networks
+
+### Centralities
+
+| Measure | Idea |
+|---|---|
+| **Degree** | $\deg(v)$ — popular |
+| **Closeness** | $\frac{n-1}{\sum_u d(v, u)}$ |
+| **Betweenness** | fraction of shortest paths through $v$ |
+| **Eigenvector / PageRank** | recursively important neighbours |
+
+### Properties
+- **Diameter** — longest shortest path.
+- **Average path length** — small in small-world networks.
+- **Clustering coefficient** $C_v = \frac{2 e(N_v)}{\deg(v)(\deg(v)-1)}$, fraction of neighbour pairs that are connected.
+- **Power-law degree distribution** $P(k) \propto k^{-\gamma}$ — scale-free.
+
+### Models
+- **Erdős–Rényi $G(n, p)$** — each pair edge independently with prob $p$. Poisson degree.
+- **Barabási–Albert** — preferential attachment → scale-free.
+- **Watts–Strogatz** — high clustering + low diameter (small-world).
+
+### Community detection
+- **Girvan–Newman** — iteratively remove highest-betweenness edges; track modularity.
+- **Modularity** $Q$ — fraction of intra-community edges minus expected at random.
+
+## Common pitfalls
+
+- Naïve Bayes assumes word independence — false but useful.
+- Without smoothing, an unseen word makes $P(d \mid c) = 0$.
+- HMM Viterbi underflow with long sequences — use log-probabilities.
+- $k$-means assumes spherical, equal-variance clusters — fails on elongated/varied densities.
+- High accuracy on imbalanced classes is misleading — report precision/recall/F1.
+- Significance ≠ effect size; small differences can be statistically significant in large samples.
+
+## Exam strategy
+
+- For sentiment: state the **independence assumption** + smoothing in answers.
+- For HMM: write down $\lambda = (A, B, \pi)$ explicitly; quote DP recurrences.
+- For networks: identify the **graph type** (directed/undirected/weighted) before computing.
+- For k-means: state objective function and emphasise convergence is to a local minimum.

@@ -1,0 +1,121 @@
+---
+module: databases
+title: "Databases — Cheat Sheet"
+paper: paper-3
+updated: "2026-05-10"
+---
+
+## DBMS roles
+
+- **Data abstraction** (3-level architecture): external (views) → conceptual (schema) → internal (storage).
+- **Data independence:** change physical layout without breaking queries.
+- **Concurrency, recovery, integrity, security.**
+
+## ER diagrams
+
+- **Entity:** rectangle. **Weak entity:** double rectangle (no own key).
+- **Attribute:** ellipse; **key** underlined; **multi-valued** double; **derived** dashed.
+- **Relationship:** diamond.
+- **Cardinality:** 1:1, 1:N, M:N. **Participation:** total (double line) vs partial.
+
+## Relational model
+
+- **Relation = set of tuples.** Schema: $R(A_1, A_2, \ldots)$ with domains.
+- **Keys:** super-key, candidate key (minimal), primary key.
+- **Foreign key** references another relation's primary key.
+
+### Relational algebra (closed under R)
+
+| Op | Symbol | Notes |
+|---|---|---|
+| Selection | $\sigma_\theta(R)$ | tuples where $\theta$ holds |
+| Projection | $\pi_{A,B}(R)$ | retain attributes |
+| Union | $R \cup S$ | same schema |
+| Difference | $R - S$ | |
+| Cartesian product | $R \times S$ | |
+| Join | $R \bowtie_\theta S$ | $\sigma_\theta(R \times S)$ |
+| Natural join | $R \bowtie S$ | equi-join on common attrs |
+| Rename | $\rho_{S(...)} (R)$ | |
+| Division | $R \div S$ | "for all" queries |
+
+## SQL essentials
+
+```sql
+SELECT a.name, AVG(b.score) AS avg_score
+FROM Author a
+JOIN Book b ON a.id = b.author_id
+WHERE b.year > 2000
+GROUP BY a.name
+HAVING COUNT(b.id) >= 3
+ORDER BY avg_score DESC
+LIMIT 10;
+```
+
+- `WHERE` filters rows; `HAVING` filters groups.
+- `JOIN` defaults to INNER. `LEFT/RIGHT/FULL OUTER JOIN` keep unmatched rows.
+- **Aggregates:** `COUNT, SUM, AVG, MIN, MAX`. Watch `NULL`s — aggregates ignore.
+- **Set operations:** `UNION, INTERSECT, EXCEPT`.
+- **Subqueries:** scalar, IN, EXISTS, correlated.
+- **CTE:** `WITH t AS (...) SELECT ...`. Recursive CTEs allowed in standard SQL.
+
+## Implementing ER ⇒ relational
+
+| ER | Relational |
+|---|---|
+| Strong entity | one table; PK = entity key |
+| Weak entity | one table; PK = (owner PK, partial key) |
+| 1:1 relationship | merge into one of the tables; FK on either side |
+| 1:N | FK on the N side |
+| M:N | new table with both PKs |
+| Multi-valued attr | new table |
+
+## Normalisation
+
+- **1NF:** atomic values; no repeating groups.
+- **2NF:** 1NF + every non-prime attr fully dependent on whole PK (no partial dependencies).
+- **3NF:** 2NF + no transitive dependencies of non-prime on PK.
+- **BCNF:** every non-trivial FD's left-hand side is a super-key.
+
+**Functional dependencies:** $X \to Y$. **Armstrong's axioms:** reflexivity, augmentation, transitivity.
+Closure $X^+$ via these axioms determines whether $X$ is a key.
+
+## Transactions & ACID
+
+- **A**tomicity, **C**onsistency, **I**solation, **D**urability.
+- **Anomalies:** dirty read, non-repeatable read, phantom read.
+- **Isolation levels:** read uncommitted, read committed, repeatable read, serializable.
+- **2PL** (two-phase locking): growing phase (acquire), shrinking (release). Strict 2PL holds locks until commit — recoverability + serializability.
+- **Deadlock:** wait-for graph with cycle. Detect (graph) or prevent (timeouts, ordering).
+- **Recovery:** WAL (write-ahead log); undo/redo; checkpoints.
+
+## Throughput & concurrency
+
+- Hot rows ⇒ contention. Sharding partitions data; replication serves reads.
+- **CAP theorem:** under partition, choose Consistency or Availability.
+
+## Semi-structured / document DB
+
+- JSON / BSON / XML.
+- **MongoDB** — collections of documents; flexible schema.
+- Trade-off: schema-on-read vs schema-on-write; integrity vs flexibility.
+
+## Graph databases
+
+- Nodes + relationships, both with properties.
+- **Neo4j / Cypher:** `MATCH (a:Person)-[:KNOWS]->(b) RETURN b`.
+- Index-free adjacency: traversals are constant-time per hop.
+
+## Common pitfalls
+
+- `NULL` is *not* a value — `x = NULL` always unknown; use `IS NULL`.
+- `COUNT(*)` counts all rows (incl. nulls); `COUNT(col)` ignores nulls.
+- `HAVING` evaluated after `GROUP BY`; cannot reference unaggregated raw cols.
+- BCNF can require splitting a relation that 3NF wouldn't — at the cost of losing some FDs.
+- Two-phase locking ≠ two-phase commit (different concept, distributed atomicity).
+
+## Exam strategy
+
+- For ER: draw it; show keys; label cardinalities both sides.
+- For SQL: indent and align — readability wins partial credit.
+- For normalisation: state every FD; compute closure; identify violations.
+- Quote ACID by name and give a one-line example each.

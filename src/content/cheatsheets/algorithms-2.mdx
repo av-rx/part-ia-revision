@@ -1,0 +1,93 @@
+---
+module: algorithms-2
+title: "Algorithms 2 — Cheat Sheet"
+paper: paper-1
+updated: "2026-05-10"
+---
+
+## Graphs
+
+- **Graph $G = (V, E)$**: undirected/directed; weighted/unweighted; simple vs multi.
+- **Density:** sparse $|E| = O(|V|)$; dense $|E| = \Theta(|V|^2)$.
+- **Representations:** adjacency matrix $\Theta(V^2)$ space, edge query $O(1)$, neighbour iter $O(V)$. Adjacency list $\Theta(V + E)$, edge query $O(\deg)$.
+
+## Traversal
+
+| Algorithm | Cost | Property |
+|---|---|---|
+| BFS | $O(V + E)$ | shortest path in *unweighted* graph |
+| DFS | $O(V + E)$ | classifies edges (tree/back/forward/cross) |
+
+DFS edge classification (directed): **tree, back, forward, cross**. Undirected has only tree + back.
+
+**Cycle detection:** DFS — back edge ⇒ cycle.
+
+**Topological sort:** DFS, push to stack on *finish*; reverse-postorder. $O(V+E)$. Requires DAG.
+
+**SCC (Kosaraju):** DFS on $G$ recording finish times → DFS on $G^T$ in reverse-finish order. $O(V+E)$.
+
+## Shortest paths
+
+| Algorithm | Cost | Restriction |
+|---|---|---|
+| BFS | $O(V+E)$ | unweighted |
+| Dijkstra (binary heap) | $O((V+E)\log V)$ | non-negative weights |
+| Dijkstra (Fibonacci heap) | $O(E + V\log V)$ | non-negative weights |
+| Bellman–Ford | $O(VE)$ | detects negative cycles |
+| Floyd–Warshall | $O(V^3)$ | all-pairs; allows negative edges |
+
+**Dijkstra correctness** rests on non-negativity: extracted-min vertex has its final distance.
+
+**Bellman–Ford:** relax all $E$ edges $V-1$ times. A further round that still relaxes ⇒ negative cycle reachable.
+
+## Minimum spanning tree (MST)
+
+Both run on undirected, connected, weighted graphs.
+
+| Algorithm | Cost |
+|---|---|
+| Kruskal (sort + union-find) | $O(E \log E)$ |
+| Prim (binary heap) | $O((V+E)\log V)$ |
+| Prim (Fibonacci heap) | $O(E + V\log V)$ |
+
+**Cut property:** lightest edge crossing any cut is in *some* MST.
+**Cycle property:** heaviest edge in any cycle is in *no* MST.
+
+**Union-Find** with union-by-rank + path compression: $O(\alpha(n))$ amortised per op (≈ $O(1)$).
+
+## Advanced data structures
+
+- **Binary heap:** array; node $i$ children $2i, 2i+1$. Insert $O(\log n)$, extract-min $O(\log n)$, build-heap $O(n)$ via siftdown from $n/2$ down to root.
+- **Binomial heap:** forest of binomial trees $B_k$; merge $O(\log n)$, decrease-key $O(\log n)$, extract-min $O(\log n)$.
+- **Fibonacci heap:** lazy. Insert + decrease-key $O(1)$ amortised; extract-min $O(\log n)$ amortised. Used inside Dijkstra/Prim for theoretical speedup.
+- **Disjoint-set forest (union-find):** path compression + union-by-rank → $O(\alpha(n))$.
+- **AVL / red-black tree:** balanced BST, $O(\log n)$ ops.
+- **B-tree / B+ tree:** disk-friendly, branching factor $t$; height $O(\log_t n)$.
+
+### Amortised analysis
+
+- **Aggregate:** total over $n$ ops divided by $n$. Dynamic array doubling: $O(1)$ amortised insert.
+- **Accounting:** assign credit per op; banked credit pays for expensive ops.
+- **Potential method:** $\hat c_i = c_i + \Phi_i - \Phi_{i-1}$; pick $\Phi$ so amortised cost is small.
+
+## Geometric algorithms
+
+- **Convex hull (Graham scan):** sort by angle from anchor; reject points that cause non-left turns. $O(n \log n)$.
+- **Convex hull (Jarvis march / gift wrap):** $O(nh)$ where $h$ = hull vertices.
+- **Cross product test:** for points $p_1, p_2, p_3$, $(p_2 - p_1) \times (p_3 - p_1) > 0$ ⇒ left turn.
+- **Line-segment intersection:** counterclockwise tests; sweep line $O((n+k)\log n)$.
+- **Closest pair of points:** divide-and-conquer $\Theta(n \log n)$; combine step looks at strip of width $2\delta$ around split.
+
+## Common pitfalls
+
+- Dijkstra **fails** on negative edges, even without negative cycles — counter-example matters.
+- Topological sort is **only** defined on DAGs.
+- $|E| \le V(V-1)/2$ for simple undirected; in dense graphs adjacency matrix can beat list.
+- For MST, edge weights need only be **distinct** to make MST unique; equal weights ⇒ multiple MSTs.
+- Convex-hull cross products: be careful with collinear points — typically include them on the hull boundary or not, per problem.
+
+## Exam strategy
+
+- Always state the **graph model** (directed? weighted? non-negative?) before invoking an algorithm.
+- For complexity, identify whether the bound is in terms of $V, E$, or both — and what data structure is assumed.
+- Quote the **invariant or correctness argument** (e.g. cut property for MST, finalised-distance for Dijkstra).

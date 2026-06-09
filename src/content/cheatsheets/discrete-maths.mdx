@@ -1,0 +1,106 @@
+---
+module: discrete-maths
+title: "Discrete Mathematics — Cheat Sheet"
+paper: paper-2
+updated: "2026-05-10"
+---
+
+## Logic & proof
+
+- **Implication** $P \Rightarrow Q$: false only if $P$ true and $Q$ false.
+- **Contrapositive:** $P \Rightarrow Q \equiv \neg Q \Rightarrow \neg P$ (equivalent).
+- **Converse:** $Q \Rightarrow P$ — *not* equivalent.
+- **Iff:** $P \Leftrightarrow Q$ ≡ $(P\Rightarrow Q) \land (Q \Rightarrow P)$.
+
+### Quantifiers
+$\forall x\, P(x)$, $\exists x\, P(x)$. Negation: $\neg \forall x P \equiv \exists x \neg P$; $\neg \exists x P \equiv \forall x \neg P$.
+
+### Proof techniques
+- **Direct.**
+- **Contrapositive** — show $\neg Q \Rightarrow \neg P$.
+- **Contradiction** — assume $\neg Q$, derive $\bot$.
+- **Induction:** base case $P(0)$, step $P(k) \Rightarrow P(k+1)$.
+- **Strong / well-founded** — use $\forall j < k.\ P(j) \Rightarrow P(k)$.
+- **Construction / counterexample.**
+
+## Numbers
+
+- **Divisibility:** $a \mid b$ iff $\exists k.\ b = ka$.
+- **GCD via Euclid:** $\gcd(a, b) = \gcd(b, a \bmod b)$, base $\gcd(a, 0) = a$.
+- **Bézout:** $\exists x, y \in \mathbb{Z}: ax + by = \gcd(a, b)$ — extended Euclid finds them.
+- **Coprime:** $\gcd(a, b) = 1$.
+- **Modular arithmetic:** $a \equiv b \pmod n$ iff $n \mid (a - b)$.
+
+### Fermat's little theorem
+For prime $p$ and $\gcd(a, p) = 1$: $a^{p-1} \equiv 1 \pmod p$.
+
+### Chinese remainder theorem
+If $\gcd(m_i, m_j) = 1$ for $i \ne j$, the system $x \equiv a_i \pmod{m_i}$ has a unique solution mod $\prod m_i$.
+
+## Sets
+
+- **Set-builder:** $\{x \in S \mid P(x)\}$.
+- **Operations:** $\cup, \cap, \setminus, \triangle$ (symmetric difference), $\overline{A}$ (complement w.r.t. universe).
+- **Power set:** $\mathcal{P}(S)$, size $2^{|S|}$.
+- **Cartesian product:** $A \times B = \{(a, b) \mid a \in A, b \in B\}$.
+
+### Functions
+- $f: A \to B$. **Injective** (1-1): $f(x) = f(y) \Rightarrow x = y$. **Surjective** (onto): $\forall b \exists a.\ f(a) = b$. **Bijective** = both.
+- Composition $g \circ f$ associative.
+- $|A| \le |B|$ iff there's an injection $A \hookrightarrow B$.
+
+### Relations
+- **Equivalence relation:** reflexive, symmetric, transitive — induces partition.
+- **Partial order:** reflexive, antisymmetric, transitive.
+- **Total order:** partial + comparable.
+
+### Cardinality
+- $\aleph_0$ countable (e.g. $\mathbb{Q}$); $|\mathbb{R}|$ uncountable (Cantor diagonal).
+
+## Counting & combinatorics
+
+- **Permutations:** $n!$ orderings; $\binom{n}{k} k!$ for $k$-permutations.
+- **Combinations:** $\binom{n}{k} = \frac{n!}{k!(n-k)!}$.
+- **Pascal's rule:** $\binom{n}{k} = \binom{n-1}{k-1} + \binom{n-1}{k}$.
+- **Binomial theorem:** $(x+y)^n = \sum_k \binom{n}{k} x^{n-k} y^k$.
+- **Pigeonhole:** $n$ items in $k$ boxes ($n > k$) ⇒ some box has $\ge 2$.
+- **Inclusion–exclusion:** $|A \cup B| = |A| + |B| - |A \cap B|$.
+
+## Regular languages & automata
+
+### Regular expressions
+- $\varnothing, \varepsilon, a$ are regex.
+- $RS$ concatenation; $R + S$ (or $R \mid S$) union; $R^*$ Kleene star.
+
+### DFA $(Q, \Sigma, \delta, q_0, F)$
+- $\delta : Q \times \Sigma \to Q$.
+- Accepts $w$ iff $\hat\delta(q_0, w) \in F$.
+
+### NFA
+- $\delta : Q \times \Sigma \cup \{\varepsilon\} \to \mathcal{P}(Q)$.
+- **Subset construction:** every NFA has an equivalent DFA (potentially exponentially larger).
+
+### Equivalence
+**Kleene's theorem:** regex ⇔ NFA ⇔ DFA describe the same class.
+
+### Pumping lemma (regular)
+If $L$ regular, $\exists p \ge 1: \forall w \in L, |w| \ge p \Rightarrow w = xyz$ with $|xy| \le p$, $|y| \ge 1$, $\forall i \ge 0.\ xy^iz \in L$.
+
+Use to show non-regularity (e.g. $\{a^n b^n\}$).
+
+### DFA minimisation
+Hopcroft / table-filling — partition states by distinguishability; merge equivalent states.
+
+## Common pitfalls
+
+- $\Rightarrow$ versus $\Leftrightarrow$ — proving one direction does not give the other.
+- Strong induction step must apply to *all* smaller $k$, not just $k - 1$.
+- $\binom{n}{k}$ defined only for $0 \le k \le n$ as integers (extend by convention to 0 outside).
+- An NFA with $\varepsilon$-moves is *not* a DFA — convert via subset construction.
+- "$L$ is not regular" requires the pumping lemma to be applied for *every* sufficiently long word, not just one.
+
+## Exam strategy
+
+- For "prove…" use a formal style: state hypothesis, induction principle, base case, step, conclusion.
+- For language questions, give an explicit DFA (table or diagram) — partial credit only for vague descriptions.
+- Always verify number-theoretic claims with one numerical example.
