@@ -2,92 +2,521 @@
 module: algorithms-2
 title: "Algorithms 2 — Cheat Sheet"
 paper: paper-1
-updated: "2026-05-10"
+updated: "2026-06-09"
 ---
 
-## Graphs
+## 1 · Graph representations
 
-- **Graph $G = (V, E)$**: undirected/directed; weighted/unweighted; simple vs multi.
-- **Density:** sparse $|E| = O(|V|)$; dense $|E| = \Theta(|V|^2)$.
-- **Representations:** adjacency matrix $\Theta(V^2)$ space, edge query $O(1)$, neighbour iter $O(V)$. Adjacency list $\Theta(V + E)$, edge query $O(\deg)$.
-
-## Traversal
-
-| Algorithm | Cost | Property |
+| | Adjacency matrix | Adjacency list |
 |---|---|---|
-| BFS | $O(V + E)$ | shortest path in *unweighted* graph |
-| DFS | $O(V + E)$ | classifies edges (tree/back/forward/cross) |
+| Space | $\Theta(V^2)$ | $\Theta(V+E)$ |
+| Edge query $(u,v)\in E$? | $O(1)$ | $O(\deg u)$ |
+| List neighbours of $u$ | $O(V)$ | $O(\deg u)$ |
+| Iterate all edges | $O(V^2)$ | $O(E)$ |
+| Best for | Dense graphs | Sparse graphs |
 
-DFS edge classification (directed): **tree, back, forward, cross**. Undirected has only tree + back.
+**Dense:** $|E|=\Theta(V^2)$; **sparse:** $|E|=O(V)$.
+**Transpose $G^T$:** reverse all directed edges (transpose the matrix, or reverse the lists).
+**Degree:** in-degree + out-degree; handshaking: $\sum \deg v = 2|E|$ (undirected).
 
-**Cycle detection:** DFS — back edge ⇒ cycle.
+---
 
-**Topological sort:** DFS, push to stack on *finish*; reverse-postorder. $O(V+E)$. Requires DAG.
+## 2 · Breadth-first search
 
-**SCC (Kosaraju):** DFS on $G$ recording finish times → DFS on $G^T$ in reverse-finish order. $O(V+E)$.
+```
+BFS(G, s):
+  for v in G.V:  v.d = ∞;  v.π = NIL;  v.pending = false
+  s.d = 0;  s.pending = true
+  Q = Queue();  Enqueue(Q, s)
+  while Q not empty:
+    u = Dequeue(Q)
+    for v in adj[u]:
+      if not v.pending:
+        v.d = u.d + 1;  v.π = u;  v.pending = true
+        Enqueue(Q, v)
+```
 
-## Shortest paths
+- $O(V+E)$ with adjacency list; $O(V^2)$ with matrix.
+- Computes **shortest hop-distances** $\delta(s,v)$ and a **breadth-first tree** (predecessor subgraph).
+- **Queue invariant:** distances in queue are non-decreasing, with at most two distinct consecutive values. This ensures BFS processes all distance-$k$ vertices before any distance-$(k+1)$.
+- **Correctness sketch (by contradiction):** if any vertex has wrong distance at termination, take the one with minimum $\delta(s,v)$. Its predecessor $u$ on a true shortest path must have correct distance. When $u$ was dequeued, $v$ was either not-pending (would be set correctly), pending (was set by an earlier dequeue, which is ≤ $u.d$), or already done (also ≤ $u.d$). All cases contradict a larger-than-correct $v.d$.
 
-| Algorithm | Cost | Restriction |
+**Application — 2-colourability (bipartiteness):** BFS from $s$; colour alternating levels. After BFS, check all edges — any same-colour endpoints means non-bipartite.
+
+---
+
+## 3 · Depth-first search & edge classification
+
+```
+DFS(G):
+  for v in G.V:  v.marked = false;  v.π = NIL
+  time = 0
+  for v in G.V:
+    if not v.marked:  DFS-Visit(G, v)
+
+DFS-Visit(G, u):
+  u.d = ++time;  u.marked = true
+  for v in adj[u]:
+    if not v.marked:  v.π = u;  DFS-Visit(G, v)
+  u.f = ++time
+```
+
+$O(V+E)$. Each vertex: $u.d$ = discovery time; $u.f$ = finish time. Vertex $v$ is a descendant of $u$ iff $u.d < v.d < v.f < u.f$ (parenthesis theorem).
+
+**Edge classification (directed graph):**
+
+| Type | Timing condition | Meaning |
 |---|---|---|
-| BFS | $O(V+E)$ | unweighted |
-| Dijkstra (binary heap) | $O((V+E)\log V)$ | non-negative weights |
-| Dijkstra (Fibonacci heap) | $O(E + V\log V)$ | non-negative weights |
-| Bellman–Ford | $O(VE)$ | detects negative cycles |
-| Floyd–Warshall | $O(V^3)$ | all-pairs; allows negative edges |
+| Tree | $u.d < v.d < v.f < u.f$ | $v$ first discovered via $(u,v)$ |
+| Forward | $u.d < v.d < v.f < u.f$ | $(u,v)$ not in tree; $v$ is descendant |
+| Back | $v.d \le u.d < u.f \le v.f$ | $(u,v)$ goes to an ancestor |
+| Cross | $v.d < v.f < u.d < u.f$ | All other cases |
 
-**Dijkstra correctness** rests on non-negativity: extracted-min vertex has its final distance.
+- **Undirected graphs:** only tree and back edges exist.
+- **Cycle detection:** back edge $\iff$ directed cycle (undirected cycle iff DFS finds any back edge).
 
-**Bellman–Ford:** relax all $E$ edges $V-1$ times. A further round that still relaxes ⇒ negative cycle reachable.
+### Topological sort
 
-## Minimum spanning tree (MST)
+DFS on a **DAG**; output vertices in **decreasing finish-time** order. $O(V+E)$.
 
-Both run on undirected, connected, weighted graphs.
+Correctness: if $(u,v)\in E$ then $u.f > v.f$ (finish after descendants), so decreasing-finish order respects all edges.
 
-| Algorithm | Cost |
+### Strongly connected components (Kosaraju's)
+
+1. **DFS on $G$** — record finish times.
+2. Compute **$G^T$** (reverse all edges).
+3. **DFS on $G^T$** processing vertices in **decreasing finish-time** from step 1.
+4. Each DFS tree in step 3 = one SCC.
+
+$O(V+E)$. Intuition: the vertex with the latest finish time in $G$ is in a "source" SCC that can reach everything in its SCC. In $G^T$, DFS from it reaches only its SCC.
+
+---
+
+## 4 · Shortest paths — summary
+
+| Algorithm | Complexity | Conditions | Notes |
+|---|---|---|---|
+| BFS | $O(V+E)$ | Unweighted | Hop count |
+| Dijkstra (array/hash) | $O(V^2+E)$ | $w\ge 0$ | Dense graphs |
+| Dijkstra (binary heap) | $O((V+E)\log V)$ | $w\ge 0$ | Standard |
+| Dijkstra (Fibonacci heap) | $O(V\log V + E)$ | $w\ge 0$ | Theoretical best |
+| Bellman-Ford | $O(VE)$ | Any weights | Detects neg. cycles |
+| DAG shortest paths | $\Theta(V+E)$ | DAG only | Topo-sort + relax |
+| Floyd-Warshall | $O(V^3)$ | All-pairs, any | DP over intermediates |
+| Johnson's | $O(V^2\log V + VE)$ | All-pairs, any | Reweight + Dijkstra×$V$ |
+
+**Shortest-path optimal substructure:** any subpath of a shortest path is itself a shortest path. Proof: if the subpath weren't shortest, replacing it would yield a shorter overall path — contradiction. This justifies both Dijkstra and DP methods.
+
+**Negative cycles:** no shortest path is defined when a negative-weight cycle is reachable.
+
+---
+
+## 5 · Bellman-Ford
+
+```
+Relax(u, v, w):
+  if v.d > u.d + w(u,v):  v.d = u.d + w(u,v);  v.π = u
+
+Bellman-Ford(G, w, s):
+  for v in G.V:  v.d = ∞;  v.π = NIL
+  s.d = 0
+  for i = 1 to |V|-1:            // V-1 relaxation passes
+    for each (u,v) in G.E:  Relax(u, v, w)
+  for each (u,v) in G.E:         // negative-cycle check
+    if v.d > u.d + w(u,v):  return false
+  return true
+```
+
+- After $k$ passes, all shortest paths using $\le k$ edges are found.
+- Shortest simple paths have $\le V-1$ edges → $V-1$ passes suffice.
+- **Negative cycle:** if the $V$-th pass still relaxes an edge, a negative cycle is reachable from $s$.
+
+**DAG special case:** topological sort then relax edges in that order — each edge relaxed once → $\Theta(V+E)$.
+
+---
+
+## 6 · Dijkstra
+
+```
+Dijkstra(G, w, s):
+  for v in G.V:  v.d = ∞;  v.π = NIL
+  s.d = 0;  S = ∅;  Q = PriorityQueue(G.V, key = d)
+  while Q not empty:
+    u = PQ-Extract-Min(Q);  S = S ∪ {u}
+    for each (u,v) in adj[u]:
+      Relax(u, v, w)         // calls PQ-Decrease-Key if v.d decreases
+```
+
+**Requires $w(u,v) \ge 0$ for all edges.**
+
+**Invariant $\phi$:** at the start of each iteration, $v.d = \delta(s,v)$ for all $v \in S$.
+
+**Correctness proof (maintenance, by contradiction):** let $u$ be the first vertex added to $S$ with $u.d \ne \delta(s,u)$. The shortest path $s\to u$ must first leave $S$ at some vertex $y\notin S$ (predecessor $x\in S$). Since $x$ was added to $S$ earlier, the convergence property of `Relax` gives $y.d = \delta(s,y)$. Non-negative weights: $\delta(s,y)\le\delta(s,u)$. Both $u,y\notin Q$ means $u.d\le y.d$. Chain: $u.d \le y.d = \delta(s,y) \le \delta(s,u) \le u.d$, so $u.d = \delta(s,u)$. Contradiction.
+
+**Complexity with different priority queues:**
+
+| PQ implementation | Extract-Min | Decrease-Key | Total |
+|---|---|---|---|
+| Array / hash table | $O(V)$ | $O(1)$ | $O(V^2 + E)$ |
+| Binary heap | $O(\log V)$ | $O(\log V)$ | $O((V+E)\log V)$ |
+| Fibonacci heap | $O(\log V)$ amort. | $O(1)$ amort. | $O(V\log V + E)$ |
+
+---
+
+## 7 · All-pairs shortest paths
+
+### Floyd-Warshall — $O(V^3)$
+
+DP: $d^{(k)}_{ij}$ = min-weight path $i\to j$ using only vertices $\{1,\ldots,k\}$ as intermediates.
+
+$$d^{(k)}_{ij} = \min\!\left(d^{(k-1)}_{ij},\; d^{(k-1)}_{ik} + d^{(k-1)}_{kj}\right), \qquad d^{(0)}_{ij} = w(i,j)$$
+
+```
+Floyd-Warshall(G, w):
+  D = weight matrix (w[i][j] if edge, ∞ otherwise, 0 on diagonal)
+  for k = 1 to |V|:
+    for i = 1 to |V|:
+      for j = 1 to |V|:
+        D[i][j] = min(D[i][j], D[i][k] + D[k][j])
+```
+
+- Detect negative cycles: $D[i][i] < 0$ after completion.
+- Track predecessors with parallel matrix $\Pi$ (update alongside $D$).
+- Transitive closure: run with $\min \to \text{OR}$ and $+ \to \text{AND}$.
+
+### Johnson's algorithm — $O(V^2\log V + VE)$
+
+Better than Floyd-Warshall when $|E| \ll V^2$.
+
+1. **Augment:** add source $s$; edge $(s,v)$ weight 0 for all $v\in G.V$.
+2. **Bellman-Ford** from $s$ to get $h(v) = \delta(s,v)$. If negative cycle detected, stop.
+3. **Reweight:** $\hat{w}(u,v) = w(u,v) + h(u) - h(v) \ge 0$.
+4. **Dijkstra** from each $u$ using $\hat{w}$; un-reweight: $\delta(u,v) = \hat{d}(u,v) - h(u) + h(v)$.
+
+**Why reweighting preserves shortest paths:** for any path $u = v_0 \to v_1 \to\cdots\to v_k = v$,
+$$\hat{w}(p) = w(p) + h(u) - h(v)$$
+The $h$-terms telescope. Since the offset depends only on endpoints, not the path, relative ordering of path weights is preserved.
+
+**Why $\hat{w}\ge 0$:** triangle inequality for $h$: $h(v) \le h(u) + w(u,v)$, so $w(u,v)+h(u)-h(v)\ge 0$.
+
+---
+
+## 8 · Flow networks
+
+A **flow network** $G=(V,E)$: directed, capacities $c(u,v)\ge 0$, source $s$, sink $t$.
+- No self-loops; no antiparallel edges (split $(u,v)$ + $(v,u)$ with intermediate node $u'$).
+- All vertices lie on some $s\leadsto t$ path.
+
+**Flow** $f:V\times V\to\mathbb{R}$ satisfies:
+1. **Capacity:** $0 \le f(u,v) \le c(u,v)$.
+2. **Conservation:** $\sum_v f(v,u) = \sum_v f(u,v)$ for all $u\ne s,t$.
+
+**Value:** $|f| = \sum_v f(s,v) - \sum_v f(v,s)$.
+
+**Multiple sources/sinks:** add supersource $s$ connected to each real source with $\infty$-capacity edges; same for supersink $t$.
+
+### Residual network
+
+```
+Edge (u,v) in original E → two residual edges:
+  Forward:  c_f(u,v) = c(u,v) − f(u,v)   (remaining forward capacity)
+  Backward: c_f(v,u) = f(u,v)             (cancellable flow)
+  (edge omitted if residual capacity = 0)
+```
+
+Formally: $c_f(u,v) = c(u,v)-f(u,v)$ if $(u,v)\in E$; $f(v,u)$ if $(v,u)\in E$; 0 otherwise.
+
+**Augmenting path $p$:** simple path $s\to t$ in $G_f$. Bottleneck $c_f(p) = \min_{(u,v)\in p} c_f(u,v)$.
+
+Augmenting along $p$ increases $|f|$ by exactly $c_f(p) > 0$.
+
+---
+
+## 9 · Max-flow: Ford-Fulkerson & Edmonds-Karp
+
+```
+Ford-Fulkerson(G, s, t):
+  for (u,v) in E:  f(u,v) = 0
+  while ∃ augmenting path p in G_f:   // find by DFS or BFS
+    for (u,v) in p:
+      if (u,v) ∈ E:  f(u,v) += c_f(p)
+      else:          f(v,u) -= c_f(p)
+```
+
+- **Integer capacities:** terminates in $O(|f^*|)$ iterations, each finding an augmenting path in $O(E)$ → total $O(E|f^*|)$.
+- **Irrational capacities:** may loop forever (augmenting paths can converge to a non-maximum flow).
+
+**Edmonds-Karp:** use **BFS** (not DFS) to find augmenting path → always uses **shortest** path. Provably $O(VE^2)$, independent of capacities.
+
+---
+
+## 10 · Max-flow min-cut theorem
+
+**Cut** $(S,T)$: partition of $V$ with $s\in S$, $t\in T$. Capacity $c(S,T)=\sum_{u\in S,\,v\in T} c(u,v)$.
+
+**Theorem (equivalent conditions):**
+1. $f$ is a **maximum flow** in $G$.
+2. The residual network $G_f$ contains **no augmenting path** $s\to t$.
+3. $|f| = c(S,T)$ for some cut $(S,T)$ — equivalently, $f$ achieves the **minimum-cut capacity**.
+
+**Key inequality:** $|f| \le c(S,T)$ for any flow $f$ and any cut $(S,T)$.
+
+**Proof sketches:**
+- (1)→(2): if $G_f$ had a path, augmenting would increase $|f|$, contradicting maximality.
+- (3)→(1): $|f|\le c(S,T)$; if equality holds, $f$ must be maximum.
+- (2)→(3): let $S = \{v\in V \mid \exists \text{ path } s\to v \text{ in } G_f\}$. For $u\in S$, $v\in T$ with $(u,v)\in E$: residual capacity zero means $f(u,v)=c(u,v)$. For $(v,u)\in E$: $f(v,u)=0$. Therefore $|f|=f(S,T)=c(S,T)$.
+
+---
+
+## 11 · Bipartite matching
+
+**Bipartite graph** $G=(V_1\cup V_2,\,E)$ with $E\subseteq V_1\times V_2$. A **matching** $M\subseteq E$ has at most one edge incident at each vertex. **Maximum matching** = largest $|M|$.
+
+**Reduction to max-flow:** direct edges $V_1\to V_2$; add $s\to V_1$ and $V_2\to t$, all unit capacities. Integer max-flow = max matching. $O(VE)$.
+
+**Augmenting-path theorem:** $M$ is maximum $\iff$ no augmenting path exists w.r.t.\ $M$.
+Proof: if $M'$ is maximum with $|M'|>|M|$, the symmetric difference $M\oplus M'$ consists of paths and even cycles. An excess of $M'$-edges requires at least one odd-length chain with more $M'$-edges — this chain is an augmenting path.
+
+**Hopcroft-Karp** — $O(E\sqrt{V})$:
+- Each phase finds all **vertex-disjoint shortest** augmenting paths simultaneously (BFS for layered graph, DFS for paths).
+- After $\sqrt{V}$ phases, at most $\sqrt{V}$ augmenting paths remain → final cost $O(E\sqrt{V})$.
+
+---
+
+## 12 · Minimum spanning trees
+
+**Input:** connected, undirected, weighted $G=(V,E)$. **Output:** $T\subseteq E$ connecting all vertices, acyclic, minimising $\sum_{e\in T}w(e)$.
+
+### Safe edge theorem
+
+Let $A\subseteq E$ be in some MST. Let $(S,V\setminus S)$ be a cut that **respects** $A$ (no edge of $A$ crosses it). Any **light edge** (minimum-weight edge crossing the cut) is **safe** for $A$.
+
+**Proof:** if light edge $(u,v)\notin T$, adding it creates a cycle containing another crossing edge $(x,y)$ ($x,y\notin A$). Since $(u,v)$ is lightest: $w(u,v)\le w(x,y)$. Replace $(x,y)$ with $(u,v)$: still spanning tree, weight $\le w(T)$ → still MST.
+
+### Kruskal's algorithm
+
+```
+MST-Kruskal(G, w):
+  A = ∅
+  for each v:  Make-Set(v)
+  sort E by weight
+  for (u,v) in sorted E:
+    if Find(u) ≠ Find(v):  A = A ∪ {(u,v)};  Union(u,v)
+  return A
+```
+
+$O(E\log E) = O(E\log V)$ (sorting dominates; union-find $O((V+E)\alpha(V))$).
+Correctness: each added edge is a light edge crossing a cut that separates two components — safe by the corollary of the safe edge theorem.
+
+### Prim's algorithm
+
+```
+MST-Prim(G, w, r):
+  for v in G.V:  v.key = ∞;  v.π = NIL
+  r.key = 0;  Q = PriorityQueue(G.V, key = key)
+  while Q not empty:
+    u = PQ-Extract-Min(Q)
+    for (u,v) in adj[u]:
+      if v ∈ Q and w(u,v) < v.key:
+        v.key = w(u,v);  v.π = u   // PQ-Decrease-Key
+```
+
+Grows a single tree; `v.key` = weight of cheapest edge from $v$ to current tree.
+- Binary heap: $O(E\log V)$.
+- **Fibonacci heap: $O(E + V\log V)$** — $O(1)$ amortised decrease-key.
+
+**Prim vs Kruskal:** Prim tends to be better for dense graphs ($O(E + V\log V)$ vs $O(E\log V)$ when $E\gg V$); Kruskal simpler and naturally handles disconnected graphs (spanning forest).
+
+---
+
+## 13 · Amortised analysis
+
+Gives per-operation cost estimates when costs vary. Useful when expensive operations are rare.
+
+### Aggregate method
+Total cost of $n$ operations divided by $n$.
+**Dynamic array doubling:** $N$ inserts cost $N + (1+2+4+\cdots) \in O(N)$ → $O(1)$ amortised per insert.
+
+### Accounting method
+Charge each operation an **amortised cost** $\hat{c}_i \ge 0$. Excess over actual cost = **credit** stored on objects. Credit must never go negative. If $\sum \hat{c}_i \ge \sum c_i$ for any sequence, the amortised bound is valid.
+**Dynamic array:** charge 3 per insert — 1 for insert, 2 stored as credit. When array doubles (cost $2n$), each of the $n$ elements has 2 credits of credit → pays for itself.
+
+### Potential method
+Define $\Phi(D) \ge 0$ with $\Phi(D_0) = 0$. Amortised cost:
+$$\hat{c}_i = c_i + \underbrace{\Phi(D_i) - \Phi(D_{i-1})}_{\Delta\Phi}$$
+Valid because $\sum \hat{c}_i = \sum c_i + \Phi(D_n) - \Phi(D_0) \ge \sum c_i$.
+
+**Binary counter example:** $\Phi$ = number of 1-bits. The $i$-th increment resets $r_i$ bits (cost $\le r_i+1$); $\Delta\Phi \le 1-r_i$; amortised cost $\le 2 \in O(1)$.
+
+---
+
+## 14 · Binomial heaps
+
+Implement **mergeable priority queue** with $O(\log n)$ union (binary heap needs $\Theta(n)$).
+
+**Binomial tree $B_k$:** $B_0$ = single node; $B_k$ = two $B_{k-1}$ trees — root of one becomes leftmost child of other.
+
+```
+B₀: •    B₁: •     B₂:  •        B₃:   •
+         |              |  \            |  \  \
+         •              •   •           •   •   •
+                        |               |       |
+                        •               •       •
+                                                 |
+                                                 •
+```
+
+Properties of $B_k$: $2^k$ nodes; height $k$; $\binom{k}{i}$ nodes at depth $i$; root has degree $k$.
+
+**Binomial heap $H$:** forest of binomial trees, at most one $B_k$ per degree (like binary digits of $n$). An $n$-node heap has $\le \lfloor\log n\rfloor + 1$ trees.
+
+**`Destructive-Union`:** merge two root lists (sorted by degree) like binary addition — when two trees of same degree exist, merge them ($O(1)$: make smaller-key root the parent). $O(\log n)$.
+
+| Operation | Cost |
 |---|---|
-| Kruskal (sort + union-find) | $O(E \log E)$ |
-| Prim (binary heap) | $O((V+E)\log V)$ |
-| Prim (Fibonacci heap) | $O(E + V\log V)$ |
+| `Create`, `Count` | $O(1)$ |
+| `Peek-Min` | $O(\log n)$ (scan root list) |
+| `Insert` | $O(\log n)$ |
+| `Extract-Min` | $O(\log n)$ |
+| `Decrease-Key` | $O(\log n)$ |
+| **`Destructive-Union`** | **$O(\log n)$** |
 
-**Cut property:** lightest edge crossing any cut is in *some* MST.
-**Cycle property:** heaviest edge in any cycle is in *no* MST.
+---
 
-**Union-Find** with union-by-rank + path compression: $O(\alpha(n))$ amortised per op (≈ $O(1)$).
+## 15 · Fibonacci heaps
 
-## Advanced data structures
+**Lazy** structure: defer expensive work to `Extract-Min`. Achieves $O(1)$ amortised for insert and decrease-key.
 
-- **Binary heap:** array; node $i$ children $2i, 2i+1$. Insert $O(\log n)$, extract-min $O(\log n)$, build-heap $O(n)$ via siftdown from $n/2$ down to root.
-- **Binomial heap:** forest of binomial trees $B_k$; merge $O(\log n)$, decrease-key $O(\log n)$, extract-min $O(\log n)$.
-- **Fibonacci heap:** lazy. Insert + decrease-key $O(1)$ amortised; extract-min $O(\log n)$ amortised. Used inside Dijkstra/Prim for theoretical speedup.
-- **Disjoint-set forest (union-find):** path compression + union-by-rank → $O(\alpha(n))$.
-- **AVL / red-black tree:** balanced BST, $O(\log n)$ ops.
-- **B-tree / B+ tree:** disk-friendly, branching factor $t$; height $O(\log_t n)$.
+| Operation | Amortised cost |
+|---|---|
+| `Create`, `Peek-Min`, `Count` | $O(1)$ |
+| **`Insert`** | **$O(1)$** |
+| **`Decrease-Key`** | **$O(1)$** |
+| **`Destructive-Union`** | **$O(1)$** |
+| `Extract-Min` | $O(\log n)$ |
+| `Delete` (= Decrease-Key $-\infty$ + Extract-Min) | $O(\log n)$ |
 
-### Amortised analysis
+**Structure:** doubly-linked cyclic root list of min-heap-ordered trees (sizes unrestricted). Each node carries a `marked` flag: has this node lost a child since becoming someone's child?
 
-- **Aggregate:** total over $n$ ops divided by $n$. Dynamic array doubling: $O(1)$ amortised insert.
-- **Accounting:** assign credit per op; banked credit pays for expensive ops.
-- **Potential method:** $\hat c_i = c_i + \Phi_i - \Phi_{i-1}$; pick $\Phi$ so amortised cost is small.
+**Insert:** create single-node tree, splice into root list, update min pointer. $O(1)$ — just list splicing.
 
-## Geometric algorithms
+**Decrease-Key:** set new key. If new key < parent: cut node into root list. If parent was `marked`: cut parent into root list too (cascade-cut upwards until an unmarked ancestor or root). Mark the last ancestor cut. $O(1)$ amortised.
 
-- **Convex hull (Graham scan):** sort by angle from anchor; reject points that cause non-left turns. $O(n \log n)$.
-- **Convex hull (Jarvis march / gift wrap):** $O(nh)$ where $h$ = hull vertices.
-- **Cross product test:** for points $p_1, p_2, p_3$, $(p_2 - p_1) \times (p_3 - p_1) > 0$ ⇒ left turn.
-- **Line-segment intersection:** counterclockwise tests; sweep line $O((n+k)\log n)$.
-- **Closest pair of points:** divide-and-conquer $\Theta(n \log n)$; combine step looks at strip of width $2\delta$ around split.
+**Extract-Min:** (1) drop all children of old min into root list; (2) remove old min; (3) scan for new min; (4) **consolidate** — merge trees of equal degree until at most one of each (using a degree-indexed array). After consolidation, root list has $O(\log n)$ trees.
+
+### Potential function & amortised analysis
+
+$\Phi = r + 2m$ where $r$ = root list size, $m$ = marked nodes.
+
+| Operation | Actual cost | $\Delta\Phi$ | Amortised |
+|---|---|---|---|
+| Insert | $O(1)$ | $+1$ | $O(1)$ |
+| Decrease-Key ($a$ cascades) | $O(a)$ | $1-a$ (net) | $O(1)$ |
+| Extract-Min | $O(r + D(n))$ | $D(n)+1-r$ | $O(D(n))$ |
+
+**Max degree $D(n) = O(\log n)$:** if node $x$ has degree $k$, then $\text{size}(x) \ge F_{k+2} \ge \phi^k$ (Fibonacci numbers; $\phi=(1+\sqrt5)/2 \approx 1.618$). Hence $k \le \log_\phi n$.
+
+**Used in Dijkstra:** $V$ `Extract-Min` + $E$ `Decrease-Key` → $O(V\log V + E)$.
+
+---
+
+## 16 · Disjoint sets (Union-Find)
+
+Maintains a partition of $n$ elements under **`Union(a,b)`** (merge sets) and **`In-Same-Set(a,b)`** (same set?). Used in Kruskal's algorithm.
+
+**Forest implementation with path compression + union by rank:**
+
+```
+Find(k):                        // returns root; compresses path
+  if node[k].parent ≠ NIL:
+    node[k].parent = Find(node[k].parent)
+  return node[k].parent ?? k
+
+Union(a, b):
+  ra = Find(a);  rb = Find(b)
+  if ra == rb: return               // already same set
+  if ra.rank > rb.rank:  rb.parent = ra
+  elif rb.rank > ra.rank: ra.parent = rb
+  else:  ra.parent = rb;  rb.rank++
+
+In-Same-Set(a, b): return Find(a) == Find(b)
+```
+
+**Amortised cost:** $O(\alpha(n))$ per operation — $\alpha$ is the inverse Ackermann function, which is $\le 4$ for any $n$ that fits in the observable universe. Effectively $O(1)$.
+
+**Path compression alone:** $O(\log n)$ per operation. **Union by rank alone:** $O(\log n)$. **Both together:** $O(\alpha(n))$.
+
+**In Kruskal:** `Create` once → $O(V)$; `In-Same-Set` $|E|$ times + `Union` $|V|-1$ times → $O((V+E)\alpha(V)) \approx O(V+E)$. Sorting dominates at $O(E\log V)$.
+
+---
+
+## 17 · Geometric primitives *(non-examinable)*
+
+### Cross product & direction tests
+
+For 2D vectors $\vec{a}=(a_x,a_y)$, $\vec{b}=(b_x,b_y)$:
+
+$$\vec{a}\times\vec{b} = a_x b_y - a_y b_x = |\vec{a}||\vec{b}|\sin\theta$$
+
+**Direction test** for three points $p_1, p_2, p_3$: compute $d = (p_2-p_1)\times(p_3-p_1)$:
+- $d > 0$ → **left turn** (counterclockwise).
+- $d = 0$ → **collinear**.
+- $d < 0$ → **right turn** (clockwise).
+
+Avoids slow trig; only uses addition and multiplication — numerically stable.
+
+### Segment intersection
+
+Segments $p_1p_2$ and $p_3p_4$ **intersect** iff:
+1. Each segment **straddles** the line through the other (endpoints are on opposite sides), **or**
+2. An endpoint of one lies **on** the other segment (collinear / touching).
+
+Straddling test: $p_1,p_2$ straddle line $p_3p_4$ iff $(p_3\to p_4)\times(p_3\to p_1)$ and $(p_3\to p_4)\times(p_3\to p_2)$ have opposite signs.
+
+**Point-in-polygon (ray casting):** cast horizontal ray from $P$; count edge crossings. Odd = inside; even = outside. Handle vertices on the ray by checking whether their two neighbours are on the same side (not a crossing) or opposite sides (crossing).
+
+### Convex hull
+
+**Graham's scan — $O(n\log n)$:**
+1. Anchor = bottommost (then leftmost) point.
+2. Sort remaining $n-1$ points by polar angle from anchor; break ties by keeping furthest. $O(n\log n)$.
+3. Push first 3 points onto stack. For each point $p$ in order: while the sequence next-to-top → top → $p$ is **not a left turn**, pop the top. Push $p$.
+4. Stack = convex hull.
+
+Each point pushed and popped at most once → walk step is $O(n)$. Sorting dominates.
+
+**Jarvis' march (gift wrapping) — $O(nh)$:**
+- Start at bottommost point; repeatedly find the point with smallest polar angle relative to the last edge.
+- $h$ = number of hull points; $O(n)$ per hull point → $O(nh)$ total.
+- Better than Graham when $h \ll n$.
+
+Use cross product for angle comparisons in both algorithms — sorts by $\sin\theta$ which is monotone for $\theta\in[-\pi/2,\pi/2]$.
+
+---
 
 ## Common pitfalls
 
-- Dijkstra **fails** on negative edges, even without negative cycles — counter-example matters.
-- Topological sort is **only** defined on DAGs.
-- $|E| \le V(V-1)/2$ for simple undirected; in dense graphs adjacency matrix can beat list.
-- For MST, edge weights need only be **distinct** to make MST unique; equal weights ⇒ multiple MSTs.
-- Convex-hull cross products: be careful with collinear points — typically include them on the hull boundary or not, per problem.
+- **Dijkstra fails with negative edges** even without a negative cycle. A simple 3-node counter-example suffices.
+- **Topological sort requires a DAG.** Any back edge means a cycle exists.
+- **Bellman-Ford always runs $V-1$ passes** regardless of convergence; early termination needs extra tracking. The $V$-th pass checks for negative cycles — don't skip it.
+- **Optimal substructure of shortest paths:** subpaths are shortest paths. Don't assume this without proof in exams — the proof is short (swap argument).
+- **Ford-Fulkerson terminates only with integer (or rational) capacities.** With irrational capacities, augmentations may not converge.
+- **Max-flow = min-cut capacity**, not the number of paths.
+- **Kruskal returns spanning forest** if graph is disconnected — check connectivity separately.
+- **Prim's $O(E + V\log V)$ requires a Fibonacci heap.** With a binary heap, it's $O(E\log V)$.
+- **Fibonacci heap $O(1)$ Decrease-Key is amortised**, not worst-case. A single operation can cascade $O(\log n)$ cuts.
+- **Path compression alone** gives $O(\log n)$, not $O(\alpha(n))$ — you need both path compression **and** union by rank.
+- **BFS with adjacency matrix** costs $O(V^2)$, not $O(V+E)$ — the inner loop must scan all $V$ vertices.
+- **Reweighting (Johnson's):** you cannot simply add a constant to all edges — paths of different lengths are penalised unequally. The vertex-height function $h$ is essential.
+
+---
 
 ## Exam strategy
 
-- Always state the **graph model** (directed? weighted? non-negative?) before invoking an algorithm.
-- For complexity, identify whether the bound is in terms of $V, E$, or both — and what data structure is assumed.
-- Quote the **invariant or correctness argument** (e.g. cut property for MST, finalised-distance for Dijkstra).
+- **State the graph model first:** directed/undirected? Weighted? Non-negative? DAG? Connected? Every algorithm has preconditions.
+- **Name the theorem/property:** "by the safe edge theorem, $(u,v)$ is safe for $A$"; "by max-flow min-cut, $|f^*| = c(S,T)$"; "by optimal substructure of shortest paths…".
+- **Correctness argument for Dijkstra:** invariant $\phi$ (finalized vertices have correct distances) + non-negative weights ensure the extracted-min vertex cannot later be improved.
+- **Specify the priority queue:** "$O((V+E)\log V)$ with a binary heap" or "$O(V\log V + E)$ with a Fibonacci heap". The bound is meaningless without it.
+- **Amortised vs worst-case:** always say "amortised" when the bound is amortised (Fibonacci heap insert, decrease-key; union-find). Examiners will penalise "worst case $O(1)$".
+- **Reweighting in Johnson's:** show $\hat{w}(p) = w(p) + h(u) - h(v)$ (telescoping) and $\hat{w}\ge 0$ (triangle inequality). These two facts are the whole correctness argument.
+- **For flow problems:** draw or describe the residual network; identify the augmenting paths; state the max-flow min-cut.
