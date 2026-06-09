@@ -2,81 +2,543 @@
 module: algorithms-1
 title: "Algorithms 1 — Cheat Sheet"
 paper: paper-1
-updated: "2026-05-10"
+updated: "2026-06-09"
 ---
 
-## Asymptotic notation
+## 1 · Asymptotic notation
 
-| Symbol | Meaning |
-|---|---|
-| $f = O(g)$ | $\exists c, n_0: f(n) \le c \cdot g(n)\ \forall n \ge n_0$ — upper bound |
-| $f = \Omega(g)$ | $\exists c, n_0: f(n) \ge c \cdot g(n)$ — lower bound |
-| $f = \Theta(g)$ | both — tight bound |
-| $f = o(g)$ | $\lim f/g = 0$ — strict upper |
+| Notation | Meaning | Formal definition |
+|---|---|---|
+| $f = \Theta(g)$ | tight bound | $\exists\, c_1,c_2,n_0>0:\; c_1 g(n) \le f(n) \le c_2 g(n) \;\forall n \ge n_0$ |
+| $f = O(g)$ | upper bound | $\exists\, c,n_0>0:\; f(n) \le c\,g(n) \;\forall n \ge n_0$ |
+| $f = \Omega(g)$ | lower bound | $\exists\, c,n_0>0:\; c\,g(n) \le f(n) \;\forall n \ge n_0$ |
+| $f = o(g)$ | strict upper | $\lim_{n\to\infty} f(n)/g(n) = 0$ |
+| $f = \omega(g)$ | strict lower | $\lim_{n\to\infty} f(n)/g(n) = \infty$ |
 
-## Sorting (key complexities, in-place?, stable?)
+- $f = \Theta(g) \iff f = O(g) \land f = \Omega(g)$.
+- $\Theta$ is symmetric; $O, \Omega, \Theta$ are reflexive; all five are transitive.
+- **Growth hierarchy:** $1 \prec \log n \prec \sqrt{n} \prec n \prec n\log n \prec n^2 \prec n^3 \prec 2^n \prec n!$
 
-| Algorithm | Best | Avg | Worst | Space | Stable |
-|---|---|---|---|---|---|
-| Insertion sort | $\Theta(n)$ | $\Theta(n^2)$ | $\Theta(n^2)$ | $O(1)$ | yes |
-| Selection sort | $\Theta(n^2)$ | $\Theta(n^2)$ | $\Theta(n^2)$ | $O(1)$ | no |
-| Bubble sort | $\Theta(n)$ | $\Theta(n^2)$ | $\Theta(n^2)$ | $O(1)$ | yes |
-| Mergesort | $\Theta(n\log n)$ | $\Theta(n\log n)$ | $\Theta(n\log n)$ | $O(n)$ | yes |
-| Quicksort | $\Theta(n\log n)$ | $\Theta(n\log n)$ | $\Theta(n^2)$ | $O(\log n)$ | no |
-| Heapsort | $\Theta(n\log n)$ | $\Theta(n\log n)$ | $\Theta(n\log n)$ | $O(1)$ | no |
-| Counting sort | $\Theta(n+k)$ | $\Theta(n+k)$ | $\Theta(n+k)$ | $O(n+k)$ | yes |
-| Radix sort | $\Theta(d(n+k))$ | — | — | $O(n+k)$ | yes |
+---
 
-**Lower bound for comparison sort:** $\Omega(n \log n)$ — proof via decision tree with $n!$ leaves and depth $\ge \log_2(n!) = \Theta(n\log n)$.
+## 2 · Solving recurrences
 
-## Loop-invariant proof template (insertion sort exemplar)
+### Master Theorem
 
-1. **Initialisation** — invariant holds before first iteration.
-2. **Maintenance** — if it holds before an iteration, it holds after.
-3. **Termination** — when the loop ends, the invariant gives the postcondition.
+For $T(n) = aT(n/b) + f(n)$, $a \ge 1$, $b > 1$; compare $f(n)$ to $n^{\log_b a}$:
 
-For insertion sort: "After iteration $j$, $A[1..j]$ is a sorted permutation of original $A[1..j]$."
+| Case | Condition | Solution | Intuition |
+|---|---|---|---|
+| 1 | $f(n) = O(n^{\log_b a - \varepsilon})$ for $\varepsilon>0$ | $\Theta(n^{\log_b a})$ | Leaves dominate |
+| 2 | $f(n) = \Theta(n^{\log_b a})$ | $\Theta(n^{\log_b a} \log n)$ | Tied; multiply by $\log n$ |
+| 3 | $f(n) = \Omega(n^{\log_b a + \varepsilon})$ + regularity | $\Theta(f(n))$ | Root dominates |
 
-## Strategies for algorithm design
+**Regularity condition (case 3):** $af(n/b) \le cf(n)$ for some $c < 1$ and all large $n$.
 
-- **Divide and conquer** — split, solve recursively, combine. Master Theorem: $T(n) = aT(n/b) + f(n)$, three cases on comparison of $f(n)$ to $n^{\log_b a}$.
-- **Dynamic programming** — overlapping subproblems + optimal substructure; memoise or tabulate.
-- **Greedy** — locally optimal choice; needs *exchange argument* or *matroid* proof of optimality.
-- **Backtracking / branch-and-bound** — DFS over solution tree with pruning.
-- **Amortised analysis** — aggregate, accounting, potential-function methods.
+**Gaps exist** between cases 1/2 and 2/3 (polynomial gap required) — the MT **cannot** solve $T(n) = 2T(n/2) + n\log n$ (falls in case 2/3 gap).
 
-### Master theorem (regularity condition omitted)
+**Worked examples:**
 
-For $T(n) = a T(n/b) + f(n)$ with $a \ge 1, b > 1$:
-- if $f(n) = O(n^{\log_b a - \varepsilon})$: $T(n) = \Theta(n^{\log_b a})$
-- if $f(n) = \Theta(n^{\log_b a})$: $T(n) = \Theta(n^{\log_b a} \log n)$
-- if $f(n) = \Omega(n^{\log_b a + \varepsilon})$: $T(n) = \Theta(f(n))$
-
-## Data structures
-
-| Structure | Insert | Find | Delete | Notes |
+| Recurrence | $a,b$ | $n^{\log_b a}$ | Case | Result |
 |---|---|---|---|---|
-| Sorted array | $O(n)$ | $O(\log n)$ | $O(n)$ | binary search |
-| Linked list | $O(1)$ head | $O(n)$ | $O(1)$ given ptr | |
-| Stack / queue | $O(1)$ | — | $O(1)$ | LIFO / FIFO |
-| BST (balanced) | $O(\log n)$ | $O(\log n)$ | $O(\log n)$ | AVL, red-black |
-| Hash table | $O(1)$* | $O(1)$* | $O(1)$* | * amortised, good hash |
-| Binary heap | $O(\log n)$ | $O(1)$ min | $O(\log n)$ | array-backed |
+| $2T(n/2)+\Theta(n)$ | 2,2 | $n$ | 2 | $\Theta(n\log n)$ |
+| $9T(n/3)+n$ | 9,3 | $n^2$ | 1 | $\Theta(n^2)$ |
+| $3T(n/4)+n\log n$ | 3,4 | $n^{0.79}$ | 3 | $\Theta(n\log n)$ |
+| $2T(n/2)+n\log n$ | 2,2 | $n$ | — | **Gap — cannot apply MT** |
 
-**BST property:** for every node, left-subtree keys < node key < right-subtree keys. In-order traversal yields sorted order.
+### Substitution method (guess & verify)
 
-**Hashing:** open addressing (linear / quadratic / double); chaining; load factor $\alpha = n/m$.
+Guess $T(n) \le cn$, substitute into the recurrence, solve for the constraint on $c$.
+
+**Median-of-medians example:** recurrence is $T(n) \le T(\lceil n/5 \rceil) + T(7n/10 + 6) + kn$. Substituting $T(n) \le cn$:
+
+$$T(n) \le \tfrac{cn}{5} + c + \tfrac{7cn}{10} + 6c + kn = cn - \tfrac{cn}{10} + 7c + kn$$
+
+This is $\le cn$ when $\tfrac{cn}{10} \ge 7c + kn$, i.e. $c \ge 20k$ (for $n \ge 140$). So $T(n) = \Theta(n)$.
+
+---
+
+## 3 · Sorting at a glance
+
+| Algorithm | Best | Avg | Worst | Space | Stable | Strategy |
+|---|---|---|---|---|---|---|
+| Insertion sort | $\Theta(n)$ | $\Theta(n^2)$ | $\Theta(n^2)$ | $O(1)$ | yes | Incremental |
+| Merge sort | $\Theta(n\log n)$ | $\Theta(n\log n)$ | $\Theta(n\log n)$ | $O(n)$ | yes | Divide & conquer |
+| Quicksort | $\Theta(n\log n)$ | $\Theta(n\log n)$ | $\Theta(n^2)$ | $O(\log n)$ | no | Divide & conquer |
+| Heapsort | $\Theta(n\log n)$ | $\Theta(n\log n)$ | $\Theta(n\log n)$ | $O(1)$ | no | Semi-structure |
+| Counting sort | $\Theta(n+k)$ | $\Theta(n+k)$ | $\Theta(n+k)$ | $O(n+k)$ | yes | Non-comparison |
+| Radix sort | — | $\Theta(d(n+k))$ | — | $O(n+k)$ | yes | Non-comparison |
+| Bucket sort | — | $\Theta(n)$ | $\Theta(n^2)$ | $O(n)$ | yes | Non-comparison |
+
+**Comparison-sort lower bound: $\Omega(n\log n)$.**
+Decision tree: every leaf is one output permutation → $n!$ leaves → height $\ge \log_2(n!) = \Theta(n\log n)$.
+
+**Counting/Radix/Bucket sort bypass this lower bound** — they don't use comparisons.
+
+---
+
+## 4 · Loop invariants
+
+To prove loop correctness, state a **property $P$** and show three things:
+
+1. **Initialisation** — $P$ holds before the first iteration.
+2. **Maintenance** — if $P$ holds before an iteration, it holds after.
+3. **Termination** — loop termination condition + $P$ implies the postcondition.
+
+**Insertion-sort invariant:** at the start of each outer-loop iteration $j$, `A[1..j-1]` contains the original elements at positions $1\ldots j-1$ in sorted order.
+- *Init:* $j=2$, `A[1]` is a one-element sorted subarray. ✓
+- *Maintenance:* inner while shifts elements right until the correct slot for `Key = A[j]` is found, then inserts it. ✓
+- *Termination:* $j = n+1$ → `A[1..n]` sorted. ✓
+
+**Partial vs total correctness:** partial = "if it terminates, the answer is correct"; total = partial + always terminates. For insertion sort, both loops have well-founded decreasing quantities ($n-j$ and $i$), so total correctness holds.
+
+---
+
+## 5 · Insertion sort
+
+```
+Insertion-Sort(A):
+  for j = 2 to A.length
+    Key = A[j]
+    i = j - 1
+    while i > 0 and A[i] > Key
+      A[i+1] = A[i]
+      i = i - 1
+    A[i+1] = Key
+```
+
+- **Best case** (sorted input): inner while never runs, $t_j = 1$ each time → $\Theta(n)$.
+- **Worst case** (reverse sorted): inner while runs $j-1$ times → $\sum_{j=2}^n(j-1) = \tfrac{n(n-1)}{2} = \Theta(n^2)$.
+- In-place, stable, good for nearly-sorted data or small arrays.
+
+---
+
+## 6 · Merge sort
+
+```
+Merge-Sort(A, p, r):
+  if p < r
+    q = floor((p + r) / 2)
+    Merge-Sort(A, p, q)
+    Merge-Sort(A, q+1, r)
+    Merge(A, p, q, r)
+
+Merge(A, p, q, r):
+  Copy A[p..q] → L,  A[q+1..r] → R   (append sentinel ∞)
+  i = j = 1
+  for k = p to r
+    if L[i] <= R[j]:  A[k] = L[i++]
+    else:             A[k] = R[j++]
+```
+
+Recurrence: $T(n) = 2T(n/2) + \Theta(n)$. Master Theorem case 2: $T(n) = \Theta(n\log n)$.
+
+**Tree method:** each level does $\Theta(n)$ merge work; tree has $\log_2 n + 1$ levels → $\Theta(n\log n)$.
+
+- Always $\Theta(n\log n)$ — no worst case.
+- Requires $O(n)$ extra space for temporary arrays.
+- Stable (ties broken left-first in `Merge`).
+
+---
+
+## 7 · Quicksort & Partition
+
+```
+Quicksort(A, p, r):
+  if p < r
+    q = Partition(A, p, r)
+    Quicksort(A, p, q-1)
+    Quicksort(A, q+1, r)
+
+Partition(A, p, r):         // pivot = A[r]
+  x = A[r];  i = p - 1
+  for j = p to r-1
+    if A[j] <= x
+      i = i + 1
+      swap(A[i], A[j])
+  swap(A[i+1], A[r])
+  return i + 1
+```
+
+**Partition trace** (subarray `[8,2,1,5,2,4]`, pivot = 4):
+```
+Start:   [8  2  1  5  2 | 4]   i=0
+j=1: 8>4  → skip              [8  2  1  5  2 | 4]   i=0
+j=2: 2≤4  → i=1, swap(1,2):   [2  8  1  5  2 | 4]   i=1
+j=3: 1≤4  → i=2, swap(2,3):   [2  1  8  5  2 | 4]   i=2
+j=4: 5>4  → skip              [2  1  8  5  2 | 4]   i=2
+j=5: 2≤4  → i=3, swap(3,5):   [2  1  2  5  8 | 4]   i=3
+End: swap pivot (4,5):         [2  1  2  4  8   5]   return 4
+```
+
+**Loop invariant for Partition:** at start of each iteration $j$: (1) $A[p..i] \le x$; (2) $A[i+1..j-1] > x$; (3) $A[r] = x$.
+
+**Performance:**
+- **Best / average** — roughly equal split: $T(n) = 2T(n/2) + \Theta(n) = \Theta(n\log n)$.
+- **Any constant ratio** (e.g. 25/75) — still $\Theta(n\log n)$; tree has levels between $\log_4 n$ and $\log_{4/3} n$, both $\Theta(\log n)$.
+- **Worst case** — sorted input, pivot always min/max, one side empty: $T(n) = T(n-1) + \Theta(n) = \Theta(n^2)$.
+- **Constant split** — splitting off fixed $x$ items every level: arithmetic progression, still $\Theta(n^2)$.
+
+**Pivot improvements (best to worst effort):**
+
+| Technique | Worst case | Notes |
+|---|---|---|
+| Last element (default) | $\Theta(n^2)$ | Terrible on sorted input |
+| Random pivot | $\Theta(n^2)$ expected very unlikely | Makes adversarial input hard |
+| Median-of-three | $\Theta(n^2)$ unlikely | Prob. of worst case $\approx 2/n^2$ |
+| **Median-of-medians** | $\Theta(n\log n)$ guaranteed | $\Theta(n)$ pivot selection — constant factor overhead |
+
+---
+
+## 8 · QuickSelect
+
+Find the $i$-th smallest element in $O(n)$ expected, $O(n)$ worst-case with median-of-medians.
+
+```
+QuickSelect(A, p, r, i):
+  if p == r: return A[p]
+  q = Partition(A, p, r)
+  k = q - p + 1            // pivot is k-th smallest in A[p..r]
+  if i == k:   return A[q]
+  elif i < k:  return QuickSelect(A, p, q-1, i)
+  else:        return QuickSelect(A, q+1, r, i-k)
+```
+
+- Without improvement: same $\Theta(n^2)$ worst case as Quicksort.
+- With **median-of-medians**: $T(n) \le T(\lceil n/5\rceil) + T(7n/10 + 6) + \Theta(n) = \Theta(n)$.
+
+---
+
+## 9 · Heapsort
+
+### Binary heap: array as nearly-complete binary tree
+
+```
+Index:   1   2   3   4   5   6   7
+Array: [16, 14, 10,  8,  7,  9,  3]
+
+Tree:        16            Node i:  left child  = 2i
+           /    \                   right child = 2i+1
+         14      10                 parent      = floor(i/2)
+        /  \    /  \
+       8    7  9    3
+```
+
+- **Structural property:** nearly-complete binary tree (last level filled left-to-right).
+- **Max-heap ordering:** every node ≥ its children; root = maximum.
+
+```
+Max-Reheapify(A, i):                 // fix node i given subtrees are valid heaps
+  l=2i; r=2i+1
+  largest = (l ≤ heap_size ∧ A[l] > A[i]) ? l : i
+  if r ≤ heap_size ∧ A[r] > A[largest]: largest = r
+  if largest ≠ i
+    swap(A[i], A[largest])
+    Max-Reheapify(A, largest)        // O(log n)
+
+Max-Full-Heapify(A):                 // build heap from arbitrary array in O(n)
+  heap_size = A.length
+  for i = floor(A.length/2) downto 1
+    Max-Reheapify(A, i)
+
+HeapSort(A):
+  Max-Full-Heapify(A)                // O(n)
+  for i = A.length downto 2
+    swap(A[1], A[i])                 // move current max to sorted suffix
+    heap_size = heap_size - 1
+    Max-Reheapify(A, 1)              // O(log n) × (n-1) times
+```
+
+**Why `Max-Full-Heapify` is $O(n)$, not $O(n\log n)$:** nodes near the bottom do very little work. A node at height $h$ does $O(h)$ work; summing over all levels: $\sum_{h=0}^{\lfloor\log n\rfloor} \lceil n/2^{h+1}\rceil\cdot O(h) = O(n)$.
+
+**HeapSort total:** $O(n) + (n-1)\cdot O(\log n) = O(n\log n)$. In-place, not stable.
+
+---
+
+## 10 · Linear-time sorting
+
+### Counting sort — $\Theta(n+k)$, stable
+
+Keys must be integers in $[0\ldots k]$ with $k = O(n)$.
+
+```
+Counting-Sort(A, B, k):
+  C[0..k] = 0
+  for i = 1 to n:    C[A[i]]++            // count each key
+  for j = 1 to k:    C[j] += C[j-1]       // C[j] = # keys ≤ j
+  for i = n downto 1:                      // iterate backwards → stable
+    B[C[A[i]]] = A[i]
+    C[A[i]]--
+```
+
+Stable because the backwards loop preserves original order among equal keys.
+
+### Radix sort — $\Theta(d(n+k))$
+
+Sort $d$-digit numbers, **least significant digit first**, using a **stable** sort each pass.
+
+```
+Radix-Sort(A, d):
+  for i = 1 to d                // i=1 is least significant digit
+    stable-sort A on digit i    // e.g. Counting-Sort with k=9
+```
+
+Key insight: because each pass is stable, earlier-sorted digits are preserved among equal later digits.
+
+### Bucket sort — $\Theta(n)$ expected
+
+Requires input **uniformly distributed** over $[0,1)$.
+
+```
+Bucket-Sort(A):
+  B[0..n-1] = n empty lists
+  for i = 1 to n: insert A[i] into B[floor(n·A[i])]
+  for i = 0 to n-1: Insertion-Sort(B[i])
+  concatenate B[0], B[1], ..., B[n-1]
+```
+
+Expected $O(1)$ elements per bucket → expected $O(1)$ insertion-sort work per bucket → $\Theta(n)$ total.
+
+---
+
+## 11 · Dynamic programming
+
+Use DP when a problem has **both**:
+- **Optimal substructure** — optimal solution uses optimal solutions to subproblems.
+- **Overlapping subproblems** — the same subproblems are solved repeatedly.
+
+**Four steps:**
+1. Characterise the structure of an optimal solution.
+2. Recursively define the value of an optimal solution.
+3. Compute the value (bottom-up or memoised top-down).
+4. Construct the solution from the computed values (if needed).
+
+| | Top-down (memoize) | Bottom-up (tabulate) |
+|---|---|---|
+| Direction | Problem → subproblems → base cases | Base cases → … → problem |
+| Stack space | Yes (recursion) | No |
+| Solves only needed subproblems | Yes | No |
+| Style | Recursive + cache | Iterative |
+
+**VMHP (Virtual Machine Hosting Problem):** given $n$ cores and value table $v[1..n]$, maximise value by partitioning.
+
+$$\text{opt}(n) = \max_{1 \le i \le n}\bigl(v[i] + \text{opt}(n-i)\bigr), \quad \text{opt}(0) = 0$$
+
+- Naïve recursive: $T(n) = 1 + \sum_{i=0}^{n-1} T(i) \implies T(n) = O(2^n)$.
+- With memoization: each of $n$ subproblems solved once, each doing $O(n)$ work → $O(n^2)$.
+- Greedy fails: with $v = [1,6,7,9]$ for $n=4$, greedy picks VM of size 4 (value 9) but optimal is $2+2$ (value 12).
+
+**Other DP problems:** Longest Common Subsequence, Matrix Chain Multiplication, 0/1 Knapsack, Shortest Path (no negative cycles).
+
+---
+
+## 12 · Greedy algorithms
+
+Use greedy when you can prove a **greedy-choice property**: committing to the locally optimal choice still allows a globally optimal solution to be reached.
+
+**Requirements:**
+1. **Greedy-choice property** — local optimum extends to global optimum (proof: exchange argument).
+2. **Optimal substructure** — combining greedy choice with optimal subproblem solution gives global optimum.
+
+**Greedy vs DP:**
+
+| | Greedy | DP |
+|---|---|---|
+| Subproblems | One remains after each choice | Many, evaluated to find optimal |
+| When valid | Greedy-choice property holds | Optimal substructure + overlapping |
+| Speed | Faster | Slower (but more general) |
+| Example | Fractional knapsack, activity selection | 0/1 knapsack, VMHP |
+
+**Activity selection problem:** given activities with start $s_i$ and finish $f_i$, find largest compatible subset.
+- Sort by finish time.
+- **Greedy:** always pick the next unscheduled activity with earliest finish time.
+- **Proof:** suppose an optimal solution $A^*$ does not include the activity with earliest finish $a_1$. Replace the first activity in $A^*$ with $a_1$ — since $a_1$ finishes no later, it is compatible with all remaining activities in $A^*$. The replacement is still optimal, so $a_1$ can always be included.
+
+**Other greedy problems:** MST (Kruskal, Prim), Huffman coding, fractional knapsack, some scheduling problems.
+
+---
+
+## 13 · Data structures at a glance
+
+| Structure | Search | Insert | Delete | Notes |
+|---|---|---|---|---|
+| Unsorted array | $O(n)$ | $O(1)$ amort. | $O(n)$ | Append then compact |
+| Sorted array | $O(\log n)$ | $O(n)$ | $O(n)$ | Binary search; shifting |
+| Singly linked list | $O(n)$ | $O(1)$ head | $O(1)$ with ptr | One direction traversal |
+| Doubly linked list | $O(n)$ | $O(1)$ head | $O(1)$ with ptr | `prev` enables backwards |
+| Stack | — | $O(1)$ push | $O(1)$ pop | LIFO; `top` pointer |
+| Queue | — | $O(1)$ enq | $O(1)$ deq | FIFO; circular array |
+| BST (balanced) | $O(\log n)$ | $O(\log n)$ | $O(\log n)$ | RBT, AVL |
+| BST (unbalanced) | $O(n)$ | $O(n)$ | $O(n)$ | Degenerate case |
+| B-Tree(T) | $O(\log N)$ | $O(\log N)$ | $O(\log N)$ | Disk-friendly |
+| Binary heap | $O(1)$ max/min | $O(\log n)$ | $O(\log n)$ | Peek in $O(1)$ |
+| Hash table | $O(1)$† | $O(1)$† | $O(1)$† | †Expected, good hash |
+
+---
+
+## 14 · Binary search trees
+
+**BST property:** for every node $x$, all keys in left subtree $< x.\text{key}$, all keys in right subtree $> x.\text{key}$. No duplicates.
+
+All operations: $O(h)$ where $h$ is height. Balanced: $h = O(\log n)$; worst case (sorted inserts): $h = O(n)$.
+
+```
+BST-Search(p, k):              // iterative
+  while p ≠ NIL and p.key ≠ k
+    p = (k < p.key) ? p.left : p.right
+  return p                     // NIL if not found
+
+BST-Minimum(p):                // leftmost node
+  while p.left ≠ NIL: p = p.left
+  return p
+
+BST-Predecessor(p):            // largest key < p.key
+  if p.left ≠ NIL: return BST-Maximum(p.left)
+  y = p.parent
+  while y ≠ NIL and p == y.left: p = y; y = y.parent
+  return y                     // NIL if p is minimum
+
+BST-Delete(bst, k):
+  // 0 children: remove node directly.
+  // 1 child:    replace node with its child.
+  // 2 children: replace with predecessor (max of left subtree),
+  //             then delete predecessor (has ≤ 1 child).
+```
+
+In-order traversal (left → node → right) yields **keys in sorted order**.
+
+---
+
+## 15 · B-Trees
+
+Designed to minimise disk I/O by keeping many keys per node. All leaves at same depth. All algorithms start at root (cannot hold pointers to internal nodes — keys move on insert/delete).
+
+**Minimum degree $T \ge 2$ — five properties:**
+1. Every internal node holds $T{-}1$ to $2T{-}1$ keys (root: 1 to $2T{-}1$).
+2. A node with $t$ keys has exactly $t{+}1$ children.
+3. All leaves are at the same depth (keyless).
+4. Keys in a node divide the key ranges of its children.
+5. Root has at least 1 key (unless tree is entirely empty).
+
+**Height:** at least $2(T-1)$ keys at each level below root → $h \le \log_T\!\left(\tfrac{N+1}{2}\right) = O(\log N)$ for $N$ keys.
+
+**Insert:** walk down searching for `k`. Pre-split any **full** node ($2T{-}1$ keys) encountered on the way down. Insert at the leaf level. No backtracking needed; root split is the only way height increases.
+
+**Delete:** walk down ensuring every node encountered has $\ge T$ keys (merge or borrow from sibling if at minimum). Swap key to delete with predecessor (bottom level), then remove from bottom. Root's last key stolen by merging children → update root pointer.
+
+**Special case $T=2$ (2-3-4 tree):** isomorphic to red-black tree.
+
+---
+
+## 16 · Red-black trees
+
+BST with one colour bit per node. Guarantees $h \le 2\log(n+1) = O(\log n)$.
+
+**Five properties:**
+1. Every node is **red** or **black**.
+2. The **root** is black.
+3. All **leaves** (NIL sentinels) are black.
+4. **Red nodes** have both children black (no two consecutive reds on any path).
+5. All simple paths from any node to a descendant leaf contain the same number of **black nodes** (black-height balanced).
+
+**Black-height $bh(x)$:** number of black nodes on any path from $x$ (exclusive) to a leaf.
+
+**Proof that $h \le 2\log(n+1)$:**
+- Any subtree rooted at $x$ with $bh(x) = y$ has $\ge 2^y - 1$ internal nodes (by induction: leaves contribute $2^0-1=0$; each internal node has 2 subtrees each with $\ge 2^{y-1}-1$ nodes plus the node itself).
+- By property 4, at least half the nodes on any root-to-leaf path are black, so $bh(\text{root}) \ge h/2$.
+- Thus $n \ge 2^{h/2} - 1 \implies h \le 2\log(n+1)$.
+
+**Isomorphism with B-Tree(T=2):** merge each red node into its black parent → each black node becomes a 2-3-4 tree node with 1–3 keys.
+
+**Tree rotations** (preserve BST ordering, change structure):
+```
+   Left-Rotate(x)            Right-Rotate(y)
+       x                           y
+      / \      ←→                 / \
+     A   y                       x   C
+        / \                     / \
+       B   C                   A   B
+```
+
+Rotations used in RBT insert/delete to restore the 5 properties after recolouring.
+
+---
+
+## 17 · Priority queues
+
+| Operation | Heap | Red-black tree |
+|---|---|---|
+| Minimum/Maximum | $O(1)$ | $O(\log n)$ |
+| Extract-Min/Max | $O(\log n)$ | $O(\log n)$ |
+| Decrease/Increase-Key | $O(\log n)$ | $O(\log n)$ |
+| Insert | $O(\log n)$ | $O(\log n)$ |
+
+**Heap wins** on peek ($O(1)$); everything else is $O(\log n)$ for both.
+
+**`PQ-Decrease-Key(pq, idx, k)`** (min-heap): update `pq[idx] = k`, then **bubble up** while parent $>$ new key. $O(\log n)$.
+
+**`PQ-Extract-Min`:** copy root to output, move last element to root, shrink heap, call `Min-Reheapify(root)`. $O(\log n)$.
+
+---
+
+## 18 · Hash tables
+
+Implement `Insert`, `Search`, `Delete`. Expected $O(1)$ per operation with a good hash function.
+
+**Load factor** $\alpha = n\,/\,|T|$ (live keys / table size). Expected operation cost $O(1 + \alpha)$.
+
+**Key problems:** range (use $h(k) \bmod |T|$); collisions (pigeonhole principle — unavoidable); clustering; entropy (short/similar keys may hash poorly).
+
+### Chaining
+
+Slots hold linked lists. Four variants:
+
+| Variant | Insert | Search | Delete | Notes |
+|---|---|---|---|---|
+| Append to end | $O(1+\alpha)$ | $O(1+\alpha)$ | $O(1+\alpha)$ | Symmetric cost present/absent |
+| Keep sorted | $O(1+\alpha)$ | $O(1+\alpha)$ | $O(1+\alpha)$ | Early abort on absent keys |
+| Push on head | $O(1)$ | Grows: $O(I+D)$ | $O(1)$ marker | Best for read-only tables |
+| Push on head + delete | $O(1)$ | $O(I)$ | $O(I)$ | Stack-like per-key history |
+
+$I$ = number of inserts, $D$ = number of deletes called so far.
+
+### Open addressing
+
+Keys stored **in** the table. On collision, follow a **probe sequence** to find an empty slot.
+
+| Probe method | Sequence for probe $i$ | Clustering issue |
+|---|---|---|
+| Linear | $(h(k) + i) \bmod m$ | Primary clustering (long runs) |
+| Quadratic | $(h(k) + ai + bi^2) \bmod m$ | Secondary clustering (same-hash keys collide) |
+| Double hashing | $(h_1(k) + i\cdot h_2(k)) \bmod m$ | Neither (best) |
+
+**Deletion:** cannot remove a key — leaves a gap that breaks probe sequences. Insert a **tombstone marker** (treated as full for search, empty for insert).
+
+**Resizing:** track `nk` (live) and `nm` (markers). When `nk + nm > threshold`: grow table if `nk >> nm`; rehash same size if `nk ≈ nm` (to clear markers); shrink if `nk << nm`.
+
+---
 
 ## Common pitfalls
 
-- Quicksort's worst case is $O(n^2)$, not $O(n \log n)$ — random pivot or median-of-three to mitigate.
-- Mergesort needs $\Theta(n)$ extra space — a non-trivial caveat versus quicksort's in-place behaviour.
-- Counting/radix sort sidesteps the comparison lower bound because they're not comparison-based.
-- "Optimal substructure" is necessary but not sufficient for greedy correctness — also need the greedy-choice property.
-- In Master Theorem, $\varepsilon > 0$ is strict — borderline cases (e.g. $f(n) = n^{\log_b a} \log n$) need extended Master Theorem (Akra–Bazzi).
+- $O$ is an **upper bound**, not an equality — "$O(n^2)$" includes $O(n)$ algorithms.
+- Master Theorem has **gaps** — $T(n) = 2T(n/2) + n\log n$ **cannot** be solved by MT (falls between cases 2 and 3).
+- Quicksort worst case is $\Theta(n^2)$ on sorted input — use a pivot improvement in practice.
+- **`Max-Full-Heapify` is $O(n)$**, not $O(n\log n)$ — don't confuse with calling Reheapify $n$ times from scratch.
+- Counting/Radix sort beat the $\Omega(n\log n)$ bound only because they are **not comparison-based**.
+- BST height is $O(n)$ in the worst case (sorted insertion) — always say "balanced BST" or "RBT" to claim $O(\log n)$ ops.
+- Open addressing deletion **without tombstones** breaks probe sequences — future searches falsely return "not found".
+- B-Tree internal nodes can **move keys** during inserts/deletes — never store pointers to them.
+- RBT property 4 forbids two consecutive reds — a red root's parent doesn't exist, so the root is always recoloured black (property 2).
+- Greedy fails on 0/1 knapsack (and VMHP) — a locally optimal first choice may block a better overall solution.
 
-## Exam strategy (Tripos)
+---
 
-- **State complexity bounds with reasons** — never just say "$O(n \log n)$"; give a one-line argument.
-- **Justify correctness** — invariants for iteration, induction for recursion.
-- **Cite the strategy** — "this is divide-and-conquer with $T(n) = 2T(n/2) + O(n)$, giving $\Theta(n \log n)$ by Master Theorem case 2".
+## Exam strategy
+
+- **Cite the case** when applying Master Theorem: "Case 2 applies because $f(n) = \Theta(n^{\log_b a}) = \Theta(n)$."
+- **Loop invariants:** state the property as a precise sentence, then prove all three parts. Don't assume maintenance is obvious.
+- **Complexity arguments:** one line per claim. "Partition sweeps the subarray once → $\Theta(n)$; $\log n$ levels → $\Theta(n\log n)$ total."
+- **Greedy vs DP:** name which strategy, then justify. "Greedy works here: picking the earliest-finishing activity leaves the most room — any other first choice can be swapped out without reducing the count."
+- **Hash tables:** quote **expected** complexity; worst case is $O(n)$ unless stated otherwise.
+- **Height-dependent structures (BST, RBT, B-Tree):** state the height bound explicitly, then derive the operation cost from $O(h)$.
+- When asked to prove $O(\log n)$ for RBT: use the black-height argument — don't just assert it.
