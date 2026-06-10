@@ -78,11 +78,11 @@ Debt accumulates → interest payments consume all developer time → every new 
 
 | Incident | Root cause | Lessons |
 |---|---|---|
-| **Therac-25** (1985–87) | Therac-20's hardware interlocks were removed, entrusting safety entirely to software; race condition in operator-input handling (typing "X" then quickly correcting to "E" armed the high-power beam without the shield); cryptic "Malfunction 54" with no explanation, operators pressed "P" to bypass | **Defence in depth** — never rely on a single software check for safety; **concurrency is dangerous** — shared state must be strictly managed; **UX is safety** — errors must be actionable, not blindly dismissible |
-| **Mars Climate Orbiter** (1999) | Lockheed Martin (Colorado) wrote thruster output in **Imperial** (pound-seconds); JPL (California) navigation expected **metric** (Newton-seconds) — trajectory off by factor 4.45; the Software Interface Specification required metric but wasn't enforced; no end-to-end integration testing between teams | **Type safety** — strongly typed languages catch unit errors at compile time; **integration testing** — component-isolated tests are insufficient, failures cluster at team boundaries; **process over blame** — systemic failure, not one programmer |
-| **London Ambulance CAD** (1992) | Contract awarded to inexperienced firm via underbid on a politically compressed timeline; under-trained, hostile paramedics pressed wrong status buttons → corrupt availability data; memory leak slowed the system; ambulances dispatched repeatedly to the same address while others were ignored; total collapse within 36 hours, reverted to paper | **Phased rollouts** — never "Big Bang" a critical system; **user buy-in** — involve users in design; **load testing** — test extreme/anomalous load, not just the happy path. Software is part of a **socio-technical system** — a perfectly coded system fails if humans don't understand, trust, or accept it |
-| **Post Office Horizon** (1999–) | Fujitsu's Horizon accounting software had bugs that could silently alter financial records; Fujitsu developers knew; Post Office insisted the system was "robust" and "effectively infallible"; over 700 subpostmasters prosecuted for theft/false accounting | **Audit trails** — every automated action in financial/legal systems must be transparent and human-auditable; **engineering integrity** — technical truth must override business convenience; **presumption of guilt** — UK law presumed computer evidence correct unless disproved; engineers must challenge the *myth of infallibility* |
-| **Boeing 737 MAX — MCAS** (2018–19) | Larger engines moved forward/up, changing aerodynamics (tendency to pitch up); MCAS automatically pushed the nose down based on a **single** angle-of-attack sensor; sensor failure caused repeated forced dives; Boeing concealed MCAS to avoid pilot retraining | **Single point of failure** — never base critical safety on one sensor; **complexity hiding** — software must not act autonomously without operator awareness; **"software fix" trap** — don't patch fundamental hardware/design flaws with software unless built with absolute rigour |
+| **Therac-25** (1985–87) | Therac-20's hardware interlocks were removed, leaving safety entirely to software; a race condition in operator-input handling (typing "X" then quickly correcting to "E") armed the beam without the shield; cryptic "Malfunction 54" let operators bypass via "P" with no explanation | **Defence in depth** — never rely on a single software check for safety; **concurrency is dangerous** — shared state must be strictly managed; **UX is safety** — errors must be actionable, not blindly dismissible |
+| **Mars Climate Orbiter** (1999) | Lockheed Martin wrote thruster output in **Imperial** (pound-seconds); JPL navigation expected **metric** (Newton-seconds) — trajectory off by factor 4.45. The Software Interface Specification required metric but wasn't enforced, and no end-to-end integration testing existed between teams | **Type safety** — strongly typed languages catch unit errors at compile time; **integration testing** — component-isolated tests are insufficient, failures cluster at team boundaries; **process over blame** — systemic failure, not one programmer |
+| **London Ambulance CAD** (1992) | Contract awarded to an inexperienced firm via underbid on a politically compressed timeline; under-trained, hostile paramedics pressed wrong status buttons → corrupt availability data; a memory leak caused repeated/missed dispatches; total collapse within 36 hours, reverted to paper | **Phased rollouts** — never "Big Bang" a critical system; **user buy-in** — involve users in design; **load testing** — test extreme/anomalous load, not just the happy path. Software is part of a **socio-technical system**: a perfectly coded system fails if humans don't understand or trust it |
+| **Post Office Horizon** (1999–) | Fujitsu's Horizon accounting software had bugs that could silently alter financial records (Fujitsu knew); the Post Office insisted it was "robust" and "effectively infallible"; over 700 subpostmasters were prosecuted for theft/false accounting | **Audit trails** — every automated action in financial/legal systems must be transparent and auditable; **engineering integrity** — technical truth must override business convenience; **presumption of guilt** — UK law presumed computer evidence correct unless disproved, so engineers must challenge the *myth of infallibility* |
+| **Boeing 737 MAX — MCAS** (2018–19) | Larger engines shifted forward/up, changing aerodynamics (pitch-up tendency); MCAS automatically pushed the nose down based on a **single** angle-of-attack sensor — its failure caused repeated forced dives; Boeing concealed MCAS to avoid pilot retraining | **Single point of failure** — never base critical safety on one sensor; **complexity hiding** — software must not act autonomously without operator awareness; **"software fix" trap** — don't patch fundamental hardware/design flaws with software unless built with absolute rigour |
 
 ---
 
@@ -539,7 +539,7 @@ Most maintenance is **not** about fixing bugs — it's about keeping the system 
 
 Practically: code without tests, or code we're afraid to modify. Foundation of almost all profitable businesses; often in outdated languages, original authors gone.
 
-**Case study — COBOL and the pandemic (2020):** US state unemployment systems (NJ, KS) crashed under COVID-19 load. They were written in **COBOL** in the 1970s; original authors retired or deceased. Governors recruited volunteer COBOL programmers on TV. *Lesson: legacy code is often the most critical code in a business.*
+**Case study — COBOL and the pandemic (2020):** US state unemployment systems (NJ, KS), written in **COBOL** in the 1970s by now-retired authors, crashed under COVID-19 load — governors recruited volunteer COBOL programmers on TV. *Lesson: legacy code is often the most critical code in a business.*
 
 **Why modify code we didn't write:** bug fixes, new features (market demand), platform migration (on-prem → cloud), regulatory compliance (GDPR).
 
@@ -577,7 +577,7 @@ APIs are **promises** — the contract: if the caller provides input X, you prov
 
 **Hyrum's Law:** "with a sufficient number of users of an API, all observable behaviours of your system will be depended on by somebody."
 
-**Case study — the SimCity hack:** a Windows 95 developer found SimCity crashed due to a memory bug *in the game itself*. Microsoft didn't want users to blame Windows, so the Win95 kernel had a special check: "if app is SimCity, use a slower memory allocator that masks the bug." *Lesson: once you have enough users, every bug becomes a "feature" someone depends on.*
+**Case study — the SimCity hack:** a Windows 95 developer found SimCity crashed due to a memory bug *in the game itself*. To avoid blame, Win95's kernel added a special check: "if app is SimCity, use a slower allocator that masks the bug." *Lesson: once you have enough users, every bug becomes a "feature" someone depends on.*
 
 **Deprecation cycle:**
 1. **Announce** — warn users a feature will be removed.
@@ -600,7 +600,7 @@ APIs are **promises** — the contract: if the caller provides input X, you prov
 
 Prudent/deliberate debt is often a valid business decision; inadvertent debt is where the most dangerous complexity grows.
 
-**Case study — the $300 billion Y2K bug:** in the 1960s, years were stored as two digits (`98` vs `1998`) to save 2 bytes of RAM, on the assumption "this code will be replaced by 2000". Lehman's Law: systems stayed in use 40+ years. ~$300 billion was spent in 1999 to prevent global financial collapse. *Lesson: short-term technical debt can have multi-billion dollar long-term interest.*
+**Case study — the $300 billion Y2K bug:** in the 1960s, years were stored as two digits (`98` vs `1998`) to save 2 bytes of RAM, assuming "this code will be replaced by 2000" — but per Lehman's Law, systems stayed in use 40+ years. ~$300 billion was spent in 1999 to avert global financial collapse. *Lesson: short-term technical debt can carry multi-billion dollar long-term interest.*
 
 **Characterisation tests (Golden Master):** for refactoring code with no tests, where you don't understand the requirements well enough to write unit tests — record the current output for given inputs and assert it stays identical. Tests for *consistency*, not *correctness*.
 
@@ -628,7 +628,7 @@ Low risk, continuous delivery, avoids a "Big Bang" rewrite.
 
 **Four golden signals:** latency (time to service a request), traffic (demand, e.g. HTTP req/sec), errors (rate of 500s/timeouts), saturation (how "full" the service is — CPU, memory, disk I/O).
 
-**SRE — SLI, SLO, and the 50% rule:** *"SRE is what happens when you ask a software engineer to design an operations team"* (Ben Treynor Sloss, Google). Core philosophy: treat operations as a software problem — automate repetitive tasks. **SLI** = quantitative measure (latency, throughput); **SLO** = target for an SLI ("99.9% of requests finish in < 200 ms"). **50% rule:** SREs spend max 50% of time on "toil" (manual ops), the rest on engineering improvements. Reliability is a feature — 100% is the wrong target (too expensive, slows innovation).
+**SRE — SLI, SLO, and the 50% rule:** *"SRE is what happens when you ask a software engineer to design an operations team"* (Ben Treynor Sloss, Google) — treat operations as a software problem and automate repetitive tasks. **SLI** = quantitative measure (latency, throughput); **SLO** = target for an SLI ("99.9% of requests finish in < 200 ms"). **50% rule:** SREs spend max 50% of time on "toil" (manual ops), the rest on engineering improvements — reliability is a feature, and 100% is the wrong target (too expensive, slows innovation).
 
 **Error budget = 100% − SLO.** SLO of 99.9% ⇒ 0.1% error budget. Budget left → push risky features; budget exhausted → all feature work stops, focus on stability.
 
@@ -642,7 +642,7 @@ Low risk, continuous delivery, avoids a "Big Bang" rewrite.
 3. **Experiment** — introduce the failure.
 4. **Verify** — did steady state hold?
 
-**Case study — Netflix Chaos Monkey (2010):** Netflix migrated from stable data centres to "unreliable" cloud (AWS), knowing instances would disappear randomly. Chaos Monkey randomly killed production servers *during business hours*, forcing engineers to build self-recovering services. The **Simian Army** expanded to Chaos Gorilla (kills availability zones) and Chaos Kong (kills entire regions).
+**Case study — Netflix Chaos Monkey (2010):** migrating from stable data centres to "unreliable" cloud (AWS), Netflix knew instances would disappear randomly. Chaos Monkey randomly killed production servers *during business hours*, forcing engineers to build self-recovering services — the **Simian Army** later expanded to Chaos Gorilla (kills availability zones) and Chaos Kong (kills entire regions).
 
 ### Software sustainability
 
@@ -654,7 +654,7 @@ Modern apps rely on hundreds of third-party libraries (npm, PyPI, Maven). **Tran
 
 **Software supply chain — SBOM (Software Bill of Materials):** a formal, machine-readable record of every component used in a build; critical for defence, banking, healthcare. How do you know a `.jar` matches the GitHub source?
 
-**Case study — Log4Shell (2021):** a vulnerability in `log4j` (a standard Java logging library) let attackers take over a server just by sending a crafted string to be logged (e.g. via a chat box or search bar). Companies spent weeks manually searching for `log4j` usage. With an SBOM, you could instantly see if you were affected.
+**Case study — Log4Shell (2021):** a vulnerability in `log4j` (a standard Java logging library) let attackers take over a server just by sending a crafted string to be logged (e.g. via a chat box). Companies spent weeks manually searching for `log4j` usage — with an SBOM, this would be instant.
 
 ---
 
@@ -666,11 +666,11 @@ Modern apps rely on hundreds of third-party libraries (npm, PyPI, Maven). **Tran
 - **Semantic awareness:** modern tools use project context (RAG for code) — reading `package.json`, utility functions, naming conventions — to suggest solutions using *your* `Logger`/`ErrorHandler`, not generic ones.
 - **Boilerplate:** 40–60% of professional code is boilerplate (routes, DB schemas, DTOs, test setup); AI reduces "time to Hello World" from hours to seconds.
 - **Full prototypes:** prompt → MVP — directory structure, Dockerfile, DB schema, API endpoints in one pass. Valuable for rapid hypothesis testing, but prototypes typically cover only the happy path.
-- **Language polyglot:** AI handles the "syntactic tax" of switching languages (e.g. "convert this Java Stream into idiomatic Rust iterators") — useful for performance (Python → Rust), safety (C → Rust), or frontend/backend boundary moves.
+- **Language polyglot:** AI handles the "syntactic tax" of switching languages (e.g. "convert this Java Stream into idiomatic Rust iterators") — useful for performance, safety, or frontend/backend boundary moves.
 - **AI in testing:** generates unit tests for happy paths and edge cases (nulls, empty strings, max ints) — but only tests what the code *does*, not what it *should* do. **Intelligent fuzzing** generates plausible-but-malformed data (e.g. JSON with a circular reference) rather than random bytes.
 - **AI in CI/CD:** "self-healing build" — on failure, an agent reads the log/stack trace, identifies the failing line, and proposes a fix in a new commit ("night watchman" for the codebase).
 - **Debugging:** root-cause analysis from a pasted stack trace + state (e.g. spotting "Service A expects ISO-8601, Service B sends a Unix timestamp"); anomaly detection and summarisation across terabytes of logs.
-- **Refactoring with AI:** "refactor this function (cyclomatic complexity 15) into smaller testable units"; "rename variables to the Google style guide"; "extract hardcoded config into an env-var handler".
+- **Refactoring with AI:** "refactor this function (cyclomatic complexity 15) into smaller testable units"; "extract hardcoded config into an env-var handler".
 - **Understanding large codebases:** semantic search ("show every place we calculate VAT, explain the differences") — an onboarding superpower.
 - **Rubber duck reinvented:** the AI duck talks back — a sounding board for architectural brainstorming.
 
