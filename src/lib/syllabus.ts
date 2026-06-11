@@ -376,8 +376,8 @@ export const MODULES: Record<ModuleSlug, ModuleMeta> = {
     topics: [
       // Topic structure mirrors the vault subfolders rather than numbered topics.
       T(1, 'Sentiment Classification', 'Sentiment Classification'),
-      T(2, 'Hidden Markov Models and Clustering', 'Hidden Markov Models & Clustering'),
-      T(3, 'Social Networks', 'Social Networks'),
+      T(2, 'Social Networks', 'Social Networks'),
+      T(3, 'Hidden Markov Models and Clustering', 'Hidden Markov Models & Clustering'),
     ],
   },
 
