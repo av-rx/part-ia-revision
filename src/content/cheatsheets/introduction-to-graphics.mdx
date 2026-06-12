@@ -18,7 +18,7 @@ An image is obtained by **sampling** this continuous function on a rectangular g
 - **Sampling:** mapping a continuous function to a discrete one (choosing *where* to measure).
 - **Quantisation:** mapping a continuous variable (intensity) to a discrete one (choosing *how finely* to represent each measurement).
 
-A pixel, mathematically, is a **point** — it has no dimension, occupies no area, and cannot itself be "seen"; it is a *sample* of the underlying continuous image.
+A pixel, mathematically, is a **point** — dimensionless, occupying no area, and not itself "seen"; it is a *sample* of the underlying continuous image.
 
 ### Memory layout, stride, and indexing
 
@@ -29,9 +29,9 @@ Pixels are usually stored as 3 bytes (R, G, B). Index formulas for locating pixe
 - **Interleaved row-major (colour):** $i(x,y,c) = x \cdot 3 + y \cdot 3 \cdot n_{\text{cols}} + c$
 - **General case (with strides):** $i(x,y,c) = x \cdot s_x + y \cdot s_y + c \cdot s_c$
 
-`stride` = number of bytes/elements to advance per row — often **padded** so rows align to convenient boundaries (e.g. 4 bytes).
+`stride` = bytes/elements to advance per row — often **padded** so rows align to convenient boundaries (e.g. 4 bytes).
 
-**Padded images / region of interest (ROI):** images may be stored with extra border pixels (padding) so operators can safely read outside the logical image bounds, or so a sub-region can be addressed directly:
+**Padded images / region of interest (ROI):** images may store extra border pixels (padding) so operators can safely read outside the logical bounds, or so a sub-region can be addressed directly:
 
 $$i(x,y,c) = i_{\text{first}} + x \cdot s_x + y \cdot s_y + c \cdot s_c$$
 
@@ -48,7 +48,7 @@ $$s_x = 3(n_{\text{cols}}+2p), \qquad s_y = (n_{\text{cols}}+2p)\cdot 3, \qquad 
 | Truecolour | 24 (3 bytes) | $2^{24} \approx 16.8$ million |
 | Deepcolour | ≥32 (≥4 bytes) | even more |
 
-**Colour banding:** visible stepping when too few bits represent a smooth gradient — perceptually worsened by the **Mach band** / **Chevreul illusion** (the eye exaggerates contrast at edges between flat regions). **Dithering** (adding controlled noise before quantisation) breaks up the bands and reduces perceived banding.
+**Colour banding:** visible stepping when too few bits represent a smooth gradient — worsened by the **Mach band** / **Chevreul illusion** (the eye exaggerates contrast at edges between flat regions). **Dithering** (adding controlled noise before quantisation) breaks up the bands.
 
 ---
 
@@ -67,11 +67,11 @@ $$\text{Scale: } \begin{bmatrix}x'\\y'\end{bmatrix} = \begin{bmatrix}m & 0\\0 & 
 
 $$\text{Shear: } \begin{bmatrix}x'\\y'\end{bmatrix} = \begin{bmatrix}1 & a\\0 & 1\end{bmatrix}\begin{bmatrix}x\\y\end{bmatrix} \qquad \text{Identity: } \begin{bmatrix}x'\\y'\end{bmatrix} = \begin{bmatrix}1 & 0\\0 & 1\end{bmatrix}\begin{bmatrix}x\\y\end{bmatrix}$$
 
-A plain 2×2 matrix **cannot represent translation** — there is no constant term. This motivates homogeneous coordinates.
+A plain 2×2 matrix **cannot represent translation** — there is no constant term, motivating homogeneous coordinates.
 
 ### Homogeneous 2D coordinates
 
-A point $(x,y)$ is represented by $(x, y, w)$, with the equivalence $(x,y,w) \equiv (x/w, y/w)$. Infinitely many homogeneous triples map to the same 2D point. $w=0$ represents a **point at infinity** (a direction). The conventional inverse representation takes $(x,y) \equiv (x,y,1)$.
+A point $(x,y)$ is represented by $(x, y, w)$, with the equivalence $(x,y,w) \equiv (x/w, y/w)$. Infinitely many homogeneous triples map to the same 2D point. $w=0$ represents a **point at infinity** (a direction); the conventional inverse representation takes $(x,y) \equiv (x,y,1)$.
 
 **3×3 matrices in homogeneous coordinates** (all leave $w$ unchanged for scale/rotate/shear):
 
@@ -90,7 +90,7 @@ In conventional coordinates (dividing through): $\dfrac{x'}{w'} = \dfrac{x}{w} +
 
 Multiple transforms are applied by **multiplying their matrices**, e.g. shear then scale gives a single combined matrix. Composition is applied **right-to-left** to a column vector: $v' = T_2 T_1 v$ means $T_1$ happens first.
 
-**Transformations do not commute** in general — e.g. translate-then-rotate ≠ rotate-then-translate. Order matters.
+**Transformations do not commute** in general — e.g. translate-then-rotate ≠ rotate-then-translate.
 
 **Scaling about an arbitrary point** $(x_0,y_0)$ by factor $m$ (the standard "sandwich" technique used throughout graphics):
 1. Translate $(x_0,y_0)$ to the origin: $T(-x_0,-y_0)$
@@ -103,9 +103,9 @@ Combined: $M = T(x_0,y_0)\, S(m)\, T(-x_0,-y_0)$. The same pattern generalises t
 
 3D homogeneous coordinates: $(x,y,z,w) \to (x/w,\, y/w,\, z/w)$. Transformation matrices generalise to 4×4 (translation, scale, and three axis rotations $R_x, R_y, R_z$). As in 2D, **3D transformations do not commute**.
 
-**Example — modelling a cylinder:** build up a model transform by composing translate/rotate/scale steps; a cylinder is rotationally symmetric about its own axis, so the rotation that aligns that axis does not need a third (redundant) rotation step.
+**Example — modelling a cylinder:** build up a model transform by composing translate/rotate/scale steps; a cylinder is rotationally symmetric about its own axis, so aligning that axis needs no third (redundant) rotation step.
 
-**Multiple instances:** because transforms are just matrices, the same base geometry can be defined once and placed many times in a scene by applying a different model matrix to each instance (instancing).
+**Multiple instances:** since transforms are just matrices, the same base geometry can be defined once and placed many times in a scene by applying a different model matrix to each instance (instancing).
 
 ---
 
@@ -113,8 +113,8 @@ Combined: $M = T(x_0,y_0)\, S(m)\, T(-x_0,-y_0)$. The same pattern generalises t
 
 ### Types of projection
 
-- **Parallel (orthographic):** e.g. $(x,y,z) \to (x,y)$ — discards depth entirely, rays are parallel. Useful for CAD/architecture/engineering drawings; looks geometrically "correct" but visually unrealistic (no perspective foreshortening).
-- **Perspective:** e.g. $(x,y,z) \to (x/z,\, y/z)$ — objects shrink as $z$ (distance) increases. This is how cameras and the human eye work, and looks realistic.
+- **Parallel (orthographic):** e.g. $(x,y,z) \to (x,y)$ — discards depth entirely, rays are parallel. Useful for CAD/architecture/engineering drawings; geometrically "correct" but visually unrealistic (no perspective foreshortening).
+- **Perspective:** e.g. $(x,y,z) \to (x/z,\, y/z)$ — objects shrink as $z$ (distance) increases. This is how cameras and the eye work, and looks realistic.
 
 ### Geometry of perspective projection
 
@@ -124,7 +124,7 @@ By similar triangles, a 3D point $(x,y,z)$ projects to screen coordinates:
 
 $$x' = \frac{d \cdot x}{z}, \qquad y' = \frac{d \cdot y}{z}$$
 
-(For the simplest case $d=1$: $x'=x/z,\ y'=y/z$.) This is a **non-linear** operation in $(x,y,z)$ — but it becomes linear if we work in homogeneous coordinates and defer the division.
+(For the simplest case $d=1$: $x'=x/z,\ y'=y/z$.) This is **non-linear** in $(x,y,z)$ — but becomes linear if we work in homogeneous coordinates and defer the division.
 
 ### Projection as a matrix operation
 
@@ -132,7 +132,7 @@ Perspective projection can be expressed as a 4×4 matrix acting on homogeneous c
 
 $$P = \begin{bmatrix}d & 0 & 0 & 0\\0 & d & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & 1 & 0\end{bmatrix}$$
 
-maps $(x,y,z,1) \to (dx,\, dy,\, z,\, z)$. Dividing through by the resulting $w' = z$ gives $(dx/z,\ dy/z,\ 1)$ — i.e. the projected screen coordinates, with depth $z$ recoverable from $w'$. Real projection matrices (e.g. OpenGL's) additionally remap $z$ into a normalised depth range $[-1,1]$ or $[0,1]$ using the **near** ($n$) and **far** ($f$) clipping planes, so that depth-buffer precision is concentrated appropriately.
+maps $(x,y,z,1) \to (dx,\, dy,\, z,\, z)$. Dividing through by the resulting $w' = z$ gives $(dx/z,\ dy/z,\ 1)$ — the projected screen coordinates, with depth $z$ recoverable from $w'$. Real projection matrices (e.g. OpenGL's) additionally remap $z$ into a normalised depth range $[-1,1]$ or $[0,1]$ using the **near** ($n$) and **far** ($f$) clipping planes, concentrating depth-buffer precision appropriately.
 
 **Key point:** the perspective divide ($\div w$) happens *after* the matrix multiply, converting **clip space** (post-matrix, still homogeneous) into **normalised device coordinates (NDC)**. Forgetting this step is a classic mistake.
 
@@ -140,7 +140,7 @@ maps $(x,y,z,1) \to (dx,\, dy,\, z,\, z)$. Dividing through by the resulting $w'
 
 The simple projection formulas assume: screen centred at $(0,0,d)$, parallel to the $xy$-plane, eye at the origin, $z$ into the screen, $y$ up, $x$ right. For an **arbitrary camera** position/orientation, there are two equivalent strategies:
 1. Derive projection equations directly for the arbitrary camera and plane, or
-2. Transform *all* scene objects into a standard **viewing coordinate system** (where the simple assumptions hold) and then apply the simple projection.
+2. Transform *all* scene objects into a standard **viewing coordinate system** (where the simple assumptions hold), then apply the simple projection.
 
 **Model–View–Projection (MVP) pipeline:**
 
@@ -152,7 +152,7 @@ Object coords --[Model matrix]--> World coords --[View matrix]--> View/Camera co
 - **View matrix:** transforms world coordinates into the camera's frame of reference (as if the camera were at the origin looking down $-z$ or $+z$ depending on convention).
 - **Projection matrix:** applies perspective or orthographic projection, mapping view-space coordinates into clip space.
 
-The model and view matrices can be pre-multiplied into a single **model-view matrix**; all three (model, view, projection) can in principle be combined into one matrix taking object coordinates straight to clip space. Either (or both) of the model/view matrices can be the identity — e.g. objects may be specified directly in world or viewing coordinates.
+The model and view matrices can be pre-multiplied into a single **model-view matrix**; all three (model, view, projection) can in principle combine into one matrix taking object coordinates straight to clip space. Either (or both) of the model/view matrices can be the identity — e.g. objects may be specified directly in world or viewing coordinates.
 
 ### Look-At (constructing the view matrix)
 
@@ -168,7 +168,7 @@ The combined "look-at" matrix is $R \cdot T(-c)$ — translate the world so the 
 
 **Important pitfall:** if a vertex position transform $M$ is **non-orthogonal** (e.g. non-uniform scale), transforming normal vectors by the same $M$ does **not** preserve perpendicularity to the surface.
 
-Derivation: a normal $N$ is perpendicular to a tangent $T$ on the surface, so $N \cdot T = 0$. After transforming vertices by $M$ (giving $T' = MT$) and normals by some matrix $G$ (giving $N' = GN$), we require $N' \cdot T' = 0$, i.e. $(GN)\cdot(MT) = 0$. Writing this as $N^\top G^\top M T = 0$ and comparing with the original $N^\top T = 0$, we need $G^\top M = I$, giving:
+Derivation: a normal $N$ is perpendicular to a tangent $T$ on the surface, so $N \cdot T = 0$. After transforming vertices by $M$ (giving $T' = MT$) and normals by some matrix $G$ (giving $N' = GN$), we require $N' \cdot T' = 0$, i.e. $(GN)\cdot(MT) = 0$. Writing this as $N^\top G^\top M T = 0$ and comparing with the original $N^\top T = 0$ gives $G^\top M = I$, so:
 
 $$G = (M^{-1})^\top$$
 
@@ -176,7 +176,7 @@ i.e. normals must be transformed by the **inverse transpose** of the vertex tran
 
 ### Scene construction and the scene graph
 
-Complex scenes (e.g. a robot model) are built by composing instances of simpler parts, each placed via its own model transform relative to a parent. A **scene graph** is a tree (or DAG) representing this hierarchy: traversing it from the root, accumulating transforms along each path, gives the world-space transform for every object/part in the scene — enabling hierarchical animation (rotating a parent node moves all its children).
+Complex scenes (e.g. a robot model) are built by composing instances of simpler parts, each placed via its own model transform relative to a parent. A **scene graph** is a tree (or DAG) representing this hierarchy: traversing it from the root, accumulating transforms along each path, gives the world-space transform for every object/part — enabling hierarchical animation (rotating a parent node moves all its children).
 
 ---
 
@@ -196,7 +196,7 @@ for each pixel (x, y):
         colour(x,y) = background
 ```
 
-Ray tracing **easily handles** reflection, refraction, shadows, and (via distributed sampling) blur from motion and optics — but is **computationally expensive**, since every pixel potentially tests intersection against every object (and recursively spawns more rays).
+Ray tracing **easily handles** reflection, refraction, shadows, and (via distributed sampling) motion/optical blur — but is **computationally expensive**, since every pixel potentially tests intersection against every object (and recursively spawns more rays).
 
 ### Ray–object intersection
 
@@ -207,10 +207,10 @@ Ray tracing **easily handles** reflection, refraction, shadows, and (via distrib
 
 ### Shading, shadows, reflection, refraction
 
-- **Shading:** once the nearest intersection is found, compute the surface normal there, then shoot **shadow rays** toward each light source to compute diffuse and specular contributions; combine with ambient illumination for the final colour.
-- **Shadows:** because rays are already being traced from the surface point to each light, simply check whether **any other object** lies between the point and the light — if so, the point is in shadow. Watch for **self-shadowing** (numerical precision causing a surface to incorrectly shadow itself; usually fixed with a small bias/epsilon offset).
-- **Reflection:** for (partially) reflective surfaces, spawn a new **reflection ray** in the mirror direction and recursively trace it to find its contribution to the pixel's colour (perfect/mirror reflection).
-- **Transparency & refraction:** for (partially) transparent objects, allow objects behind to be seen through them; if the material has a refractive index, the ray bends according to Snell's law as it crosses the interface. Combined with reflection, a single ray can split into **two child rays** (reflected + refracted/transmitted), recursively.
+- **Shading:** once the nearest intersection is found, compute the surface normal there, then shoot **shadow rays** toward each light to compute diffuse and specular contributions; combine with ambient illumination for the final colour.
+- **Shadows:** since rays are already traced from the surface point to each light, simply check whether **any other object** lies between the point and the light — if so, the point is in shadow. Watch for **self-shadowing** (numerical precision causing a surface to shadow itself; usually fixed with a small bias/epsilon offset).
+- **Reflection:** for (partially) reflective surfaces, spawn a new **reflection ray** in the mirror direction and recursively trace it for its contribution to the pixel's colour (perfect/mirror reflection).
+- **Transparency & refraction:** for (partially) transparent objects, objects behind can be seen through them; if the material has a refractive index, the ray bends per Snell's law at the interface. Combined with reflection, a single ray can split into **two child rays** (reflected + refracted/transmitted), recursively.
 
 ---
 
@@ -218,7 +218,7 @@ Ray tracing **easily handles** reflection, refraction, shadows, and (via distrib
 
 ### How surfaces reflect light
 
-Real surfaces combine **diffuse** reflection (light scattered equally in all directions — gives an object its perceived "base colour") and **specular** reflection (light reflected preferentially around the mirror direction — gives shiny highlights). A classic example: plastic exhibits specular highlights in the *light's* colour but diffuse reflection in the *plastic's* colour.
+Real surfaces combine **diffuse** reflection (light scattered equally in all directions — gives an object its perceived "base colour") and **specular** reflection (light reflected preferentially around the mirror direction — gives shiny highlights). Classic example: plastic shows specular highlights in the *light's* colour but diffuse reflection in the *plastic's* colour.
 
 ### Diffuse (Lambertian) shading
 
@@ -241,7 +241,7 @@ $$I_s = k_s \, I_l \, (\hat{R}\cdot \hat{V})^n$$
 
 where $\hat R$ is the ideal mirror-reflection direction of $\hat L$ about $\hat N$, and $\hat V$ is the direction to the viewer/eye.
 
-**Blinn–Phong (cheaper variant):** uses the **half-vector** $\hat H = \dfrac{\hat L + \hat V}{|\hat L + \hat V|}$ (the direction halfway between light and view directions), and compares it directly to the normal:
+**Blinn–Phong (cheaper variant):** uses the **half-vector** $\hat H = \dfrac{\hat L + \hat V}{|\hat L + \hat V|}$ (halfway between light and view directions), compared directly to the normal:
 
 $$I_s = k_s\, I_l\, (\hat{H}\cdot\hat{N})^n$$
 
@@ -254,14 +254,14 @@ Combining ambient + diffuse + specular, summed over all light sources, **per col
 $$I = k_a I_a + \sum_{\text{lights } l} \Big[ k_d\, I_l\, (\hat N \cdot \hat L_l) + k_s\, I_l\, (\hat R_l \cdot \hat V)^n \Big]$$
 
 - $k_a I_a$ = constant **ambient** term, approximating all indirect/global illumination as a flat baseline.
-- More lights in the scene ⇒ proportionally longer computation (one diffuse+specular evaluation per light).
+- More lights ⇒ proportionally longer computation (one diffuse+specular evaluation per light).
 
 ### Gross assumptions of this local-illumination model
 
 - Only **diffuse** reflection is modelled accurately; specular is a crude approximation.
 - **No shadows** — achieving shadows needs ray tracing or shadow mapping as a separate pass.
-- **Lights at infinity** (directional lights) — local point lights need extra per-pixel interpolation of the $L$ vector (since $L$ then varies with position).
-- **No inter-surface interaction** — all indirect light bouncing between surfaces is lumped into the single constant "ambient" term, on top of direct diffuse/specular.
+- **Lights at infinity** (directional lights) — local point lights need extra per-pixel interpolation of $L$ (since it then varies with position).
+- **No inter-surface interaction** — all indirect bounced light is lumped into the single constant "ambient" term, on top of direct diffuse/specular.
 
 ### The rendering equation (Kajiya)
 
@@ -272,7 +272,7 @@ $$L_o(x, \omega_o) = L_e(x, \omega_o) + \int_\Omega f_r(x, \omega_i, \omega_o)\,
 - $L_o(x,\omega_o)$: outgoing radiance from point $x$ in direction $\omega_o$.
 - $L_e(x,\omega_o)$: emitted radiance (for light sources).
 - $f_r(x,\omega_i,\omega_o)$: the **BRDF** (bidirectional reflectance distribution function) — how light from incoming direction $\omega_i$ scatters toward $\omega_o$.
-- $L_i(x,\omega_i)$: incoming radiance from direction $\omega_i$ (itself the $L_o$ of whatever is visible in that direction — recursive/integral nature).
+- $L_i(x,\omega_i)$: incoming radiance from direction $\omega_i$ (itself the $L_o$ of whatever is visible there — recursive/integral nature).
 - $(\omega_i \cdot n)$: cosine falloff term (Lambert's law), integrated over the hemisphere $\Omega$ above the surface.
 
 Every physically based renderer (path tracing, photon mapping, etc.) is, at its core, a numerical approximation to this integral; the Phong/Lambertian models above are simple, non-recursive, point-sampled special cases.
@@ -283,9 +283,9 @@ Every physically based renderer (path tracing, photon mapping, etc.) is, at its 
 
 ### The sampling problem
 
-Basic ray tracing assumes a single ray passes through the exact centre of each pixel, and the pixel takes the colour of whatever the ray hits. This causes:
+Basic ray tracing assumes a single ray passes through the exact centre of each pixel, and the pixel takes the colour of whatever it hits. This causes:
 - **Jagged ("staircase") edges** on object silhouettes.
-- **Small objects missed entirely** if no pixel centre happens to land on them.
+- **Small objects missed entirely** if no pixel centre lands on them.
 - **Thin objects missed or broken into disconnected fragments**.
 
 These artefacts (and related ones) are called **aliasing**; techniques to reduce them are **anti-aliasing**. (The Nyquist criterion underlies this: to faithfully represent a signal you must sample at more than twice its highest frequency — sharp edges have effectively unbounded frequency content, so some aliasing is unavoidable without pre-filtering or super-sampling.)
@@ -295,14 +295,14 @@ These artefacts (and related ones) are called **aliasing**; techniques to reduce
 - **Single point:** one ray through the pixel centre (baseline, most aliasing).
 - **Super-sampling:** shoot **multiple** rays per pixel and average the results.
   - **Regular grid:** divide the pixel into a grid of sub-pixels, one ray each. Still shows noticeable aliasing unless the sub-grid resolution is very high.
-  - **Random:** shoot $N$ rays at uniformly random positions within the pixel. Trades aliasing artefacts for **noise** artefacts — and the human eye is much less sensitive to noise than to structured aliasing.
-  - **Poisson disc:** shoot $N$ random rays such that no two are closer than some $\varepsilon$ to each other. Produces visually better results than pure random for the same $N$, but is hard to implement efficiently.
-  - **Jittered / stratified sampling:** divide the pixel into $N$ sub-pixels and shoot **one randomly-placed ray per sub-pixel**. A practical approximation to Poisson disc sampling — better than pure random for the same $N$, and easy to implement.
-- **Adaptive super-sampling:** shoot a few rays, check the variance of the results; if they're similar enough, stop — otherwise shoot more rays. Concentrates effort where it matters (edges, high-frequency detail).
+  - **Random:** shoot $N$ rays at uniformly random positions within the pixel. Trades aliasing artefacts for **noise** — the eye is much less sensitive to noise than to structured aliasing.
+  - **Poisson disc:** shoot $N$ random rays such that no two are closer than some $\varepsilon$. Visually better than pure random for the same $N$, but hard to implement efficiently.
+  - **Jittered / stratified sampling:** divide the pixel into $N$ sub-pixels and shoot **one randomly-placed ray per sub-pixel**. A practical approximation to Poisson disc — better than pure random for the same $N$, and easy to implement.
+- **Adaptive super-sampling:** shoot a few rays, check the variance; if similar enough, stop — otherwise shoot more. Concentrates effort where it matters (edges, high-frequency detail).
 
 ### Distributed ray tracing
 
-The idea of "many samples per pixel" generalises beyond spatial anti-aliasing: each ray can additionally sample a random value from some relevant distribution, or each ray can spawn multiple child rays when it hits an object. With enough samples per pixel, all of the following effects emerge naturally:
+"Many samples per pixel" generalises beyond spatial anti-aliasing: each ray can additionally sample a random value from some relevant distribution, or spawn multiple child rays on hitting an object. With enough samples per pixel, all of the following effects emerge naturally:
 
 | Distribute samples over... | Effect |
 |---|---|
@@ -317,7 +317,7 @@ The idea of "many samples per pixel" generalises beyond spatial anti-aliasing: e
 
 ### Why rasterisation, not ray tracing, for real time
 
-Ray tracing is computationally expensive — fine for offline, super-high-quality rendering, but too slow for video games/UIs which need high frame rates. Most real-time applications instead use **rasterisation**:
+Ray tracing is computationally expensive — fine for offline, high-quality rendering, but too slow for video games/UIs needing high frame rates. Most real-time applications instead use **rasterisation**:
 
 1. Model surfaces as **polyhedra** — meshes of polygons.
 2. Use composition/instancing to build up scenes from parts.
@@ -329,7 +329,7 @@ Graphics cards have dedicated hardware support for rasterisation. Modern GPUs al
 
 ### Meshes and triangulation
 
-3D objects are represented as **polygonal meshes** (open or closed) — curved surfaces must be approximated/tessellated into polygons before rendering. A **triangle** (3 vertices) is guaranteed planar; polygons with more than 3 vertices are not necessarily planar, making their representation more ambiguous. Since most GPUs are optimised specifically for triangles, polygons with >3 vertices are **split into triangles** — care is taken not to create unnecessary extra triangles, and to avoid triangles with very elongated/thin edges (expensive and numerically unstable to rasterise).
+3D objects are represented as **polygonal meshes** (open or closed) — curved surfaces must be approximated/tessellated into polygons before rendering. A **triangle** (3 vertices) is guaranteed planar; polygons with more vertices are not necessarily planar, making their representation more ambiguous. Since GPUs are optimised specifically for triangles, polygons with >3 vertices are **split into triangles** — avoiding unnecessary extra triangles and very elongated/thin edges (expensive and numerically unstable to rasterise).
 
 ### Rasterisation vs ray tracing — loop structure
 
@@ -355,13 +355,13 @@ for each triangle T in the scene:
 
 ### Barycentric coordinates
 
-Any point $(x,y)$ inside (or on) a triangle with vertices $A=(x_a,y_a)$, $B=(x_b,y_b)$, $C=(x_c,y_c)$ can be written as a weighted combination $\alpha A + \beta B + \gamma C$ with $\alpha+\beta+\gamma=1$. Exactly one of $\alpha,\beta,\gamma$ equals 1 (and the others 0) at the corresponding vertex — they encode, for any interior point, how far it is from each edge.
+Any point $(x,y)$ inside (or on) a triangle with vertices $A=(x_a,y_a)$, $B=(x_b,y_b)$, $C=(x_c,y_c)$ can be written as a weighted combination $\alpha A + \beta B + \gamma C$ with $\alpha+\beta+\gamma=1$. Exactly one of $\alpha,\beta,\gamma$ equals 1 (others 0) at the corresponding vertex — they encode, for any interior point, how far it is from each edge.
 
 **Computing barycentric coordinates** using the implicit line equation for the edge through two points, $f_{PQ}(x,y) = (y_P - y_Q)x + (x_Q - x_P)y + x_P y_Q - x_Q y_P$:
 
 $$\alpha = \frac{f_{cb}(x,y)}{f_{cb}(x_a,y_a)}, \qquad \beta = \frac{f_{ac}(x,y)}{f_{ac}(x_b,y_b)}, \qquad \gamma = \frac{f_{ab}(x,y)}{f_{ab}(x_c,y_c)}$$
 
-Each is the implicit line equation for the edge *opposite* that vertex, evaluated at $(x,y)$, normalised by its value at the vertex itself (giving 1 at that vertex and 0 along the opposite edge). Geometrically this is equivalent to setting up a (non-orthogonal) coordinate system whose axes are aligned with the triangle's edges.
+Each is the implicit line equation for the edge *opposite* that vertex, evaluated at $(x,y)$, normalised by its value at the vertex itself (giving 1 at that vertex, 0 along the opposite edge). Geometrically this sets up a (non-orthogonal) coordinate system whose axes align with the triangle's edges.
 
 **Using barycentric coordinates:**
 - A point is **inside the triangle** iff $\alpha, \beta, \gamma$ are all $\ge 0$ (and $\le 1$, automatically true given $\alpha+\beta+\gamma=1$).
@@ -374,16 +374,16 @@ Each is the implicit line equation for the edge *opposite* that vertex, evaluate
 3. If all three are non-negative, the pixel is inside the triangle: interpolate attributes and write the fragment.
 4. Otherwise skip the pixel.
 
-**Incremental optimisation:** barycentric coordinates change by a **constant amount** when moving one pixel right or one pixel down, *regardless of position* (because $f_{PQ}$ is affine/linear in $x,y$). So precompute the increments $\Delta\alpha, \Delta\beta, \Delta\gamma$ for a step in $x$ and in $y$, and update $\alpha,\beta,\gamma$ incrementally as pixels are scanned line-by-line — avoiding recomputation of the full formula at every pixel. This incremental evaluation is heavily optimised in GPU hardware, enabling drawing of millions of triangles per frame.
+**Incremental optimisation:** barycentric coordinates change by a **constant amount** when moving one pixel right or down, *regardless of position* (because $f_{PQ}$ is affine/linear in $x,y$). So precompute the increments $\Delta\alpha, \Delta\beta, \Delta\gamma$ for a step in $x$ and $y$, and update $\alpha,\beta,\gamma$ incrementally while scanning pixels line-by-line — avoiding recomputation of the full formula each time. This incremental evaluation is heavily optimised in GPU hardware, enabling millions of triangles per frame.
 
 ### Shading during rasterisation
 
-For each triangle, colours/normals at the **vertices** are computed (e.g. via the Phong equation) and then **interpolated** across the triangle's fragments using barycentric weights. The result may not be perfectly realistic, but can be improved simply by increasing the polygon count (finer mesh ⇒ smoother interpolated shading).
+For each triangle, colours/normals at the **vertices** are computed (e.g. via the Phong equation) and then **interpolated** across the triangle's fragments using barycentric weights. The result may not be perfectly realistic, but improves simply by increasing the polygon count (finer mesh ⇒ smoother interpolated shading).
 
 **Normal interpolation and per-pixel shading:** for a polygonal model, interpolate the **normal vector** across the triangle (rather than the final colour), then evaluate the Phong reflection model **per pixel** using the interpolated normal:
-- If the full Phong equation (including specular) is evaluated only **per vertex** and then interpolated, specular highlights are either missed entirely (no vertex happens to be at the highlight position) or — if a vertex *does* hit the highlight — the bright specular colour gets smeared/interpolated across the whole triangle, looking unrealistic.
+- If the full Phong equation (including specular) is evaluated only **per vertex** and interpolated, specular highlights are either missed entirely (no vertex lands on the highlight) or — if one does — the bright specular colour gets smeared across the whole triangle, looking unrealistic.
 - Modern GPU pipelines therefore typically **interpolate normals** (cheap) and compute the **specular term per fragment** (more expensive, but far more realistic).
-- The **diffuse** component usually looks acceptable either way — it can be computed per pixel (cheap on modern GPUs) or computed per vertex and interpolated.
+- The **diffuse** component usually looks acceptable either way — computed per pixel (cheap on modern GPUs) or per vertex and interpolated.
 
 ---
 
@@ -407,22 +407,22 @@ for each triangle (in any order):
 ```
 
 - $z_{\max}$ = the **far clipping plane** — maximum depth that will be drawn.
-- $z_{\min}$ = the **near clipping plane** — minimum depth, beyond which (i.e. closer than which) nothing is drawn.
-- **Inefficiency:** if triangles happen to be processed far-to-near, a pixel may be **overdrawn multiple times**, wasting shading computation on fragments later overwritten. Mitigations: sort the scene front-to-back, or use other visibility techniques (e.g. early-Z / occlusion culling) to avoid redundant shading.
+- $z_{\min}$ = the **near clipping plane** — minimum depth, beyond which (closer than which) nothing is drawn.
+- **Inefficiency:** if triangles are processed far-to-near, a pixel may be **overdrawn multiple times**, wasting shading on fragments later overwritten. Mitigations: sort the scene front-to-back, or use other visibility techniques (e.g. early-Z / occlusion culling).
 
 ### Precision: near/far planes and z-fighting
 
-- The depth buffer stores $z$ with **limited precision** (commonly 24-bit or 32-bit, integer or floating point) — often storing $1/z$ rather than $z$ directly.
+- The depth buffer stores $z$ with **limited precision** (commonly 24-bit or 32-bit, integer or float) — often storing $1/z$ rather than $z$ directly.
 - **Far plane needed:** an infinite depth range cannot be represented with finite precision — a far plane bounds the range.
 - **Near plane needed:** if $1/z$ is stored, $z \to 0$ gives $1/z \to \infty$ — small $z$ values are numerically problematic, so a near plane keeps $z$ bounded away from zero.
-- **Practical symptom:** in games, when the camera gets too close to a surface, geometry can start to disappear — it has been clipped by the near plane.
-- **Z-fighting:** a shimmering/flickering artefact when two triangles have **almost the same** $z$ value at a pixel. Floating-point rounding (and details of how the projection matrix computes depth) essentially randomly determines which triangle "wins" the depth test from frame to frame, causing visible flicker.
+- **Practical symptom:** in games, when the camera gets too close to a surface, geometry can start to disappear — clipped by the near plane.
+- **Z-fighting:** a shimmering/flickering artefact when two triangles have **almost the same** $z$ at a pixel. Floating-point rounding (and how the projection matrix computes depth) essentially randomly determines which triangle "wins" the depth test from frame to frame, causing visible flicker.
 
 ### Other hidden-surface methods (for comparison)
 
 - **Painter's algorithm:** render polygons back-to-front by sorted depth — simple, but fails when polygons cyclically overlap (no valid back-to-front order exists).
-- **BSP (Binary Space Partitioning) tree:** precompute a spatial partition of the scene so a valid back-to-front (or front-to-back) traversal order can always be derived for any viewpoint, resolving the cyclic-overlap problem of painter's algorithm at the cost of preprocessing.
-- **Z-buffer:** the dominant real-time approach — simple, per-pixel, fully supported in hardware, handles arbitrary geometry order and cyclic overlaps naturally (at the cost of memory for the depth buffer and the overdraw inefficiency above).
+- **BSP (Binary Space Partitioning) tree:** precompute a spatial partition of the scene so a valid back-to-front (or front-to-back) traversal order can always be derived for any viewpoint, resolving painter's algorithm's cyclic-overlap problem at the cost of preprocessing.
+- **Z-buffer:** the dominant real-time approach — simple, per-pixel, fully hardware-supported, handles arbitrary geometry order and cyclic overlaps naturally (at the cost of depth-buffer memory and the overdraw inefficiency above).
 
 ---
 
@@ -430,9 +430,9 @@ for each triangle (in any order):
 
 ### What is a GPU and why is it fast?
 
-A **GPU (Graphics Processing Unit)** is like a CPU but specialised for floating-point operations on **large arrays of data** (vertices, normals, pixels). It performs both low-level tasks (clipping, rasterisation, hidden-surface removal — drawing millions of triangles efficiently) and high-level tasks (procedural shading/texturing/animation/simulation, ray tracing acceleration structures, video encode/decode, physics). GPUs are **fully programmable** at several pipeline stages, but optimised for **massively parallel** operation.
+A **GPU (Graphics Processing Unit)** is like a CPU but specialised for floating-point operations on **large arrays of data** (vertices, normals, pixels). It performs both low-level tasks (clipping, rasterisation, hidden-surface removal — drawing millions of triangles efficiently) and high-level tasks (procedural shading/texturing/animation/simulation, ray-tracing acceleration structures, video encode/decode, physics). GPUs are **fully programmable** at several pipeline stages, but optimised for **massively parallel** operation.
 
-3D rendering parallelises extremely well — most operations (per-vertex, per-fragment) are independent and can run simultaneously. Modern GPUs therefore contain **hundreds/thousands of SIMD (Single Instruction Multiple Data) processors**, and have memory bandwidth far exceeding CPUs (≫1000 GB/s) — though peak figures are only achievable for specific, favourable access patterns.
+3D rendering parallelises extremely well — most per-vertex/per-fragment operations are independent and can run simultaneously. Modern GPUs therefore contain **hundreds/thousands of SIMD (Single Instruction Multiple Data) processors**, with memory bandwidth far exceeding CPUs (≫1000 GB/s) — though peak figures are only achievable for specific, favourable access patterns.
 
 ### Graphics and compute APIs
 
@@ -447,7 +447,7 @@ A **GPU (Graphics Processing Unit)** is like a CPU but specialised for floating-
 | **WebGPU** (~2017) | Browser | Access to Vulkan/Metal/DirectX; own shading language WGSL (Rust-like) |
 
 **GPGPU (General-Purpose GPU computing):** OpenGL/DirectX/Vulkan/Metal are graphics-oriented, not ideal for general compute (physics sims, ML).
-- **CUDA:** Nvidia's parallel computing architecture; C-like language with special parallel-instruction APIs; requires an Nvidia GPU.
+- **CUDA:** Nvidia's parallel computing architecture; C-like language with special parallel-instruction APIs; Nvidia GPU only.
 - **OpenCL:** open-standard equivalent; runs on GPUs and some CPUs (AMD, Intel, Nvidia, Qualcomm, Apple, ...); generally not as fast/well-supported as CUDA — modern Nvidia OpenCL drivers internally translate to CUDA.
 
 ### OpenGL programming model
@@ -468,17 +468,17 @@ Vertex data --> [Vertex Shader] --> [Tessellation Control/Eval] --> [Geometry Sh
 - **Primitive Assembly:** groups vertices into primitives (points, lines, triangles) ready for rendering.
 - **Clipping:** removes or modifies vertices so everything lies within the view frustum/viewport.
 - **Rasterisation:** generates fragments (candidate pixels) for each primitive and interpolates vertex attributes across them (barycentric interpolation, §7).
-- **Fragment Shader:** computes the final colour per fragment — can sample textures, modify the fragment's depth, and perform tone mapping. Runs once per fragment (i.e. potentially many times per pixel before blending/depth test).
+- **Fragment Shader:** computes the final colour per fragment — can sample textures, modify fragment depth, and perform tone mapping. Runs once per fragment (potentially many times per pixel before blending/depth test).
 
 ### Preparing vertex data — worked example (a cube)
 
 To render a cube:
 1. Split each square face into two triangles.
 2. Assign 3D coordinates to each vertex in object/local space.
-3. Assign a **normal** to each vertex — note a cube needs **more normals than naive vertex-sharing would suggest**: if adjacent faces shared the same vertex+normal, OpenGL would interpolate between the differing face normals, producing **rounded corners** instead of sharp edges. So vertices that are positionally identical but belong to different faces must be **duplicated** with different normals (e.g. the corner $(1,0,0)$ needs a separate vertex entry for each of the three faces meeting there).
+3. Assign a **normal** to each vertex — a cube needs **more normals than naive vertex-sharing would suggest**: if adjacent faces shared the same vertex+normal, OpenGL would interpolate between the differing face normals, producing **rounded corners** instead of sharp edges. So vertices positionally identical but belonging to different faces must be **duplicated** with different normals (e.g. corner $(1,0,0)$ needs a separate vertex entry for each of the three faces meeting there).
 4. Build a **vertex attribute array**: each entry has an index, a position, and a normal.
 5. Build a separate **index array**: groups of three indices defining each triangle.
-6. **Winding order:** vertices of each triangle should be specified consistently (conventionally **anticlockwise**, ACW, when viewed from the front) — this lets OpenGL compute a face-normal-direction via cross product and determine whether a polygon faces the camera. Back-facing polygons (normal pointing away from the camera) are not rendered ("backface culling") since they would be invisible anyway.
+6. **Winding order:** vertices of each triangle should be specified consistently (conventionally **anticlockwise**, ACW, viewed from the front) — this lets OpenGL compute a face-normal direction via cross product and determine whether a polygon faces the camera. Back-facing polygons (normal pointing away) are not rendered ("backface culling") since they'd be invisible anyway.
 
 ---
 
@@ -581,7 +581,7 @@ Supports arithmetic, bitwise (integer), logical (bool), and assignment operators
 
 1. **Define a texture function (image)** $T(u,v)$, where $(u,v)$ are texture coordinates (typically normalised to $[0,1]$).
 2. **Define a correspondence** between vertices of the 3D object and texture coordinates ("UV mapping") — typically authored once per mesh.
-3. **When rendering**, for every surface point: interpolate $(u,v)$ across the primitive (barycentric, as for other attributes), look up $T(u,v)$, and use the result as colour and/or reflectance (e.g. feeding into $k_d$ in the shading equation).
+3. **When rendering**, for every surface point: interpolate $(u,v)$ across the primitive (barycentric, as for other attributes), look up $T(u,v)$, and use the result as colour and/or reflectance (e.g. feeding $k_d$ in the shading equation).
 
 ### Filtering: up-sampling vs down-sampling
 
@@ -589,13 +589,13 @@ Supports arithmetic, bitwise (integer), logical (bool), and assignment operators
   - **Nearest-neighbour:** pick the closest texel — blocky.
   - **Bilinear:** weighted average of the 4 nearest texels — smoother.
 - **Down-sampling (minification):** the texture has higher resolution than the screen area — naive point-sampling causes severe aliasing as many texels map to one pixel.
-  - **Area averaging** (vs none): properly downsampling by averaging all texels covered by a pixel's footprint avoids aliasing; sampling without averaging produces noisy/aliased results, especially on high-frequency textures viewed at a distance/grazing angle.
+  - **Area averaging** (vs none): downsampling by averaging all texels in a pixel's footprint avoids aliasing; sampling without averaging produces noisy/aliased results, especially on high-frequency textures viewed at a distance/grazing angle.
 
 ### Mipmaps
 
-Textures are often stored at **multiple resolutions** — a **mipmap** pyramid where each level is half the size (in each dimension) of the level below; mipmap dimensions are powers of 2. This provides a **pre-filtered (area-averaged)** texture for cases where screen pixels are larger than full-resolution texels (minification) — the renderer picks (or interpolates between, "trilinear") the mip level whose texel size best matches the screen footprint. A full mip chain requires only an extra **1/3** of the base texture's storage. OpenGL can generate mipmaps automatically from a base texture.
+Textures are often stored at **multiple resolutions** — a **mipmap** pyramid where each level is half the size (per dimension) of the level below; mipmap dimensions are powers of 2. This provides a **pre-filtered (area-averaged)** texture for when screen pixels are larger than full-resolution texels (minification) — the renderer picks (or interpolates between, "trilinear") the mip level whose texel size best matches the screen footprint. A full mip chain requires only an extra **1/3** of the base texture's storage. OpenGL can generate mipmaps automatically from a base texture.
 
-**Anisotropic filtering:** extends mipmapping to handle surfaces viewed at oblique angles, where the texture footprint is stretched in one direction more than the other — samples along multiple mip levels/directions to avoid blur in one axis and aliasing in the other.
+**Anisotropic filtering:** extends mipmapping to surfaces viewed at oblique angles, where the texture footprint stretches more in one direction than the other — samples along multiple mip levels/directions to avoid blur in one axis and aliasing in the other.
 
 ### Texture tiling
 
@@ -607,7 +607,7 @@ A single texture image is often used to texture **multiple surfaces/objects** si
 
 ### Bump mapping and normal mapping
 
-A special texture that perturbs the **surface normal** used in shading — the underlying geometry remains flat, but the resulting shading *appears* as if the surface were bumpy/uneven. Cheap to implement entirely in the fragment shader (no extra geometry).
+A special texture that perturbs the **surface normal** used in shading — the underlying geometry remains flat, but the resulting shading *appears* bumpy/uneven. Cheap to implement entirely in the fragment shader (no extra geometry).
 
 ### Displacement mapping
 
@@ -615,7 +615,7 @@ Like bump mapping, but the texture actually **modifies the geometry/surface posi
 
 ### Environment mapping
 
-Used to show a reflection of the surrounding environment on an object, under the simplifying assumption that the reflected environment is **infinitely far away** (so the reflection only depends on the reflection direction, not the surface position). Implemented via a precomputed environment texture (e.g. a **cube map** — six images forming the faces of a cube around the scene). Very efficient way to fake specular/mirror-like reflections in real time — not physically exact (due to the infinite-distance assumption and lack of true ray tracing) but a fast, convincing approximation.
+Shows a reflection of the surrounding environment on an object, under the simplifying assumption that the reflected environment is **infinitely far away** (so the reflection depends only on direction, not surface position). Implemented via a precomputed environment texture (e.g. a **cube map** — six images forming the faces of a cube around the scene). A very efficient way to fake specular/mirror-like reflections in real time — not physically exact (infinite-distance assumption, no true ray tracing) but a fast, convincing approximation.
 
 ---
 
@@ -625,7 +625,7 @@ Used to show a reflection of the surrounding environment on an object, under the
 
 - **Colour buffer(s):** the rendered image.
 - **Depth buffer:** required by the Z-buffer algorithm to track the nearest depth written per pixel so nearer fragments aren't overwritten by farther ones.
-- **Stencil buffer:** masks out certain pixels from being drawn (e.g. UI overlays / minimaps that are already fully covered by other content, so no need to render the scene there). Also enables effects like **planar mirrors**: render the scene normally, then re-render the scene from a camera reflected behind the mirror plane, restricted (via the stencil buffer) to only the pixels covered by the mirror surface.
+- **Stencil buffer:** masks out certain pixels from being drawn (e.g. UI overlays/minimaps already fully covered by other content, so no need to render the scene there). Also enables effects like **planar mirrors**: render the scene normally, then re-render it from a camera reflected behind the mirror plane, restricted (via the stencil buffer) to only the pixels covered by the mirror surface.
 - **Stereo buffers:** separate left/right-eye buffers for stereo rendering — rarely used in practice (historically only on expensive cards; other stereo techniques exist that don't need dedicated buffers).
 
 ### Double buffering
@@ -638,22 +638,22 @@ When the GPU finishes drawing (and the display is ready), a **swap** command exc
 
 ### Triple buffering
 
-Adds a **third buffer** so the GPU doesn't have to idle waiting for a swap when it finishes a frame early (with double buffering, the GPU cannot start the next frame in the front buffer while it's being displayed). Cycling through three buffers eliminates idle gaps and better utilises the GPU.
+Adds a **third buffer** so the GPU doesn't idle waiting for a swap when it finishes a frame early (with double buffering, the GPU cannot start the next frame in the front buffer while it's displayed). Cycling through three buffers eliminates idle gaps and better utilises the GPU.
 
-- **Drawbacks:** more memory required; higher latency between when a frame is drawn and when it's actually displayed.
+- **Drawbacks:** more memory required; higher latency between drawing a frame and displaying it.
 
 ### Vertical synchronisation (V-Sync) and tearing
 
 The display copies pixels from the front buffer to the screen **line by line**. If a buffer swap happens mid-scan, the top of the screen shows the previous frame and the bottom shows the new frame — a visible **tearing** artefact (a horizontal discontinuity).
 
-**V-Sync** fixes this by deferring the swap command until the display finishes scanning the current frame (i.e. only swap at the end of the last row) — guaranteeing the display always shows one consistent frame.
+**V-Sync** fixes this by deferring the swap command until the display finishes scanning the current frame (only swapping at the end of the last row) — guaranteeing the display always shows one consistent frame.
 
 - **Without V-Sync:** swap happens immediately when drawing finishes → possible tearing.
 - **With V-Sync:** GPU waits for the next scan boundary before the new frame can be shown. If frame drawing takes **longer** than the refresh interval, the previous frame must be **repeated** while waiting — causing stutter/lag (the classic "frame drop").
 
 ### Adaptive sync: FreeSync / G-Sync
 
-**FreeSync (AMD)** and **G-Sync (Nvidia)** implement **Variable Refresh Rate (VRR)**: rather than the display dictating a fixed refresh rate that the GPU must hit, the **GPU signals the display** when a frame is ready, and the display adapts its refresh timing accordingly (render frame → signal display → display scans it in → GPU can start the next frame). There can still be a small delay if the display cannot instantaneously change its scan timing, but the display can monitor GPU frame times and adjust. Benefits: can **save power** when content is static, and **reduces input lag** for real-time/interactive graphics compared to fixed V-Sync.
+**FreeSync (AMD)** and **G-Sync (Nvidia)** implement **Variable Refresh Rate (VRR)**: rather than the display dictating a fixed refresh rate the GPU must hit, the **GPU signals the display** when a frame is ready, and the display adapts its refresh timing accordingly (render frame → signal display → display scans it in → GPU starts the next frame). A small delay can remain if the display cannot instantaneously change its scan timing, but it can monitor GPU frame times and adjust. Benefits: can **save power** with static content, and **reduces input lag** for real-time/interactive graphics versus fixed V-Sync.
 
 ---
 
@@ -671,11 +671,11 @@ The display copies pixels from the front buffer to the screen **line by line**. 
 
 - **Rods:** responsible for **night/low-light vision**; no colour discrimination; absent from the fovea.
 - **Cones:** responsible for **daylight vision and colour perception**; three types, sensitive to short (S), medium (M), and long (L) wavelengths.
-  - Called **LMS** rather than "RGB" because their sensitivity curves are broad and overlapping (ambiguous), especially L and M, which are very close to each other (an evolutionarily recent split).
+  - Called **LMS** rather than "RGB" because their sensitivity curves are broad and overlapping (ambiguous), especially L and M, which are very close (an evolutionarily recent split).
 
 ### The electromagnetic spectrum and visible light
 
-Visible light spans roughly **360–730 nm** (this cheat sheet's source notes also cite ~380–780 nm as a common rounding). Earth's atmosphere happens to transmit strongly in this band. Visible light is higher-energy than thermal infrared, so ambient heat doesn't interfere with vision.
+Visible light spans roughly **360–730 nm** (this cheat sheet's source notes also cite ~380–780 nm as a common rounding). Earth's atmosphere transmits strongly in this band. Visible light is higher-energy than thermal infrared, so ambient heat doesn't interfere with vision.
 
 ### Reflectance and reflected light
 
@@ -683,9 +683,9 @@ Real surfaces have a wavelength-dependent **reflectance** $R(\lambda)$ — the f
 
 $$L(\lambda) = I(\lambda)\, R(\lambda) \qquad (\text{reflected light} = \text{illumination} \times \text{reflectance})$$
 
-**Example — why a "red" object can look green:** if a surface reflects mostly red wavelengths but the eye is much less sensitive to red than to green at the relevant intensities, the perceived colour can be dark green despite red light dominating the reflected spectrum — perception depends on $L(\lambda)$ *combined with* the eye's LMS sensitivities, not on $R(\lambda)$ alone.
+**Example — why a "red" object can look green:** if a surface reflects mostly red wavelengths but the eye is much less sensitive to red than to green at the relevant intensities, the perceived colour can be dark green despite red light dominating the reflected spectrum — perception depends on $L(\lambda)$ *combined with* the eye's LMS sensitivities, not $R(\lambda)$ alone.
 
-Modelling surface reflectance with just RGB channels is a **crude approximation** to the true continuous spectral reflectance — done because full-spectrum (hundreds of wavelength channels) representation would be expensive to compute and hard to acquire data for.
+Modelling surface reflectance with just RGB channels is a **crude approximation** to the true continuous spectral reflectance — done because full-spectrum (hundreds of wavelength channels) representation is expensive to compute and hard to acquire data for.
 
 ### Cone responses and metamers
 
@@ -693,17 +693,17 @@ $$\text{cone response} = \sum_\lambda \big(\text{sensitivity}(\lambda) \times \t
 
 This projects the (effectively infinite-dimensional) spectrum of incoming light down to just **three** numbers (L, M, S responses).
 
-**Metamers:** two physically different light spectra that produce identical LMS cone responses are perceptually **indistinguishable** — they "look the same colour" despite being physically different. This is why displays can reproduce convincing colour using only **three primaries** (RGB): the display doesn't need to reproduce the real-world spectrum, only to produce a metameric match — the same LMS response.
+**Metamers:** two physically different light spectra that produce identical LMS cone responses are perceptually **indistinguishable** — they "look the same colour" despite being physically different. This is why displays can reproduce convincing colour using only **three primaries** (RGB): the display need not reproduce the real-world spectrum, only produce a metameric match — the same LMS response.
 
 ### Tristimulus theory and colour matching
 
-**Tristimulus theory:** any colour can be matched by an appropriate mixture of just **three** independent reference (primary) colours. Sometimes a "negative" contribution is needed — practically implemented in colour-matching experiments by adding light to the *test* side instead (cannot subtract light). **Colour-matching functions** describe, for monochromatic spectral colours of equal intensity, how much of each of the three primaries is needed to match — relative to a particular choice of primaries.
+**Tristimulus theory:** any colour can be matched by an appropriate mixture of just **three** independent reference (primary) colours. Sometimes a "negative" contribution is needed — practically implemented in colour-matching experiments by adding light to the *test* side instead (light cannot be subtracted). **Colour-matching functions** describe, for monochromatic spectral colours of equal intensity, how much of each primary is needed to match — relative to a particular choice of primaries.
 
 ### CIE XYZ colour space
 
 - **CIE 1931 (Guild & Wright):** colour-matching experiments with ~12 observers with normal colour vision, using a 2° visual field (fovea only) — basis of the CIE 1931 XYZ colour-matching functions.
 - **CIE 2006 XYZ:** derived from LMS colour-matching functions (Stockman & Sharpe); the S-cone response differs most from the 1931 version.
-- **Design goals of XYZ:** abstract away from the specific primaries used in the experiments; ensure all matching functions are **positive** (no negative-light awkwardness); make the $Y$ primary roughly proportional to **luminance** (light intensity).
+- **Design goals of XYZ:** abstract away from the specific experimental primaries; ensure all matching functions are **positive** (no negative-light awkwardness); make the $Y$ primary roughly proportional to **luminance** (light intensity).
 - XYZ uses **standardised, imaginary (non-physically-realisable) primaries** that can match *all* physically realisable colour stimuli. Cone (LMS) sensitivities are a linear transform of XYZ.
 
 ### CIE chromaticity diagram
@@ -712,7 +712,7 @@ Chromaticity coordinates discard luminance, projecting XYZ onto a 2D plane:
 
 $$x = \frac{X}{X+Y+Z}, \qquad y = \frac{Y}{X+Y+Z}, \qquad z = \frac{Z}{X+Y+Z}, \qquad x+y+z=1$$
 
-(so only $x,y$ are needed; $z = 1-x-y$). Pure spectral (single-wavelength) colours lie on the outer curved boundary ("spectral locus"); all other perceivable colours are mixtures of spectral colours and lie **inside** the curve. Points outside the curve do not correspond to any physically realisable colour.
+(so only $x,y$ are needed; $z = 1-x-y$). Pure spectral (single-wavelength) colours lie on the outer curved boundary ("spectral locus"); all other perceivable colours are mixtures of spectral colours, lying **inside** the curve. Points outside the curve do not correspond to any physically realisable colour.
 
 ### Opponent-process colour vision and luminance
 
@@ -721,7 +721,7 @@ Signals from the LMS cones are not sent raw to the visual cortex — they're fir
 - **Chromatic mechanism** ($L-M$): sensitive to red–green differences.
 - **Chromatic mechanism** ($S - (L+M)$): sensitive to yellow–violet (blue–yellow) differences.
 
-Rods feed into the same pathways as cones (no separate four-dimensional colour channel from rods) — rods are most sensitive at low light and saturate at high light; there's an intermediate range where both rods and cones contribute.
+Rods feed into the same pathways as cones (no separate four-dimensional colour channel from rods) — rods are most sensitive at low light and saturate at high light, with an intermediate range where both contribute.
 
 **Luminance:** a measure of light weighted by the achromatic mechanism's response; units $\text{cd/m}^2$ (candela per square metre, ISO) or **nit**. Note luminance is *not* exactly "perceived brightness" — it's the output of the specific $L+M$-summing visual mechanism.
 
@@ -729,7 +729,7 @@ Rods feed into the same pathways as cones (no separate four-dimensional colour c
 
 - All physically possible/visible colours form a 3D solid in XYZ space; any real **display** can only reproduce a sub-region (**gamut**) of this solid.
 - A chromaticity diagram is a 2D slice through this 3D solid; the full solid is often visualised using chromaticity $(x,y)$ plus $\log Y$ as the third axis. The gamut tapers toward the bottom (dark): as light decreases, cones desensitise and the range of distinguishable colours shrinks, eventually collapsing to a line where only rods (no colour) function.
-- **HDR (High Dynamic Range)** systems attempt to capture/represent/reproduce (almost) all visible colours — a **scene-referred** representation; the display is responsible for tone-mapping down to its own capabilities.
+- **HDR (High Dynamic Range)** systems attempt to capture/represent/reproduce (almost) all visible colours — a **scene-referred** representation; the display handles tone-mapping down to its own capabilities.
 - **SDR (Standard Dynamic Range)** systems represent only the sRGB gamut, mimicking CRT capabilities — a **display-referred** representation.
 
 ---
@@ -738,7 +738,7 @@ Rods feed into the same pathways as cones (no separate four-dimensional colour c
 
 ### From linear light to display-encoded values
 
-Physically-based rendering produces **linear** colour values — directly proportional to physical light quantities (luminance), so that mixing/combining them is physically accurate. But:
+Physically-based rendering produces **linear** colour values — directly proportional to physical light quantities (luminance), so mixing/combining them is physically accurate. But:
 - Representing linear values needs many bits (floating point) to avoid visible steps.
 - Displays expect encoded integer values (e.g. 0–255), not raw floats.
 
@@ -750,13 +750,13 @@ The simplest/most common SDR display encoding. Given a normalised digital signal
 
 $$V_{out} = V_{in}^{\gamma}$$
 
-with $\gamma \approx 2.2$ — historically this models the physical response of a CRT (the relationship between input voltage and emitted light intensity). A scaling constant may be applied to obtain absolute luminance units. The general **gamma correction** formula for encoding (going the other way, raising to $1/\gamma$) is:
+with $\gamma \approx 2.2$ — historically modelling a CRT's physical response (the relationship between input voltage and emitted light intensity). A scaling constant may be applied to obtain absolute luminance units. The general **gamma correction** formula for encoding (going the other way, raising to $1/\gamma$) is:
 
 $$V_{out} = V_{in}^{1/\gamma}$$
 
 ### Why gamma is needed
 
-Linear luminance values are **strongly perceptually non-uniform**: a step from 0 to 0.1 (linear) is a huge perceptual jump, while a step from 0.8 to 0.9 is barely noticeable. Gamma/display-encoded values are distributed much more **perceptually uniformly** — equal steps in encoded value correspond to roughly equal perceived brightness steps. Practically: without gamma encoding, at least **12 bits per channel** would be needed to avoid visible banding (vs 8 bits with gamma encoding) — gamma encoding effectively "spends" more of the available codes on the perceptually-important dark tones.
+Linear luminance values are **strongly perceptually non-uniform**: a step from 0 to 0.1 (linear) is a huge perceptual jump, while 0.8 to 0.9 is barely noticeable. Gamma/display-encoded values are distributed much more **perceptually uniformly** — equal steps in encoded value correspond to roughly equal perceived brightness steps. Practically: without gamma encoding, at least **12 bits per channel** would be needed to avoid visible banding (vs 8 bits with it) — gamma encoding effectively "spends" more of the available codes on perceptually-important dark tones.
 
 ### Luma vs luminance
 
@@ -768,7 +768,7 @@ $$L' = 0.2126\,R' + 0.7152\,G' + 0.0722\,B'$$
 
 $$L = 0.2126\,R + 0.7152\,G + 0.0722\,B = 0.2126\,(R')^{\gamma} + 0.7152\,(G')^{\gamma} + 0.0722\,(B')^{\gamma}$$
 
-Luma and luminance are **different quantities** despite the superficially similar formula — luminance requires converting back to linear space (raising each gamma-encoded channel to the power $\gamma$) before applying the weights. A common mistake is to treat gamma-encoded RGB values as if they were already linear when computing luminance.
+Luma and luminance are **different quantities** despite the superficially similar formula — luminance requires converting back to linear space (raising each gamma-encoded channel to $\gamma$) before applying the weights. A common mistake is treating gamma-encoded RGB values as already linear when computing luminance.
 
 ### sRGB and standards
 
@@ -779,9 +779,9 @@ Luma and luminance are **different quantities** despite the superficially simila
 
 OpenGL has built-in support for sRGB texture formats:
 - **sRGB textures** store data already in gamma-corrected (display-encoded) space — natural for images authored/captured for display (e.g. JPEGs).
-- On **texture lookup/filtering**, OpenGL automatically converts sRGB-encoded values back to **linear** RGB — important because filtering (e.g. bilinear interpolation, mipmapping) is only physically correct when performed in **linear** space.
+- On **texture lookup/filtering**, OpenGL automatically converts sRGB-encoded values back to **linear** RGB — important because filtering (bilinear interpolation, mipmapping) is only physically correct in **linear** space.
 - When **writing** to an sRGB-format framebuffer, OpenGL automatically converts linear shader output to sRGB-encoded values for storage/display.
-- **Common bug:** sampling an sRGB texture as if it were linear (no conversion) produces shading that's systematically too dark/contrasty, because lighting calculations (which assume linear inputs) are fed gamma-encoded values.
+- **Common bug:** sampling an sRGB texture as if linear (no conversion) produces shading that's systematically too dark/contrasty, because lighting calculations (which assume linear inputs) are fed gamma-encoded values.
 
 ### Converting between RGB colour spaces (SDR ↔ HDR)
 
@@ -793,7 +793,7 @@ General pipeline for converting a display-encoded image into a different (e.g. w
 4. Convert XYZ → the target linear RGB space (e.g. BT.2020) via another 3×3 matrix.
 5. Apply the **target display encoding** (e.g. the PQ transfer function for HDR) to get the final display-encoded values.
 
-Since steps 3–4 (and any other linear-space colour transforms) are just matrix multiplications, consecutive matrices can be **pre-multiplied together** into a single combined 3×3 matrix, so the whole linear-space conversion becomes one matrix multiply. The general principle: **all colour-space conversions happen in linear space**; encoding/decoding (gamma, sRGB, PQ, ...) only happens at the boundaries (input texture, output framebuffer).
+Since steps 3–4 (and any other linear-space colour transforms) are just matrix multiplications, consecutive matrices can be **pre-multiplied together** into a single combined 3×3 matrix, so the whole linear-space conversion becomes one matrix multiply. General principle: **all colour-space conversions happen in linear space**; encoding/decoding (gamma, sRGB, PQ, ...) happens only at the boundaries (input texture, output framebuffer).
 
 ### Representing colour — choices of colour space
 
@@ -814,7 +814,7 @@ CMY is approximately the inverse of RGB; the CMY space is nominally a cube, like
 **CMYK** adds black ("Key") because:
 - Real inks are imperfect absorbers.
 - Mixing C+M+Y in practice gives a muddy grey/brown, not true black.
-- Large amounts of printed text are pure black, and perfectly aligning C+M+Y registration for black text is impractical — a dedicated black ink solves both problems.
+- Large amounts of printed text are pure black, and perfectly aligning C+M+Y registration for black text is impractical — dedicated black ink solves both problems.
 
 ### Munsell, HSV, and HLS
 
@@ -825,7 +825,7 @@ CMY is approximately the inverse of RGB; the CMY space is nominally a cube, like
 
 Adjacent colours in Munsell space are a standard "perceptual" distance apart (determined empirically) — but the space is **highly irregular** (e.g. a vivid yellow is much brighter than a vivid blue at the same "value").
 
-**HSV (Hue, Saturation, Value):** same goals as Munsell, but defined by a **simple transformation of RGB** (a few equations), making it easy to implement. Hue and Value retain their Munsell meanings; "Saturation" replaces "Chroma". Geometrically forms an **inverted hexagonal pyramid**: the apex is black, the centre of the (hexagonal) base is white, hue varies by angle around the central (grayscale) axis, and value varies along that axis. Primary/secondary colours sit at the vertices of the base hexagon.
+**HSV (Hue, Saturation, Value):** same goals as Munsell, but defined by a **simple transformation of RGB** (a few equations), making it easy to implement. Hue and Value retain their Munsell meanings; "Saturation" replaces "Chroma". Geometrically an **inverted hexagonal pyramid**: the apex is black, the centre of the (hexagonal) base is white, hue varies by angle around the central (grayscale) axis, and value varies along that axis. Primary/secondary colours sit at the base hexagon's vertices.
 
 **HLS (Hue, Lightness, Saturation):** addresses HSV's limitation that **white and pure colours (e.g. blue) share the same "Value"** — perceptually wrong, since white looks much brighter than saturated blue. HLS stretches the white point toward higher values along a new **Lightness** axis. Hue and Saturation keep their meanings; "Lightness" replaces "Value".
 
@@ -833,8 +833,8 @@ Adjacent colours in Munsell space are a standard "perceptual" distance apart (de
 
 Colour-matching experiments reveal that the CIE $xy$ chromaticity diagram is **very perceptually non-uniform** — fitting ellipses (from measured discrimination thresholds, "**MacAdam ellipses**") around different colour centres in $xy$ space gives wildly different ellipse sizes (some colours are much more discriminable per unit $xy$-distance than others).
 
-- **CIE $u'v'$ space:** a transformation of chromaticity designed so that MacAdam ellipses become more **uniform and circular** — perceived colour differences correspond more consistently to Euclidean distance.
-- **CIE L\*u\*v\*:** built from XYZ → $u'v'$ chromaticity + a **Lightness** $L^*$ axis, then $u^*, v^*$ chromaticity coordinates (from which hue and chroma can be derived) — gives an HSV-like representation but with much better perceptual uniformity.
+- **CIE $u'v'$ space:** a transformation of chromaticity designed so MacAdam ellipses become more **uniform and circular** — perceived colour differences correspond more consistently to Euclidean distance.
+- **CIE L\*u\*v\*:** built from XYZ → $u'v'$ chromaticity + a **Lightness** $L^*$ axis, then $u^*, v^*$ chromaticity coordinates (from which hue and chroma can be derived) — an HSV-like representation but with much better perceptual uniformity.
 - **CIE L\*a\*b\*:** an alternative with similar goals/perceptual-uniformity performance to Luv — both remain standard because neither is conclusively "better".
 - Even Lab/Luv are **not perfectly uniform**: perceived colour differences shrink near the black and white ends of the $L^*$ axis, and the maximum perceivable chroma differs by hue.
 
@@ -844,7 +844,7 @@ Colour-matching experiments reveal that the CIE $xy$ chromaticity diagram is **v
 
 ### The tone-mapping problem
 
-Rendered (or HDR-captured) images can have a far higher **dynamic range** than a display can reproduce. The human visual system can perceive and adapt across an enormous range (from deep shadow to bright sunlight), but display devices have a comparatively narrow fixed luminance range. **Tone mapping** compresses the wide dynamic range of the source into the range the display can show.
+Rendered (or HDR-captured) images can have a far higher **dynamic range** than a display can reproduce. The human visual system perceives and adapts across an enormous range (deep shadow to bright sunlight), but displays have a comparatively narrow fixed luminance range. **Tone mapping** compresses the wide dynamic range of the source into the range the display can show.
 
 ### Why tone mapping is needed (goals)
 
@@ -859,20 +859,20 @@ Different tone-mapping operators trade off among several goals:
 
 ### Scene-referred to display-referred mapping
 
-If the source scene has a very wide dynamic range, the tone curve is designed to faithfully reproduce a chosen luminance range, **compress** values above that range, and **clip** values far above the display's maximum to the display's peak luminance. Tone mapping is often combined with **display encoding** — the display-encoding stage can additionally account for display contrast (achievable dynamic range), brightness, and ambient viewing-light levels.
+If the source scene has a very wide dynamic range, the tone curve is designed to faithfully reproduce a chosen luminance range, **compress** values above that range, and **clip** values far above the display's maximum to its peak luminance. Tone mapping is often combined with **display encoding** — the display-encoding stage can additionally account for display contrast (achievable dynamic range), brightness, and ambient viewing-light levels.
 
 ### Tone curves
 
 The primary mechanism for tone mapping: a function (curve) mapping input (scene) luminance to output (display) luminance.
-- The **ideal** mapping would be the **identity** (don't change colours at all) — but this is impossible because the display is limited by its peak brightness and black level.
+- The **ideal** mapping would be the **identity** (don't change colours at all) — impossible, since the display is limited by its peak brightness and black level.
 - A naive **straight-line (linear rescale)** mapping squeezes the entire input dynamic range into the display's range — simple, but doesn't account for image content.
-- Better results come from **adapting the tone curve's shape to image content**: if many pixel values cluster in a certain range, make the curve steep there (preserving contrast where it matters); if very few pixels are extremely bright/dark, it may be acceptable to **clip** them (they're perceptually less important).
+- Better results come from **adapting the tone curve's shape to image content**: if many pixel values cluster in a range, make the curve steep there (preserving contrast where it matters); if very few pixels are extremely bright/dark, it may be acceptable to **clip** them (they're perceptually less important).
 
 ### Sigmoidal tone curves (photographic / Reinhard)
 
-Common digital cameras mimic the response of **analogue film**, which was engineered over decades for good tone reproduction:
+Common digital cameras mimic the response of **analogue film**, engineered over decades for good tone reproduction:
 - **Toe:** the dark end, where the film approaches its minimum density — response saturates smoothly rather than clipping abruptly.
-- **Linear (central) region:** for the typical exposure range, response is nearly linear — this is where the important image content usually falls.
+- **Linear (central) region:** for the typical exposure range, response is nearly linear — where the important image content usually falls.
 - **Shoulder:** the bright end, where the film approaches full exposure — again smoothly saturating rather than clipping.
 
 This S-shaped ("sigmoidal") curve is fast to compute and gives a pleasing, photographic look.
@@ -883,7 +883,7 @@ $$L_{out} = \frac{L^{b}}{L^{b} + a}$$
 
 (equivalently written with $L$ raised to a power $b$ in both numerator and a shifted denominator) where:
 - $b$ controls the **steepness/contrast** of the curve.
-- $a$ **shifts the curve** left/right — effectively brightening or darkening the image (often anchored using the image's geometric mean / log-average luminance $L_m$, so that setting the key value relative to $a=1$ reproduces a "good" mid-range exposure).
+- $a$ **shifts the curve** left/right — brightening or darkening the image (often anchored to the image's geometric mean / log-average luminance $L_m$, so the key value relative to $a=1$ reproduces a "good" mid-range exposure).
 
 **Effect of parameters (worked example):**
 - Increasing $a$ → brighter image (shifts the curve so more of the input range maps to higher output).
@@ -895,8 +895,8 @@ This exposes the fundamental **contrast vs dynamic-range trade-off** inherent to
 ### Other named operators (for context)
 
 - **Linear scaling:** simplest — multiply by a constant so some reference value maps to display white; clips everything brighter.
-- **Drago:** logarithmic-based operator designed to preserve detail across a very wide range by adapting a logarithmic base to the image's maximum luminance.
-- **ACES (Academic Colour Encoding System):** an industry-standard tone-mapping/colour-pipeline used widely in film/games, designed to give a consistent, filmic response across a wide dynamic range.
+- **Drago:** logarithmic-based operator that preserves detail across a very wide range by adapting a logarithmic base to the image's maximum luminance.
+- **ACES (Academic Colour Encoding System):** an industry-standard tone-mapping/colour-pipeline used widely in film/games, giving a consistent, filmic response across a wide dynamic range.
 
 ---
 
@@ -904,15 +904,15 @@ This exposes the fundamental **contrast vs dynamic-range trade-off** inherent to
 
 - **Matrix order matters:** $(model)(view)(projection)$ applied to a column vector is **not** the same as $(projection)(view)(model)$. With the Cambridge convention (column vectors, matrices applied on the left, composed right-to-left), the *rightmost* matrix is applied *first*.
 - **Forgetting the perspective divide:** clip space (post-projection-matrix, still homogeneous, $w \ne 1$ in general) is **not** the same as normalised device coordinates (NDC) — you must divide by $w$.
-- **Non-orthogonal transforms break normals:** normals must be transformed by $(M^{-1})^\top$, not $M$ itself, whenever $M$ includes non-uniform scale or shear. Using $M$ directly gives normals that are no longer perpendicular to the transformed surface.
-- **Transformations don't commute:** always check the order — translate-then-rotate ≠ rotate-then-translate, in both 2D and 3D.
+- **Non-orthogonal transforms break normals:** normals must be transformed by $(M^{-1})^\top$, not $M$, whenever $M$ includes non-uniform scale or shear. Using $M$ directly gives normals no longer perpendicular to the transformed surface.
+- **Transformations don't commute:** always check order — translate-then-rotate ≠ rotate-then-translate, in 2D and 3D.
 - **Barycentric coordinates sum to 1** and are each in $[0,1]$ for points inside the triangle — use this both for the inside/outside test ($\alpha,\beta,\gamma \ge 0$) and for attribute interpolation.
-- **Z-buffer precision is worst far from the camera** (especially when storing $1/z$): choose near/far plane ratios sensibly — an excessively large far plane or excessively small near plane both hurt precision and can cause z-fighting.
+- **Z-buffer precision is worst far from the camera** (especially when storing $1/z$): choose near/far plane ratios sensibly — an excessively large far plane or small near plane both hurt precision and can cause z-fighting.
 - **Specular highlights need per-pixel evaluation:** computing Phong specular per-vertex and interpolating either misses highlights or smears them unrealistically across a triangle.
-- **sRGB/gamma must be handled correctly:** textures authored for display are gamma-encoded; lighting/filtering calculations require **linear** values. Convert on input (texture sample) and convert back on output (framebuffer write).
-- **Luma ≠ luminance:** luma is computed from gamma-encoded values directly; luminance requires converting back to linear first, despite the formulas looking similar.
+- **sRGB/gamma must be handled correctly:** textures authored for display are gamma-encoded; lighting/filtering calculations require **linear** values. Convert on input (texture sample) and back on output (framebuffer write).
+- **Luma ≠ luminance:** luma is computed from gamma-encoded values directly; luminance requires converting back to linear first, despite the similar-looking formulas.
 - **Mipmaps are essential at minification**, not just an optimisation — without them, high-frequency textures viewed at a distance/grazing angle alias badly.
-- **CIE XYZ is device-independent; RGB/sRGB are not** — RGB spaces are defined relative to specific primaries and a specific transfer function (gamma/sRGB/PQ), while XYZ is a fixed, abstract reference space that any RGB space can be converted to/from via a 3×3 matrix.
+- **CIE XYZ is device-independent; RGB/sRGB are not** — RGB spaces are defined relative to specific primaries and a transfer function (gamma/sRGB/PQ), while XYZ is a fixed, abstract reference space any RGB space can be converted to/from via a 3×3 matrix.
 - **Tone mapping trades contrast for dynamic range** — no single operator can maximise both; the choice of $a,b$ (or equivalent parameters) always involves this trade-off.
 
 ---
@@ -920,10 +920,10 @@ This exposes the fundamental **contrast vs dynamic-range trade-off** inherent to
 ## Exam strategy
 
 - **Pipeline questions:** sketch the full MVP pipeline (object → world → view → clip → NDC → screen) with arrows, explicitly marking where the perspective divide happens.
-- **Shading questions:** write out the **full** Phong illumination equation, identify every term ($k_a I_a$, diffuse, specular, including $\hat N, \hat L, \hat R/\hat H, \hat V$), and state any "gross assumptions" being made (no shadows, lights at infinity, no inter-reflection).
+- **Shading questions:** write out the **full** Phong illumination equation, identify every term ($k_a I_a$, diffuse, specular, including $\hat N, \hat L, \hat R/\hat H, \hat V$), and state the "gross assumptions" (no shadows, lights at infinity, no inter-reflection).
 - **Projection questions:** derive the perspective projection formula from similar triangles ($x' = dx/z$), then show how it's expressed as a matrix + perspective divide.
 - **Rasterisation questions:** define barycentric coordinates via the implicit line equations, show the inside-test ($\alpha,\beta,\gamma \ge 0$), and mention the incremental $\Delta\alpha,\Delta\beta,\Delta\gamma$ optimisation if asked about efficiency.
-- **Colour questions:** explain *why* XYZ is device-independent (abstract imaginary primaries, fixed by CIE definition) while RGB/sRGB are not (tied to specific display primaries and transfer functions) — and be ready to state the luma vs luminance distinction precisely.
+- **Colour questions:** explain *why* XYZ is device-independent (abstract imaginary primaries, fixed by CIE definition) while RGB/sRGB are not (tied to specific display primaries and transfer functions) — and state the luma vs luminance distinction precisely.
 - **Tone mapping questions:** state the goals (scene-referred → display-referred, dynamic range reduction, etc.), give the sigmoidal/Reinhard formula, and discuss the contrast/dynamic-range trade-off via $a$ and $b$.
 - **Z-buffer questions:** explain why near/far planes are needed (precision of stored depth, especially $1/z$), and describe z-fighting as a precision artefact between near-coincident depths.
 - **GLSL/OpenGL questions:** be ready to write a short vertex or fragment shader from a description — know the `in`/`out`/`uniform` qualifiers and `gl_Position` convention (`mvp * vec4(pos, 1.0)`).
