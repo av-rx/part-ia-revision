@@ -2,115 +2,1000 @@
 module: interaction-design
 title: "Interaction Design — Cheat Sheet"
 paper: paper-3
-updated: "2026-05-10"
+updated: "2026-06-12"
 ---
 
-## User-centred design (UCD)
+## 1 · Foundations: IxD and user-centred design
 
-Iterative cycle:
+### Goals of interaction design
+
+- Develop **interactive** products — UX as well as UI.
+- Develop **usable** products — help users do something / fulfil tasks.
+- Alternative approaches besides UCD: Participatory Design / co-design, Contextual Design, etc.
+
+### Why take a UCD approach
+
+- Useful software sells better.
+- "You aren't your user" — in most cases the designer has never met the user.
+- A structured way of allowing yourself to be **surprised**.
+
+UCD helps with:
+- **Building the right software** — useful purpose.
+- **Building the software right** — usable for its intended purpose.
+
+$\Rightarrow$ UCD is a structured way of building **empathy** for the people affected by the software.
+
+### UCD as part of the software engineering process
+
+- Identifying target users / stakeholders.
+- Developing requirements.
+- Iterative/agile development — UCD methods slot into the iterative cycle; people find it hard to say what they want without a concrete artefact to react to.
+- **Return on investment:** the cost of changes rises roughly **10×** with each phase the product progresses through. Building the wrong thing means rebuilding from scratch — correcting misunderstandings early saves enormous engineering cost.
+
+### The UCD cycle
 
 1. **Understand context of use** — who, what, where, why.
 2. **Specify user requirements** — derived from research.
 3. **Produce design solutions** — sketches, wireframes, prototypes.
 4. **Evaluate against requirements** — usability test, expert review.
 
-Cycle until requirements met.
+Cycle until requirements are met.
 
-## User research methods
+### Types of context for design
+
+| Context | Characteristics | Focus |
+|---|---|---|
+| **Consumer apps** (discretionary) | User can stop using at any time | "Walk up and use" usability |
+| **Enterprise / government apps** (compulsory) | User compelled to use through work; training possible | Productivity |
+| **Socio-technical services** (mixed) | Provision of a service users may or may not take up | No strong a-priori usability priority |
+
+---
+
+## 2 · User research methods
+
+Research is **empirical** — collects quantitative (numbers) and qualitative (words/images/video) data. Common challenges across all methods: practicalities/recruitment, ethics and risk of distorting data, power disparity between researcher and participant, confidentiality/anonymity, incentives.
 
 | Method | Strength | Weakness |
 |---|---|---|
-| Interviews | Rich qualitative | Small sample, recall bias |
-| Surveys | Many users, quantitative | Limited depth |
-| Contextual inquiry | Real environment | Time-intensive |
-| Diary studies | Longitudinal | Requires participant discipline |
-| Focus groups | Group dynamics | Groupthink, dominant voices |
-| Observation (ethnography) | Authentic behaviour | Hawthorne effect |
-| Analytics / clickstream | Real, large-scale | Lacks "why" |
+| **Unstructured interview** | Rich, interviewee-led data | Too much data, off-target |
+| **Semi-structured interview** | Rich AND targeted | Still a lot of data |
+| **Structured interview** | Straightforward to collect/compare | Rigid |
+| **Focus groups (different stakeholder groups)** | Surfaces tensions between groups | Conflict |
+| **Focus groups (same stakeholder group)** | More efficient than individual interviews | Dominant participants / groupthink |
+| **Observation — field (ethnography)** | Realistic setting, authentic behaviour | Hard to set up, intrusive, privacy issues, Hawthorne effect |
+| **Observation — lab** | Less intrusive | Not a realistic setting |
+| **Direct + concurrent think-aloud** | Good for understanding context as it happens | Lots of data, time-consuming |
+| **Indirect + retrospective protocol** | Good for cognitively demanding tasks | Users forget, time-consuming |
+| **Questionnaires** | Reach many people, qual + quant | Rigid, impersonal |
+| **Card sorting** | Reveals terminology/relationships/categories | — |
+| **Studying documentation** | Available/accessible, no stakeholder time needed | Idealised, outdated, insufficient alone |
+| **Researching similar products** | Prompts requirements, alternative designs | May inhibit creativity |
+| **Analytics / clickstream** | Real, large-scale | Lacks the "why" |
+| **Diary studies** | Longitudinal | Requires participant discipline |
 
-## Data analysis
+### Interview types in detail
 
-- **Affinity diagramming** — cluster sticky notes by emergent themes.
-- **Personas** — fictional archetypes grounded in research.
-- **Journey maps** — phases × touchpoints × emotions.
-- **Jobs-to-be-done** — what task is the user "hiring" the product for?
-- **Quantitative** — descriptive stats, significance tests.
+- **Unstructured** (no prepared questions) — interviewee-led, rich data; risk of too much off-target data.
+- **Semi-structured** (some prepared questions) — rich and targeted; still produces a lot of data.
+- **Structured** (all questions prepared) — straightforward data collection but rigid.
 
-## Requirements & design space
+Key guidelines for interviews: focus on **concrete examples**, ask **open** questions, avoid **leading** questions, avoid jargon.
 
-- Functional + non-functional reqs (cf. SwSec).
-- **Design space exploration:** sketch many alternatives before committing — diverge, then converge.
-- **Constraints inform creativity** — list hard, soft, and self-imposed.
+### Questionnaire question types
 
-## Prototyping
+- **Open questions** — respondent answers freely.
+- **Closed questions** — numerical input, simple checklist (yes/no/don't know), multi-point rating scale, ranked order.
 
-| Fidelity | Examples | Use |
+### Card sorting variants
+
+- **Open** — no pre-established groups; participants sort and label freely.
+- **Closed** — pre-established groups provided; participants assign cards to them.
+- **Hybrid** — combination of both.
+
+### Mixed methods designs
+
+| Design | Pattern |
+|---|---|
+| **Triangulation** | Collect QUAL + QUANT simultaneously, interpret together |
+| **Embedded** | One method nested within the other (e.g. QUANT with embedded qual) |
+| **Explanatory** | QUANT first, then QUAL to explain results |
+| **Exploratory** | QUAL first, then QUANT to test/generalise findings |
+
+### Choosing methods
+
+Depends on: available time, risk, researcher knowledge, design context, and the nature of user tasks (sequential vs overlapping, simple vs complex, layman vs expert).
+
+### Key guidelines for all research
+
+- Focus on users' and stakeholders' needs.
+- Involve **all** stakeholder groups (more than one representative each).
+- Get **informed consent**.
+- Use **mixed methods** — combine approaches and data types.
+- **Plan analysis before collecting data.**
+- Iterate on requirements and designs between data-collection activities.
+
+---
+
+## 3 · Requirements analysis
+
+### What is a requirement
+
+> *"Something that the product must do or a quality that the product must have."* (Robertson & Robertson, 1999)
+
+A requirements specification answers: what should the software do to meet user needs; what properties/attributes should the system have; what constraints apply to development?
+
+**Why it matters:** without requirements analysis, customers explain needs ambiguously, designers misunderstand wishes, and programmers implement the wrong thing — failures here are **expensive and time-consuming** to fix later. Requirements let the team agree *what* the system will do and *how* it will behave before implementation.
+
+### Functional vs non-functional
+
+- **Functional** — what the system should do.
+- **Non-functional** — constraints on the system/development: data requirements, environmental requirements, user characteristics, usability goals & UX requirements.
+
+This split is **imprecise** and falsely implies functional requirements matter more.
+
+### Wiegers & Beatty hierarchy
+
+A richer hierarchy flowing from business goals down to specification:
+
+**Business Requirements** → Vision & Scope Document → **User Requirements** → User Requirements Document → **Functional Requirements** → Software Requirements Specification
+
+**Business Rules** influence all levels; **Quality Attributes**, **External Interfaces**, and **Constraints** feed into the SRS.
+
+| Type | Definition |
+|---|---|
+| **Business Requirement** | High-level objectives of the org/customer. *Why* are we building this? |
+| **Business Rule** | Policy/guideline/standard/regulation constraining the business — origin of several requirements, not itself a software requirement |
+| **User/Stakeholder Requirement** | Goal or task users must perform — captured via use cases, scenarios, user stories |
+| **Quality Requirement** | Non-functional — *how well* the system performs: usability, performance, reliability, maintainability, security, portability, interoperability |
+| **Functional Requirement** | A behaviour exhibited under specific conditions — inputs, outputs, functionality, data manipulated (a.k.a. *solution requirement*) |
+| **System Requirement** | Top-level requirement for a multi-system product (software, or software + hardware) |
+| **External Interface Requirement** | A connection to the outside world — user, other system, or hardware |
+| **Constraint** | Restriction on developer choices — implementation/delivery method, technology, dev environment, legacy systems, existing DBs |
+
+**Mapping to the dev process:**
+- *What to build, for whom, why?* → Business Requirements
+- *What features matter most?* → User/Stakeholder Requirements
+- *How should each feature work?* → Functional Requirements
+- *Is it usable?* → Quality Requirements
+
+### Worked example: hiking app
+
+- **User Requirement:** maintain an accurate UK map with hiking-safety info, allow creating/storing hike plans, track via GPS, warn user if off-course.
+- **Functional/Solution Requirements** (one decomposition): store UK map with roads/footpaths/terrain/elevation with toggleable satellite imagery; display Met Office weather warnings on the map; check for map updates weekly; settings page lets the user choose auto-update vs manual permission.
+- **Constraint:** mobile app, both Android & iOS.
+- **Reliability:** works offline during tracking mode.
+- **Usability:** onboarding flow < 10 steps.
+
+> Design/prototyping bridges **User Requirements → Functional Requirements**; implementation realises the **SRS**.
+
+---
+
+## 4 · Exploring the design space
+
+### One requirement, many designs
+
+The same user requirements can be implemented in many ways (e.g. audiobook apps — Audible, Google Books, LibriVox all differ in layout). Constraints and quality attributes prune the space, but infinite possibilities remain.
+
+### UCD approach to design
+
+Create and compare alternative designs while:
+1. **Keeping the user in mind** — improve the user's environment and goals, not just system requirements.
+2. **Being iterative**: $\text{design} \to \text{measure (against requirements) / test (with users)} \to \text{redesign}$.
+
+### Methods overview
+
+Brainstorming, moodboarding, concept development, design principles, storyboards, and prototyping — mix and match as the project demands.
+
+### Brainstorming
+
+Generates ideas to solve design problems. One person facilitates; house rules:
+- Set a time limit.
+- Begin with a target problem/brief.
+- Refrain from judgment/criticism.
+- Encourage weird and wacky ideas.
+- Aim for **quantity**.
+- Build on others' ideas.
+
+**Structuring team interaction:**
+- **Group** — individuals contribute directly (e.g. Osborn's method).
+- **Individual → Group** — brainstorm alone then share (nominal group technique, team idea mapping).
+- **Individual ↔ Individual → Group** — respond to others' ideas then discuss as a group (group passing technique, directed brainstorming).
+
+**Structuring idea generation:** brain-netting (no structure), mind mapping (associations/relationships), starbursting (what/where/when/why/how per idea), gap analysis, SWOT analysis.
+
+**Challenges:** peer pressure, groupthink, disengagement, personality clashes (dominant voices). Mitigations: anonymous idea collection, clear facilitator role, time-boxing, individual-first techniques.
+
+### Moodboard
+
+A **collage** giving the "feel" of the design — images, text, samples in a chosen composition. Used to develop design concepts/style guides and communicate to the team. Feeds into (but is distinct from) the **style guide** (typography, colour palette, components) → final UI. Different personas drive radically different moodboards (commuter → calm/escapist; teen skater → bold colours; retiree → cozy/literary).
+
+**Challenges:** must match branding but also support usability/UX; easy for visuals, harder for interaction; little tool support for interaction moodboards; subjective and hard to critique ("the feel of it is not quite right").
+
+### Concept development
+
+Identifies a **driving concept or metaphor**, driving both **graphic** decisions (layout, colours, fonts, imagery) and **interaction** decisions (UI elements, widgets, animation, navigation). A strong concept produces a **coherent** design.
+
+- **Verbal concepts** — words describing the interface; abstract; focus on the *message*.
+- **Visual concepts** — images/colour schemes; concrete; focus on *how* the message is conveyed.
+
+Brainstorming and moodboarding both feed concept creation.
+
+**Examples:** the **desktop metaphor** (Apple Macintosh System 1 — folders, files, trash); Microsoft OneNote's **notebook metaphor** (sections as coloured tabs, pages within sections, drawing as a key input modality).
+
+**Challenges:** must match branding while supporting UX; a concept implemented too literally can be distracting; getting team agreement on a common vision.
+
+### Product-specific design principles
+
+Value statements that frame and guide design decisions — distinct from generic universal/platform principles. Used to focus design around user values/experience, help build a **consistent** experience, get **team alignment**, fuel and guide creativity, and make better/faster decisions.
+
+**Examples:**
+- **Medium** (Dustin Senos): *Direction over Choice* (limit layout/type/colour choices to keep focus on writing); *Appropriate over Consistent* (break consistency when OS/device/context warrants it); *Evolving over Finalized* (drafts, responses, notes improve with use).
+- **Firefox Design Values:** Takes care of you, Plays well with others, Exuberance, Finely crafted, Global, Balances power and simplicity, Makes sense of the web, High user-performance, You help make it.
+
+**Where values are used (Firefox model):** (1) filter & choose which design opportunities to pursue, (2) shape design decisions during refine & test, (3) guide implementation trade-offs and what's shipped, (4) establish what success looks like.
+
+**Guidelines for good principles:** small in number (3–5, memorable); differentiating (not just generic usability truisms — explain why a user picks *you*); unambiguous and actionable; concise and memorable.
+
+**Challenges:** too generic/not opinionated; don't actually help (or even interfere if too rigid); prioritising which matter most.
+
+### Storyboards
+
+A rough representation of a user's activities as a **series of frames/drawings** presenting a sequential storyline, showing how a user progresses through activities. Used to force thinking about user flow/tasks, iterate quickly, and communicate what users (can) do and how.
+
+**Two foci:**
+- **Context around interaction** — sketches of the user in their environment with thoughts/emotions.
+- **Screen & interaction flow** — wireframes connected by transitions/annotations.
+
+**How to create:** (1) consider a persona and scenario (context), (2) think of the sequence of actions, (3) add detail toward a solution, (4) write the story, (5) draw the storyboard, (6) caption each frame.
+
+**Challenges:** wrong level of detail (must show interaction, not just screens); cost (good storyboards take time and revisions); version management (storyboards must update as features change).
+
+### Prototyping — overview
+
+> An incomplete, early version of a product — an interactive version of a design, not production-grade. Best evaluation of alternative designs is letting users interact with them (see Wizard of Oz, §9).
+
+**Why prototype:**
+- **Sketch** — explore the design space (interaction, form, technology, concepts, content).
+- **Demo** — to team, client, user, funder.
+- **Develop design** — test concepts/assumptions; "thinking through making"; identify and prioritise key features; choose between alternatives.
+- **Evaluation/user testing** — objective feedback (designer is biased), real usage, find opportunities and problems.
+
+**What to prototype:** technical aspects, workflow/task design, screen layouts & info display, graphic design/look-and-feel, content (taxonomy of objects/widgets), controversial/critical areas (security, privacy).
+
+**Kinds — by polish:** low fidelity (lo-fi) vs high fidelity (hi-fi).
+**Kinds — by interactivity:** non-interactive (storyboards, wireframes) vs interactive (click-through — Adobe XD, Balsamiq, PowerPoint with transitions — or coded).
+
+| Kind | Characteristics | Used for |
 |---|---|---|
-| Low | paper, sketches | early concept, fast iteration |
-| Medium | wireframes (Balsamiq, Figma greyscale) | flow + structure |
-| High | clickable interactive | usability tests, pre-development |
+| **Paper** | Drawing/diagram/photoshop; quick, cheap, sketchy; many iterations | Early exploration, lo-fi user testing |
+| **Wireframe** | Schematic of IA; layout only, no visual design; shows content/nav relationships | Structuring screens before visual design |
+| **Video** | Quick or complex; sketchy or polished; tells a story | Demo impossible/costly — speculative tech, future scenarios (e.g. *Beyond the Fold*) |
+| **Form model** | Doesn't work but shows form; rough or refined | Shows how the object exists in the world; allows direct handling (e.g. Palm Pilot wooden block) |
 
-- **Wizard of Oz** — human simulates system response (great for AI prototyping).
-- **Throw-away** vs **evolutionary** prototyping.
+---
 
-## Heuristic evaluation (Nielsen's 10)
+## 5 · Prototyping fidelity in depth
 
-1. Visibility of system status.
-2. Match between system and the real world.
-3. User control and freedom.
-4. Consistency and standards.
-5. Error prevention.
-6. Recognition rather than recall.
-7. Flexibility and efficiency of use.
-8. Aesthetic and minimalist design.
-9. Help users recognise, diagnose, and recover from errors.
-10. Help and documentation.
+### Fidelity continuum
 
-**Severity (Nielsen):** 0 (not a problem) → 4 (catastrophe). Use 3–5 evaluators for ~75% issue coverage.
+| Fidelity | Examples | Cost | Best for |
+|---|---|---|---|
+| Sketches | pencil, whiteboard | minutes | brainstorming, divergence |
+| Paper prototypes | hand-drawn screens, cut-outs | hours | early flow & nav |
+| Wireframes | Balsamiq, Figma greyscale | hours | structure, information architecture |
+| Interactive wireframes | Figma click-through | day | flow + light interaction |
+| Hi-fi mockups | Figma full-colour | days | visual design, brand |
+| Hi-fi clickable | Figma + Smart Animate | days | usability tests, stakeholder demos |
+| Coded prototype | minimal app/site | weeks | technical feasibility, performance |
 
-## Cognitive walkthrough
+### Low fidelity prototyping
 
-For each task, at each step ask:
-1. Will the user try to achieve the right effect?
-2. Will the user notice the correct action is available?
-3. Will the user associate the correct action with the effect?
-4. If correct action performed, will the user see progress toward the goal?
+Rough hand-drawn sketches (pencil & paper, post-it notes). Goal: **quick, cheap, easy to change**. Detail key elements and how the user interacts with them. Used to create multiple alternatives, test/evaluate ideas with users (e.g. Wizard of Oz), and get feedback on **interaction & concepts** rather than visual presentation.
 
-Best for **first-use** scenarios (onboarding).
+- Cheap to throw away — encourages exploration of many ideas.
+- Critique focuses on structure, not aesthetics.
+- Anyone can contribute (non-designers).
+- Less convincing for stakeholders/customers; limited evaluation of detailed interaction (animation, latency, exact wording).
 
-## Usability testing
+### High fidelity prototyping
 
-- **Formative** (during development) vs **summative** (final assessment).
-- **Think-aloud protocol** — participants verbalise.
-- **Task-based scenarios.**
-- **Metrics:** success rate, time-on-task, errors, **SUS** (System Usability Scale, 10 items, 0–100).
-- **Sample size:** 5 users find ~80% of issues for a single iteration; full coverage needs more.
+Interactive, often implemented (code or Adobe XD-like tools). Goal: enable real interaction for evaluation/refinement; realistic visuals & interaction; some content real, some simulated. Used to test/evaluate with users (interaction/flow/usability) and to support investment/sales/marketing.
 
-## Accessibility
+- Realistic feel — better usability testing for visual & micro-interactions; stakeholder buy-in; ready to hand to developers.
+- Expensive to change — **anchoring effect**, people commit to embodied ideas; risk of users thinking it's a real product (e.g. unsafe to enter real data).
 
-- **WCAG** levels: A, AA (legal baseline often), AAA.
-- **Keyboard navigation, focus indicators, semantic HTML.**
-- **Colour contrast** ≥ 4.5:1 for body text; 3:1 for large text.
-- **Screen-reader testing** with VoiceOver / NVDA.
-- **Universal design** — usable by all without adaptation.
+**Rule of thumb:** match fidelity to the *question you're testing*. Testing nav layout? Wireframes suffice. Testing a complex animated transition? Go hi-fi.
 
-## Mental models & metaphors
+### Throw-away vs evolutionary
 
-- **Norman:** designer's model → system image → user's mental model. Mismatches produce confusion.
-- **Affordances** — perceived possible actions.
-- **Signifiers** — perceptible cues to affordances.
-- **Feedback loops** — system tells user about its state.
+- **Throw-away:** prototype is a learning artefact, not future code — avoids "code rot".
+- **Evolutionary:** prototype evolves into the production system — faster, but risks accumulating shortcuts.
+
+The Cambridge syllabus emphasises **throw-away** prototyping early — separating "exploring the design space" from "engineering the system".
+
+### Wizard of Oz
+
+A human secretly drives behaviour the system would later automate. Particularly useful for prototyping ML/AI features before the model exists. Tests the UX of the *experience*, not the underlying tech.
+
+### Why prototype (cost framing)
+
+Prototyping is **cheap thinking aloud in a tangible artefact**. The cost of changing a design grows roughly **10×** at each subsequent phase (requirements → design → implementation → test → production). Prototyping lets you explore and iterate before investment locks you in.
+
+---
+
+## 6 · Cognitive aspects for design
+
+Three considerations for HCI design: **perception & cognition** (memory, visual perception, attention), **interaction** (affordances, form factor, input modalities, gestures), **content understanding** (information architecture, data modelling). Practical tools that generalise these: interaction design patterns, common widgets, UI frameworks, design systems.
+
+### Memory — Atkinson–Shiffrin model (1968)
+
+Three stores connected by cognitive processes; **rehearsal** loops within short-term memory; **retrieval** pulls from long-term back to short-term.
+
+**Short-term memory (STM):** holds (but doesn't manipulate) a small amount of information in an active, readily available state, for a short time.
+- **Duration** ≈ 15–30 seconds, extendable by rehearsal.
+- **Capacity** ≈ 7 items, varies by type (≈7 digits, ≈6 letters, ≈5 words) — Miller's *"The Magical Number Seven, Plus or Minus Two"* (1956).
+- **Chunking** extends capacity by grouping items, e.g. `7562986224741` vs `756 298 622 741`.
+
+**Design implication — tooltips:** reduce STM load by showing relevant data on hover instead of forcing the user to remember it across screens.
+
+**Long-term memory (LTM):**
+- **Explicit/declarative** — episodic (events/experiences, e.g. entering the building this morning), semantic (facts/concepts, e.g. capital of a country).
+- **Implicit/procedural** — motor skills (tying shoelaces, riding a bike).
+
+**Memorisation:** usually by repetition; also when something is surprising/unusual; we learn by **association** between pieces of information.
+
+**Design implication — established conventions:** conventions reduce learning cost — users transfer existing memory (login/basket top-right, nav tabs along top, filters on left sidebar, e.g. Waterstones/Amazon). Same with code — similar syntax across languages (Java, C#, Python) lets a learner transfer a known mental model.
+
+**Activation of content in memory** increases with: **practice** (how many times used), **recency** (how recently used), **context** (what else is in focus of attention).
+
+**Recollection vs recognition (Yonelinas, 2002):**
+
+| Property | Recognition | Recollection |
+|---|---|---|
+| Speed | Faster | Slower |
+| Sensitive to divided attention? | Less | More |
+| Dependence | Independent of recollection | — |
+
+**Design implication — recognition over recall:**
+- **Labelling** — icons + text (e.g. Android clock app labels ALARM/CLOCK/TIMER/STOPWATCH instead of icons alone).
+- **Similar functionality** — reuse visual patterns across products (heart icon for "love it", share-icon row).
+- **Code completion** — IDEs surface options so users recognise rather than recall API names.
+
+### Visual perception — Gestalt principles
+
+The whole is perceived as more than the sum of its parts. Seven principles:
+
+1. **Similarity** — *make equal elements look equal.* Group similar elements (shape, size, colour) into one perceptual unit. E.g. Google search results style each role consistently (title/URL/snippet); BBC News styles headlines/content/date/section distinctly. **Anomaly** (breaking similarity in shape/orientation) draws attention — used to show selection.
+2. **Proximity** — *group related things.* Elements close in space are perceived as one unit (three rows of dots with tight horizontal spacing read as rows; tight vertical spacing reads as columns). E.g. Amazon footer link groups, Craigslist category columns.
+3. **Enclosure** — *border related things.* Elements enclosed by a visual border belong together — drawn lines, background colours, or even grey separator lines (BBC News story dividers, eBay product cards).
+4. **Common fate** — *move related things together.* Elements that move together are perceived as belonging together (Amazon expanding menus, Netflix carousels sliding as a unit).
+5. **Figure/ground** — *make content stand out from background.* We separate foreground (figure) from background (ground) — e.g. Gmail compose dialog over dimmed inbox, modal overlays, hero images with overlaid CTAs. **Figure-ground ambiguity** (Rubin's vase) is exploited in poster design.
+6. **Closure** — *viewers fill in visual gaps.* Icons built from disconnected strokes still read as coffee cup, map pin, printer, wifi, phone; simple logos rely on this. ⚠ **Bias warning** — if the missing part isn't a simple shape, closure can mislead (e.g. a line chart with a gap is interpolated by the viewer into a smooth curve even if the real data was jagged).
+7. **Good continuation** — lines/curves are perceived as continuous even when they intersect other objects. Multi-series line charts: crossing lines are still tracked as continuous series (helped by colour coding); decorative connecting paths guide the eye through a story.
+
+### Attention
+
+> *Selectively concentrating on a discrete aspect of information whilst ignoring other perceivable information.* Multi-modal (visual, auditory, verbal, tactile); incomplete, inaccurate, and limited.
+
+**Types (Spotlight Model):** **reflexive/exogenous** (triggered by external cues) vs **intentional/endogenous** (triggered by internal cues). Spotlight model: small **focus**, surrounded by blurry **fringe**, beyond which is the **margin**.
+
+**Reflexive vs intentional (Jonides, 1981):** external cues get more processing time and accuracy, are more difficult to ignore, remain effective under cognitive load, and draw attention even when unexpected.
+
+**Design implication — control visual noise:** bad examples (`arngren.net`, `rudgwicksteamshow.co.uk`) overwhelm the visual system; cluttered code editors hide a missing brace among noise. Good choices: **notifications** (surface what matters, when it matters — don't blast every event); **progressive disclosure** (reveal options as needed, e.g. Duolingo onboarding asks beginner-status, then runs a placement test, then drills exercises).
+
+### Affordances
+
+> Visual design that suggests and encourages the right interaction.
+
+- A door handle's shape suggests wrapping a hand around it and rotating.
+- A raised rectangle with a label suggests it can be **pressed** (button).
+- A row of items cut off at the edge suggests **scrolling**.
+- Underlined/coloured/arrow-marked text suggests **clicking**/external linking.
+
+⚠ Affordances make UIs **easy to learn** — they are not innate; users still rely on prior experience with conventions.
+
+### Physical form of user interfaces
+
+What the user can do, and how, depends on UI type: **physical** (consumer electronics/appliances), **screen-based** (mobile/laptop/desktop — course focus), **wearables**, **speech**, **VR**, **tangible**, **robot**.
+
+**Screen-based interfaces — two components:** **presentation device** (primary screen, external monitors) and **input device(s)** (touchscreen, touchpad, mouse, keyboard — physical or on-screen).
+
+**Constraints on design:**
+- **Form factor** — hardware dimensions: size (phone/tablet/laptop/multi-monitor), screen ratio (portrait/landscape, fixed/rotatable).
+- **Input modality** — how the user interacts: input points (single-point/multi-touch), available gestures (point, click, double-click, scroll, hover, swipe, pinch, etc.).
+
+**Examples:**
+- *Form factor:* the same web app on phone/tablet/desktop has very different layouts — single column with hamburger menu on phone, multi-column with persistent nav on desktop.
+- *Input modality:* a map app on phone uses pinch-to-zoom (multi-touch); the same site on desktop requires ⌘+scroll (modifier + wheel).
+- *Both combined:* video editing on laptop (Premiere Pro, mouse+keyboard, large multi-panel UI) vs on phone (CapCut, touch gestures, simplified timeline) — same task, fundamentally different IxD.
+
+---
+
+## 7 · Content, information architecture, and data modelling
+
+### Information architecture (IA)
+
+> The practice of deciding how to arrange the parts of something to be understandable.
+
+**Aims:** organise content/functionality into **taxonomies and hierarchies**; define **relationships** between content/functionality; **tag** content with metadata; design **search optimisation** strategies.
+
+**Process for developing an IA:**
+1. **Inventory** — what content do you have, what else do you need?
+2. **Establish a taxonomy** — high-level structure.
+3. **Chunk** — divide into logical units.
+4. **Diagram** — show structure and navigation between units.
+5. **Analyse** — test with real users and revise.
+
+Applies across the abstract/detail spectrum — whole system → single page → section.
+
+### Taxonomy types
+
+| Type | Relationship | Example |
+|---|---|---|
+| **Flat** | Enumeration | List of items |
+| **Hierarchy** | *is-a* (content ↔ category) | Sitemap tree |
+| **Faceted** | *has-a* (content ↔ attributes) | Filterable product catalog |
+| **Network** | Association (e.g. multiple tags) | Tag clouds |
+
+Usually surfaced via **navigation** and **sitemaps**. **Card-sorting** elicits taxonomies from users' own perspective.
+
+### IA diagramming best practices
+
+- Focus on **structure**, not hierarchy — hierarchy can change, structure should not.
+- **Processes should be logical** — page links should help the user achieve tasks.
+- IA is part of **UCD** — based on user research.
+- Consider the **user of the IA itself** (PM, dev team) — include what they need.
+- IA must **change over time** as the system evolves.
+
+### Page-level IA
+
+- **Match user expectations** for content location — only move things if there's a rationale.
+- **Consistency** and cognitive aspects help.
+- **Wireframes** map out page structure — how elements are organised.
+
+### Common mobile app page structures
+
+- **Hierarchy/Catalog** — drill-down list (e.g. Sainsbury's).
+- **Hub & Spoke** — central hub with detail pages (e.g. Google Maps place).
+- **Nested Doll/Flow** — linear sequence (e.g. booking flow).
+- **Tabbed View** — peer screens via tabs (e.g. Clock app).
+- **Dashboard** — summary of key info (e.g. Fitbit).
+- **Filtered View** — filtered list of items (e.g. Play Store top charts).
+
+### Navigation
+
+Moving between pages/screens to complete tasks. Three directions:
+- **Lateral** — same level of hierarchy.
+- **Forward** — top → down in hierarchy.
+- **Reverse** — backwards, chronologically or hierarchically.
+
+**Search** is an alternative navigation method for locating content quickly — often easier and quicker than navigating a complex hierarchy. IA must be complemented with UCD (requirements + testing).
+
+### Data modelling
+
+Frontend (UI) and backend (data structures, algorithms) both need design decisions. IA organises information *for the user*; data modelling asks: how, and for what, is the data/logic going to be used? Trade-offs based on both system performance *and* end-to-end user requirements.
+
+**Example — article data structure:** a wireframe maps to a backing data structure:
+```
+article: { title, subtitle, date, author, hero-image,
+           hero-image-credit, content, tags, comments, ... }
+site:    { articles, recipes, ... }
+```
+
+**Example — tagging:** how will tags be used drives the model (add/remove tags to messages & conversations; organise tags in groups, possibly one tag → multiple groups; some tags need emphasis). Resulting model: **no hierarchy** in the data model — tag objects are flat with metadata (`groups`, `filterable`, `type`, `visible`); messages/conversations only store the **tag id** (reference, not embed).
+
+**Example — messaging SMS:**
+- **Option A** — server stores conversations + users + messages explicitly: `User —1:n— Conversation —1:n— Message`.
+- **Option B** — server only stores `Message` (from, to, text, date, status); the client reconstructs conversations & users. The backend doesn't need to model abstractions the client can derive — server forwards message data, only the client has the *concept* of conversations & users.
+
+**Data modelling principles:**
+- Design with the user in mind.
+- Keep structures flexible — systems evolve, features get added.
+- Balance backend and frontend data needs — UI reshaping data can introduce bugs.
+- Align system properties with user requirements — find what matters and where.
+- Don't choose technical elegance over usability — the real world is messy.
+
+---
+
+## 8 · Practical tools for interaction design
+
+Three overlapping tools — **interaction design patterns**, **UI toolkits**, **design systems** — each provides solutions/implementations of common IxD problems at different levels of detail.
+
+### Interaction design patterns
+
+**Origin:** Christopher Alexander's *A Pattern Language* (architecture) → GoF *Design Patterns* (software) → Tidwell's *Designing Interfaces* (UI).
+
+**Why useful:** a tool for learning UI design; quick solutions to common problems; ensure **consistency** and match **user expectations**; offer a **vocabulary** for discussing designs.
+
+**Structure of a pattern (five components):** title, problem (what does it solve?), context (when to use it), solution (how to implement it), example.
+
+| Pattern | Problem | Context | Solution |
+|---|---|---|---|
+| **Navigation Tabs** | User needs to navigate site/app sections with clear indication of current location | 2–10 sections; short, predictable, stable category titles; highest level of nav | Single-line horizontal row of tabs (usually top); whole tab area clickable, not just label; maintained across all pages |
+| **Breadcrumbs** | User needs to navigate up/back in hierarchy and understand their location | Page is within a hierarchy (not top); other local nav doesn't expose hierarchy; user may arrive via external source (e.g. search) | Single-line list of labels from topmost page down to current page |
+| **Carousel** | Browse a set of visually-representable similar items, possibly select one | Items represent well visually; limited screen space; 3–8 items shown at a time; possibly multiple carousels for categorised items | Horizontal row of items with thumbnails; nav controls (arrows) or scroll/swipe |
+
+### UI toolkits
+
+> A collection of UI components/widgets, usually styled with a common theme, used to build digital applications.
+
+**Focus:** easy access to common interactive components + consistent theming.
+
+**Perceived advantages:** easier to build by combining building blocks; better team communication (common design language); better usability (consistent appearance).
+
+- **Bootstrap** — front-end open-source toolkit with pre-built components; for each component: demo, CSS class(es), example HTML, configuration options.
+- **Untitled UI** — Figma UI kit + design system; components + variants, customisable styles (colour/typography/effects), example pages for common uses.
+
+### Design systems
+
+> A collection of reusable components, guided by clear standards, composable to build one or more applications.
+
+Design systems = **interaction design patterns + UI kits + strict rules of usage.**
+
+**Perceived advantages:** faster development via reusable components + shared rationale; unified language across cross-functional teams; improved usability (cohesive, consistent UX); improved maintenance and scalability.
+
+**Example — Google Material Design:** design system for Android/iOS/Flutter/web.
+- Guided by principles (e.g. *Material is the metaphor*, *Bold, graphic, intentional*, *Motion provides meaning*).
+- Defines **components** as interactive building blocks with built-in states (focus, selection, activation, error, hover, press, drag, disabled).
+- Supports **theming** — colour, typography, shape customisable per brand.
+- Per-component docs cover **usage**, **anatomy** (labelled parts), **behaviour**, **placement**, **states**, **specs**.
+
+### Summary and limitations
+
+All three tools offer a shared vocabulary and solutions of varying detail. **Limitations:** a catalogue is **not a checklist** — every project has context, pick the right pattern/component; some patterns solve the same problem in different contexts; abstractions still leave appearance details (size, colour, typography) and interactivity (screen size/ratio, touch vs click) to decide. **Not a replacement for UCD** — must verify user needs first.
+
+---
+
+## 9 · User research data analysis
+
+Data alone doesn't build empathy — must analyse and interpret it to: relate to what the data says about users; keep users in mind during design and decision-making; discuss implications with the team and with users. Different data types require different analysis approaches.
+
+### Quantitative vs qualitative
+
+- **Quantitative** — numbers; analysis ascertains size, magnitude, amount, statistical significance.
+- **Qualitative** — words, pictures, video; analysis identifies themes, patterns, stories. Can be turned into numbers (e.g. counts of themes) but at the cost of depth.
+
+| Method | Qualitative example | Quantitative example |
+|---|---|---|
+| Interviews / Focus groups | Audio/video, interviewer notes, open-question responses | Demographics, closed questions |
+| Observation | Observer notes, photos, think-aloud, behaviour records | Demographics, time on task, # people involved |
+| Questionnaires | Open-question + "further comments" | Demographics, closed-question responses |
+| Card sorting | Records of behaviour & comments | List of categories, items in each category |
+
+### Quantitative analysis
+
+- **Central tendency:** mean (sum ÷ count), median (middle ranked value), mode (most frequent value).
+- **Variability:** range (highest − lowest), standard deviation $\sigma$ (amount of variation), variance ($\sigma^2$).
+- **Categorical distribution** — percentages.
+- **Graphical representations:** bar, pie, scatter, time series, histogram, maps. ⚠ Be careful not to mislead with numbers.
+
+**Anscombe's Quartet:** four datasets with **identical** summary statistics ($\bar{x}, \bar{y}$, regression line, $R^2$) but very different shapes when plotted $\Rightarrow$ always **visualise** data — descriptive statistics alone can hide structure.
+
+**Card sorting analysis:** build a pairwise **similarity (co-occurrence) matrix** — how often participants grouped each pair together. **Hierarchical clustering/dendrogram** visualises which items group at what dissimilarity level; cut at a chosen threshold to extract clusters. Reveals participants' mental categories (e.g. tomatoes group with vegetables despite being botanically a fruit).
+
+**Tools:** spreadsheets (simple stats/graphs); statistical packages (SPSS, STATA); visualisation (RAWGraphs, Tableau, Google Data Studio, Power BI); card-sorting (UXtweak, OptimalSort, UX Metrics).
+
+### Qualitative analysis
+
+**Basic approaches:** critical incidents (identify key events, apply specific techniques); identifying themes (emergent — **inductive**, may depend on observation framework); categorising data (pre-specified scheme — **deductive**). In practice, combine all three.
+
+**Analytical frameworks:**
+
+| Framework | Data | Focus | Expected outcomes | Granularity |
+|---|---|---|---|---|
+| **Conversation analysis** | Recordings of spoken conversation | How conversations are conducted | Insights into how conversations are managed/progress | Word-level, pauses, inflection |
+| **Discourse analysis** | Recordings of speech/writing | How words convey meaning | Implicit/hidden meaning in texts | Word, phrase, sentence |
+| **Content analysis** | Any "text" (written, A/V, photos) | Frequency of items in text | Frequency of items appearing | Words → feelings → artefacts |
+| **Interaction analysis** | Video of natural activity | Verbal/non-verbal interaction between people and artefacts | Insights about how knowledge/action are used within an activity | Artefact, dialogue, gesture |
+| **Grounded theory** | Empirical data of any kind | Building a theory around the phenomenon | Theory grounded in empirical data | Varies |
+| **Systems-based** | Large-scale, heterogeneous | Large-scale people + tech orgs (hospital, airport) | Insights about organisational effectiveness/efficiency | Macro/organisational |
+
+**Thematic Analysis (TA):** codes (small labels for data fragments) → grouped into **themes** → optionally **sub-codes** under codes. Themes are emergent groupings of related codes (e.g. *Robot capabilities* covering *engagement*, *empathy*, *feedback*, *instruction*). Output usually paired with **representative quotes** to evidence each theme.
+
+**Tools:** paper & markers, spreadsheets; NVivo, Atlas.ti, CAQDAS Networking Project, Coda.
+
+### Presenting findings
+
+Depends on **audience**, **purpose**, and **methods used**. Use graphical representations where helpful. Present an **evidence chain** — show how findings derive from underlying data (adds richness, protects against over-interpretation). Quant + qual often combined (e.g. embodiment-preference scores alongside participant quotes).
+
+---
+
+## 10 · Keeping the user in mind: stakeholders, personas, scenarios, journey maps
+
+Tools to summarise findings concretely and guide design: stakeholder analysis, personas, scenarios, journey maps.
+
+### Stakeholder analysis
+
+Identifies stakeholders, tracks their interests, prioritises product development.
+
+- **Target users** — primary stakeholder(s); can be more than one group (e.g. CamCORS: students, supervisors, DoSes).
+- **Other stakeholders** — those who **influence** the target user's interaction (e.g. parents managing a child's device use), are **affected** by it (e.g. friends of a runner using a trail map), or **support** it (e.g. helpdesk staff).
+
+**Types — from the product (Eason, 1987):** **primary** (frequent, hands-on users), **secondary** (produce input/receive output but don't directly use it), **tertiary** (affected by introduction, or influence purchase), **facilitating** (involved in design/development/maintenance).
+
+**Types — from the organisation:** **internal** (employees, managers, owners), **external** (customers/users, community/society, suppliers, shareholders, government).
+
+**Stakeholder mapping (2×2 grid — Priority × Involvement):**
+
+| | Low involvement | High involvement |
+|---|---|---|
+| **High priority** | Address their concerns | Involve them extensively |
+| **Low priority** | Keep them informed | Involve them as needed |
+
+**Challenges:** finding the right people; balancing different needs/priorities; engaging stakeholders at the right time.
+
+### Personas
+
+User archetypes constructed from research data — **fictitious, specific, concrete** representations of target users (not a real person, but a detailed example, e.g. "Betty"). Put a face on the target user group → serves as a design target ("would this work for Betty?"). Help make user-aligned decisions and trade-offs ("works for Betty but not Jake — try this instead").
+
+**Types:**
+- **Focal** — primary users; design optimised for them; ≥1 required, ≤3 recommended.
+- **Secondary** — also use the product; satisfy when possible.
+- **Unimportant** — low-priority (infrequent, unauthorised, unskilled, misusers).
+- **Affected** — don't use the product but are affected (e.g. spouse of a travel-site user).
+- **Exclusionary** — explicitly *not* designed for; stops non-users creeping back into discussions.
+
+**Creating a persona:** (1) review user research on the stakeholder group, (2) identify common attributes within the group, (3) identify differences from other groups, (4) describe a unified persona combining those attributes. Can be a **collage** of multiple users — goal is empathy, not realism.
+
+**What to include:** name, photo; demographics (gender, age, location, marital status, family); personality (a quote/slogan); product-specific — goals/needs/attitudes/motivations (not tasks), knowledge/proficiency, frustrations ("pain points"), context of usage.
+
+**Challenges:** superficial/stereotypical representations; "what you see is all there is" bias (assuming the persona captures the whole user); cost of producing well-grounded personas. Mitigation: ground in real data, validate with users, update as understanding evolves.
+
+### Scenarios
+
+> *"A concise description of a persona using a product to achieve a goal."* (Cooper, 2004)
+
+- **Concise** — short but complete; breadth over depth.
+- **Product** — software/device; assumed to exist.
+- **Goal** — reason for performing the task.
+
+**Why use them:** validate design and check assumptions; bridge from theoretical/conceptual design to lo-fi/wireframe; create shared understanding of users across the team (designers, marketers, engineers, execs).
+
+**Creation:** developed in brainstorming sessions (e.g. scenario mapping workshops). Answers *what* the user wants, *why*, *how* they'll achieve it, and *what they're thinking*. Distinct from storyboards and user stories (agile artefacts), but can be the basis for both.
+
+**Types:**
+- **Goal/task-based** — goal and reason only, no *how*; useful in design and usability testing.
+- **Elaborated** — adds context and user details; holistic; mainly design stage.
+- **Full-scale task** — includes the steps to accomplish the task; output of design stage, used by dev team or in usability testing to validate steps match real usage.
+
+**Challenges:** too superficial; wrong level of detail; **linearity** (limited handling of unforeseen events).
+
+### Journey maps
+
+Visualisation of the process a person goes through to achieve a goal. Built up: persona + scenario + goals/actions ⟹ **timeline**; timeline + thoughts/emotions ⟹ **narrative**; narrative + opportunities/pain points ⟹ **journey map**. Useful to verify the user's story makes sense and discuss product fit with stakeholders.
+
+**Typical structure:** **phases** (e.g. Awareness → Adoption → Engagement → Retention → Contribution); **activities** at each phase; **emotions** (positive and negative, with representative quotes); **pain points** at each phase; optional opportunities/internal ownership/metrics.
+
+**Challenges:** superficial if not based on real research; linearity; "what you see is all there is" bias; cost.
+
+> ⚠ **Always remember:** people are diverse — don't assume all users will use the product the same way. Different devices, interaction techniques, assistive tech, adaptive strategies; different experiences, expectations, preferences.
+
+---
+
+## 11 · Evaluation without users: heuristic evaluation
+
+### Why evaluate?
+
+- **Compare multiple designs** against user requirements; feed into a better one.
+- **Verify** the solution meets requirements; if not, evaluation suggests fixes.
+- Improve design as part of **iterative development**.
+
+**Two categories** (course focuses on practical/quick methods = **"discount usability"**): **without users** (Heuristic Evaluation, Cognitive Walkthrough) vs **with users** (Usability Testing, Controlled Experiments).
+
+### What heuristic evaluation is
+
+> A method using a fixed set of good-practice **heuristics** to find common usability problems.
+
+A **discount usability** technique — cheap, fast, doesn't need real users. Can evaluate sketches, prototypes, or production systems. **3–5 evaluators** each check the interface against the heuristics independently; problems compiled inform redesign.
+
+### Process
+
+1. **Pre-evaluation training** — heuristics & scenarios.
+2. **Evaluate individually** — go through **twice** (overview, then detail).
+3. **Collate results.**
+4. **Rate severity** — individually, then discuss and agree.
+5. **Feedback into design.**
+
+### Severity ratings (Nielsen scale)
+
+A combination of **frequency**, **persistence**, and **impact**.
+
+| Score | Meaning |
+|---|---|
+| 0 | Not a usability problem |
+| 1 | Cosmetic — fix if time permits |
+| 2 | Minor — low priority |
+| 3 | Major — important to fix |
+| 4 | Catastrophe — imperative to fix |
+
+### Nielsen's 10 heuristics in detail
+
+1. **Visibility of system status** — keep users informed via appropriate, timely feedback. UI response time thresholds: **\<200 ms** no indicators needed; **1 s** user notices delay; **10 s** max for user to stay focused on one action $\Rightarrow$ use progress bars/indicators.
+2. **Match between system and the real world** — speak the user's language: familiar words, phrases, concepts, not internal jargon.
+3. **User control and freedom** — users perform actions by mistake; need a clearly marked "emergency exit". **Total exit** → "home" button; **soft exit** → "back" button/Esc.
+4. **Consistency and standards** — different words/situations/actions shouldn't mean the same thing; follow platform conventions (e.g. burger menu top-left, search top-right).
+5. **Error prevention** — good error messages matter, but the best designs **prevent problems** in the first place (autocomplete, caps-lock warning).
+6. **Recognition rather than recall** — make elements/actions/options **visible**; minimise memory load. Menus, breadcrumbs, labelled icons promote recognition.
+7. **Flexibility and efficiency of use** — shortcuts (hidden from novices) speed up expert use; cater to both. Allow users to tailor frequent actions.
+8. **Aesthetic and minimalist design** — no irrelevant information; every extra unit competes with relevant ones.
+9. **Help users recognise, diagnose, and recover from errors** — plain language (no error codes), precisely indicate the problem, constructively suggest a solution.
+10. **Help and documentation** — best if the design needs no explanation, but docs may still be necessary. **Proactive help** (e.g. templates offered upfront) vs **reactive help** (e.g. help menu always available).
+
+### Analysis: cost-effectiveness
+
+- **Discount method** — benefit-cost ratio of **48** (Nielsen, 1994); e.g. $10,500 cost for $500,000 benefit. Value calculated: in-house ⇒ productivity; open market ⇒ sales.
+- **1 evaluator** finds **~35%** of problems.
+- **5 evaluators** find **~75%** of problems.
+- **Diminishing returns** — more evaluators cost more but find few additional problems; benefit/cost peaks at **4–5 evaluators**.
+
+**Pros:** cheap & quick; easy to learn; finds many problems.
+**Cons:** not task-focused; no actual users; not rigorous; can be too generic for new products.
+
+### Derivations
+
+Nielsen's 10 is one set — designers may make their own, e.g. **Andy Budd's *Heuristics for Modern Web Application Development*** (2007): user expectations, clarity, minimising complexity/cognitive load, efficiency, context, consistency/standards, error prevention, error recovery, enjoyable UX.
+
+### Heuristic eval vs user testing
+
+| Aspect | Heuristic eval | User testing |
+|---|---|---|
+| Cost | Low | Medium–high |
+| Speed | Days | Weeks |
+| Real users | No | Yes |
+| Catches catastrophes | Yes | Yes |
+| Catches subtle real-world issues | Poor | Good |
+| Captures emotion/context | No | Yes |
+| Captures cognitive load | Weak | Good |
+
+**Use both** — heuristic eval first to clean up obvious violations, then user testing to uncover what experts miss.
+
+---
+
+## 12 · Cognitive walkthrough
+
+> A **task-centred** evaluation by experts to find usability problems for **first-time users**.
+
+Originates from **CE+ theory** (Polson, Lewis, 1990) — models the user as someone who tries actions and learns from feedback. Focuses on real, complete, representative tasks; evaluates problems first-time users hit without training; imagines behaviour of **entire classes of users** (cf. personas), not one. Most effective when evaluators can picture the actual environment of use.
+
+**Useful for finding:** assumptions about user thinking; missing/hard-to-find controls; inadequate feedback; difficulties with labels/prompts.
+
+### Process
+
+1. **Define inputs:**
+   - **Users** — target group; record knowledge of similar systems.
+   - **Sample tasks** — representative (most frequent/important); described from the user's goal-oriented perspective (e.g. "send a £20 transfer to a friend", not "explore the app").
+   - **Action sequences** — correct steps to complete each task; granularity depends on task/product/user expertise.
+   - **Interface description** — storyboard, interactive prototype, or implemented product.
+2. **Get the analysts** — usually usability experts (not users, unlike HE); team members can participate but must "unlearn" the design. Training needed: CW method + cognitive science & interaction design.
+3. **Walk through action sequences** — tell a **credible story** for each action, asking the four questions below.
+4. **Record:** user knowledge requirements; assumptions about user population (likely to know it, why?); side issues & design changes; the credible success or failure story.
+5. **Revise the interface** — user fails to select right action → eliminate it, prompt user, or signal availability; user doesn't know correct action is available → make it more obvious; user doesn't know which action is correct → label controls based on user knowledge, check sequence makes sense; user can't tell things are going OK → give feedback/say what happened. Many problems = system-user mental-model mismatch → **global** solutions, not local fixes.
+
+### The four questions (per step)
+
+1. **Will the user try to achieve the right effect?** — do they have the *intent* this step expects?
+2. **Will the user notice that the correct action is available?** — is the control visible and identifiable?
+3. **Will the user associate the correct action with the effect they want?** — does the label/icon match their mental model?
+4. **If the correct action is performed, will the user see that progress is being made toward the goal?** — is the feedback clear?
+
+A "no" to any question = a usability defect — record the step, which question failed, why, and severity/suggested fix.
+
+### Success vs failure stories
+
+- **Credible success story** — all success criteria met.
+- **Failure story** — at least one criterion not met.
+
+### Analysis
+
+**Strengths:** finds **severe problems** fairly well (comparable to other techniques); content problems comparable for consistency, worse for recurrence; finds **specific** rather than general problems; strong on **learnability** (focus on first-time users).
+
+**Limitations:** cannot evaluate every task users will perform; users may take different action sequences; each task evaluated **separately** — cross-task interactions missed. Pair with a task-free user-centred method (e.g. HE) to catch what CW misses.
+
+### When to use cognitive walkthrough
+
+- **Before** the system is fielded.
+- **Onboarding-critical** systems — kiosks, ATMs, public services where users get one shot.
+- Where you don't have access to real users.
+- Cheaper than user testing for *learnability*.
+
+### Streamlined cognitive walkthrough (Spencer, 2000)
+
+- Drop questions 1 and 4 in early walkthroughs (too speculative).
+- Focus on questions 2 and 3 — visibility and labelling — the most common UI failures.
+- Run as a group with explicit "ground rules" (no design defence, no premature solutions).
+
+### Cognitive walkthrough vs heuristic evaluation
+
+| Aspect | CW | Heuristic eval |
+|---|---|---|
+| Focus | Learnability for *new* users | Broad usability |
+| Granularity | Per-step, per-task | Per-screen, per-element |
+| Output | Step-level defect list | Violation list with severity |
+| Best for | Onboarding, infrequent-use systems | Mature UI polish |
+| Skill required | Task analysis + cognitive theory | Usability heuristics |
+
+Many practitioners run both — CW first to validate task flow, then heuristic eval to polish details.
+
+### Derivations
+
+Applies to **APIs** — evaluates whether participants can build an accurate mental model of the API from the code alone (O'Callaghan, 2010, *The API Walkthrough Method*).
+
+---
+
+## 13 · Evaluation with users: usability testing and controlled experiments
+
+| Type | Data | Cost | When |
+|---|---|---|---|
+| **Usability testing** | Qualitative (behaviour, speech) | Cheaper | Find problems, feed into design |
+| **Controlled experiments** | Quantitative (speed, accuracy, error rate) | More expensive | Compare 2+ designs when metrics matter |
+
+### What usability testing is
+
+> Testing a product with representative users to collect feedback for improving the design.
+
+ISO 9241-11 defines usability as **effectiveness, efficiency, and satisfaction** with which specified users achieve specified goals in a specified context of use.
+
+**Uses:** gain info from the user's perspective (usability? which features work? what problems?); find out satisfaction (would they use it? what can improve?); make **design recommendations**; establish **benchmarks** for future comparisons.
+
+### Formative vs summative
+
+- **Formative** — *during* development. Goal: find problems to fix. Iterative.
+- **Summative** — *after* development (or for benchmarking). Goal: measure how good it is. Larger samples, statistical comparisons.
+
+### Designing the study (8 steps)
+
+1. **Decide objectives** — clear, testable; motivates tasks, data collection, interview questions.
+2. **Participants** — match the target user; define inclusion criteria.
+3. **Prepare task instructions** — realistic, scenario-based, non-leading ("find the cheapest flight from London to Tokyo on the 10th", not "click the search button").
+4. **Find a location/environment** — lab vs remote vs field; control vs ecological validity.
+5. **Pilot** — run 1–2 trial sessions; refine tasks/protocol.
+6. **Recruit** — Nielsen rule of thumb: 5 users find ~85% of issues *in one iteration* — but multiple iterations + diverse subgroups need more.
+7. **Conduct test** — greeting & intro → informed consent → background questionnaire (optional) → task instructions → task performance & recording (facilitator + observer + screen/audio/face recording) → debrief (optionally with questionnaire/interview).
+8. **Analyse and report findings** — code observations, identify patterns, rate severity.
+
+### Ethical considerations
+
+An ethical usability test should have: **minimal risk**; **informed consent**; **minimise deception** (generally not needed); participant may **withdraw at any time**; data kept **confidential**; participant may **withdraw their data**.
+
+**Informed consent must state:** purpose of study; what the participant will do; right to withdraw at any time without reason; how results will be used and confidentiality; right to decide their results are not used.
+
+Additional practical considerations: **anonymisation** of recordings; usability sessions can feel like exams — reassure participants ("we're testing the system, not you"); fair **compensation** for time + travel.
+
+### Think-aloud protocol
+
+Participants speak whatever comes to mind as they do tasks — e.g. *"I'm looking for a button to save… I don't see it… maybe under 'File'?"*. Reveals their mental model; identifies the **locus of attention**; spots frustration/confusion.
+
+- **Concurrent** — speak as they go. Risk: interferes with task performance; cognitively demanding tasks may cause participants to stop talking; verbalising can distract.
+- **Retrospective** — replay video, narrate after the fact. Captures performance better but relies on recall.
+
+### Common metrics
+
+- **Success rate** — % of users completing the task.
+- **Time on task** — median preferred (mean is sensitive to outliers).
+- **Errors** — count per task, severity-weighted.
+- **Efficiency** — pathway length vs optimal.
+- **Subjective** — Likert satisfaction; preference between alternatives.
+- **System Usability Scale (SUS)** — 10 statements alternating positive/negative on a 5-point Likert scale; computed score 0–100. SUS > 68 is "above average". Quick, robust, comparable across systems.
+
+### Variants
+
+- **Cafe studies (guerilla usability testing)** — short tests in a public place for quick, cheap feedback. Good for walk-up-and-use apps, first use, onboarding/learning curve. Challenges: recruiting, noisy/uncomfortable location.
+- **Wizard-of-Oz** — participant interacts with a prototype whose behaviour is enacted by a human, believing it's the computer. Used for systems that don't yet exist, or when reaction to "the real thing" matters (usually for ML systems). Challenge: looks too real → users think it's ready to use.
+
+### How many participants?
+
+- **~5 users** gives best returns (time vs problems found) — same diminishing returns as HE/CW.
+- Better to **iterate**: test → fix → test again (new problems may appear).
+- Multiple target user groups → test with **3–5 per group**.
+
+### Dogfooding
+
+> Asking your **own employees** to use your own product.
+
+**Used when prospective-user studies are hard:** commercial confidentiality (don't want to reveal the product); need critical mass of users/usage time; hard to incentivise early users; hard to get honest, detailed feedback.
+
+**Drawbacks:** employees are not representative of target users; bias toward internal norms; reluctance to give negative feedback to colleagues.
+
+### Remote vs in-person
+
+- **In-person** — richer non-verbal signal; lab environment unrealistic; easier task moderation.
+- **Remote moderated** — diverse participants; participant uses own setup (ecological validity); harder to read body language.
+- **Remote unmoderated** (UserTesting.com style) — scale, lower cost; less depth; sample bias toward platform users.
+
+### Choosing an evaluation method
+
+Depends on: time, cost, detail, risk of the method; type of understanding required; context (consumer/enterprise/service); user activities (sequential vs overlapping subtasks, high/low or complex/simple information, layman vs skilled practitioner). Mirrors the user research method choices — evaluation and research methods inform one another.
+
+---
+
+## 14 · Accessibility and inclusive design
+
+### Why design accessibly?
+
+- **Legal:** Equality Act 2010 (UK), ADA (US), EU Web Accessibility Directive — public-sector sites must meet WCAG 2.1 AA.
+- **Ethical:** ~15% of the population has a disability per WHO; many more have temporary or situational impairments.
+- **Practical:** accessibility benefits everyone — captioned video for crowded environments, keyboard nav for power users, plain language for non-native speakers.
+
+### WCAG principles — POUR
+
+1. **Perceivable** — info presented so all users can perceive it (alt text, captions, contrast).
+2. **Operable** — UI usable by all (keyboard, time limits, no seizure-inducing flashes).
+3. **Understandable** — text and behaviour predictable.
+4. **Robust** — works with assistive tech (semantic HTML, ARIA used correctly).
+
+**Conformance levels:** **A** (essential), **AA** (legal baseline often), **AAA** (gold standard, sometimes impractical).
+
+### Keyboard accessibility
+
+- Every interactive element reachable by **Tab**; logical tab order matches visual order.
+- Visible focus indicator (`:focus-visible` outline).
+- Skip-to-content link at top of pages.
+- No "keyboard traps" — can always escape.
+
+### Screen readers
+
+- Semantic HTML elements (`<button>`, `<nav>`, `<h1–6>`, `<main>`) carry meaning the screen reader announces.
+- Use **ARIA only where HTML can't express the role**; first rule of ARIA: don't use ARIA if a native element exists.
+- Provide **alt text** for non-decorative images; empty `alt=""` for decorative ones.
+- **Live regions** (`aria-live`) for dynamic updates.
+- Test with VoiceOver (macOS), NVDA (Windows), JAWS (Windows), TalkBack (Android).
+
+### Visual accessibility
+
+- **Contrast:** WCAG AA ≥ 4.5:1 for body text, ≥ 3:1 for large text.
+- **Colour-blindness:** don't convey info by colour alone — pair with shape/text.
+- **Resizable text** to 200% without breaking layout.
+- **Avoid auto-playing motion** that distracts vestibular-sensitive users (`prefers-reduced-motion`).
+
+### Cognitive accessibility
+
+- Plain language — short sentences, common words.
+- Consistent navigation; predictable behaviour.
+- Avoid time pressure where avoidable; allow extension.
+- Provide multiple representations (text + diagram + video).
+
+### Inclusive design vs accessibility
+
+- **Accessibility** focuses on disability.
+- **Inclusive design** is broader — design for the widest reasonable range of human variability, including disability, age, language, culture, expertise, device, environment, network. Microsoft's *Inclusive Design Toolkit*: "Solve for one, extend to many."
+- **Curb-cut effect** — designing for the edge often improves the centre (curb cuts for wheelchairs help parents with strollers, delivery couriers, travellers with luggage).
+
+### Universal design — 7 principles (Mace, 1997)
+
+1. Equitable use.
+2. Flexibility in use.
+3. Simple and intuitive.
+4. Perceptible information.
+5. Tolerance for error.
+6. Low physical effort.
+7. Size and space for approach and use.
+
+---
 
 ## Common pitfalls
 
-- "User likes it" ≠ "user can use it" — preference and performance dissociate.
-- Recruiting friends/colleagues biases findings.
-- Heuristic eval finds violations but not necessarily impact — pair with usability testing.
-- Skipping low-fi prototyping leads to costly late-stage changes.
-- Testing too late — "design it then test it" → costly.
+- **"User likes it" ≠ "user can use it"** — preference and performance dissociate; don't substitute satisfaction surveys for task-based testing.
+- **Recruiting friends/colleagues** for research or testing biases findings towards people who think like the design team.
+- **Heuristic evaluation finds violations but not necessarily impact** — pair with usability testing to confirm severity in practice.
+- **Skipping low-fi prototyping** "to save time" leads to costly late-stage changes once fundamental flaws surface (10× cost-escalation rule).
+- **Testing too late** — "design it then test it" is far costlier than building evaluation into the iterative cycle from the start.
+- **Hi-fi prototypes mistaken for finished products** by stakeholders ("it looks done, ship it") — and by users (entering real data into a non-functional prototype).
+- **A single heuristic evaluator** finds only ~35% of problems — always aim for 3–5 evaluators (diminishing returns beyond ~5).
+- **Cognitive walkthrough done by the system's own designer** — cognitive bias; "unlearning" the design is essential for credible analysts.
+- **Closure (Gestalt) can mislead** — a chart with a gap will be perceptually "completed" into a smooth curve even when real data was jagged; don't rely on viewers spotting missing data.
+- **ARIA misuse** — slapping ARIA roles onto inaccessible JS widgets usually breaks more than it fixes; prefer semantic HTML.
+- **Confusing "what users would do" with "what the team thinks is sensible"** — both CW and HE require modelling the *user's* mental model, not the designer's.
+- **Personas/journey maps treated as "the whole user"** — the "what you see is all there is" bias; remember people are diverse (devices, assistive tech, expectations).
+
+---
 
 ## Exam strategy
 
-- For "evaluate this design": pick 3 Nielsen heuristics + cite specific UI elements.
-- For "design a study": research question → method → participants → metrics → analysis → ethics.
-- Quote the UCD cycle steps verbatim if asked.
+- **For "evaluate this design"** — pick **3 Nielsen heuristics**, cite specific UI elements that violate them, and give a severity rating (0–4) with justification (frequency × persistence × impact).
+- **For "design a study"** — follow the structure: research question → participants → tasks → environment → pilot → recruit → run → analyse, plus ethics (informed consent, withdrawal, confidentiality).
+- **Quote the UCD cycle** verbatim if asked: understand context → specify requirements → produce design solutions → evaluate against requirements → iterate.
+- **Quote the cognitive walkthrough's four questions verbatim** — and apply them per-step for an onboarding-flow question, rather than dumping heuristics.
+- **For requirements questions**, use the Wiegers & Beatty hierarchy (business → user → functional requirements) and explicitly classify functional vs non-functional/quality requirements.
+- **For "why is X usable/unusable"**, reach for Gestalt principles (similarity, proximity, enclosure, common fate, figure/ground, closure, good continuation) and memory/attention design implications (chunking, recognition > recall, progressive disclosure).
+- **For accessibility questions**, quote **POUR** and pair each issue with a concrete impairment and WCAG level; cite the curb-cut effect for "why inclusive design helps everyone".
+- **For prototyping fidelity questions**, justify by *what you intend to evaluate* — state the fidelity, the artefact, the participants, and the metric you'll record.

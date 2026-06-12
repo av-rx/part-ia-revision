@@ -2,116 +2,863 @@
 module: machine-learning-real-world-data
 title: "Machine Learning & Real-World Data — Cheat Sheet"
 paper: paper-3
-updated: "2026-05-10"
+updated: "2026-06-12"
 ---
 
-## Sentiment classification
+## 1 · Sentiment classification fundamentals
 
-### Naïve Bayes
+### The task
 
-- Document $d$, classes $c \in C$. Predict
-$$ \hat c = \arg\max_c P(c) \prod_{w \in d} P(w \mid c). $$
-- Estimate $P(w \mid c)$ from training counts.
-- **Smoothing (Laplace add-1):** $P(w \mid c) = \frac{n(w, c) + 1}{n(c) + |V|}$.
+**Sentiment classification** — automatically decide whether a review is positive or negative based on its text. Standard NLP task; IMDb movie reviews are the running example, with the author's **star rating** as ground truth.
 
-### Evaluation
+### Lexicon-based approach
 
-| Metric | Definition |
-|---|---|
-| Accuracy | $(TP + TN) / n$ |
-| Precision | $TP / (TP + FP)$ |
-| Recall | $TP / (TP + FN)$ |
-| $F_1$ | $2 PR / (P + R)$ harmonic mean |
+A **sentiment lexicon** lists ~8000 words, each with a **polarity** (positive/negative) and **intensity** (strong/weak). **Hypothesis:** a review containing more positive than negative words is positive overall.
 
-- **Confusion matrix.** TP, FP, FN, TN.
-- **Cross-validation** — $k$-fold for stable estimates.
-- **Sign test** — paired non-parametric: how often classifier A beats B; binomial test on the count.
+- **Strengths:** simple, no training data required.
+- **Weaknesses:**
+  - Built from human intuition — static, cannot adapt to language change (e.g. "terrific", "sick" shifting meaning).
+  - Fails on **negation** ("wasn't exciting") and **context-dependent sentiment**.
+  - Some words are ambiguous (e.g. "care").
+  - Required many hours of manual labour to build.
 
-### Statistical hypothesis testing
+### Tokenisation
 
-- $H_0$ (null), $H_1$ (alternative).
-- $p$-value = probability of observed result if $H_0$ true.
-- Reject $H_0$ if $p < \alpha$ (typically $0.05$).
-- **Type I:** false rejection. **Type II:** false acceptance.
+**Tokenisation** — splitting text into individual words (**tokens**) before lexicon lookup. Whitespace splitting alone is insufficient: sentence-initial capitalisation, attached punctuation, contractions, hyphens. A standard tokeniser handles these.
 
-## Hidden Markov Models
+- **Token** — any individual occurrence of a word in text.
+- **Type** — a unique word form. "the cat sat on the mat" → 6 tokens, 5 types ("the" repeats).
 
-### Definitions
-- States $S = \{s_1, \ldots, s_N\}$.
-- **Transition** $a_{ij} = P(q_{t+1} = s_j \mid q_t = s_i)$.
-- **Emission** $b_i(o) = P(o \mid q_t = s_i)$.
-- **Initial** $\pi_i = P(q_1 = s_i)$.
+### Evaluation: accuracy
 
-### Three problems
+$$A = \frac{c}{c+i}$$
 
-| Problem | Algorithm | Cost |
+where $c$ = correct decisions, $i$ = incorrect decisions.
+
+### Improving the simple lexicon classifier
+
+- **Threshold adjustment** — classify positive only if $\text{positive} \geq \text{negative} + \text{threshold}$ (requires a margin).
+- **Lexicon strength weighting** — strong-intensity words contribute more than weak ones.
+- **Negation handling** — detect negation words (`not, no, never, n't, none, nobody, nothing, neither, nowhere, hardly, barely`); flip the polarity of the next word until end-of-line punctuation (`. ! ?`) resets the flag.
+- **Word frequency weighting** — weight by $\log(1 + \text{count})$ where count is the word's frequency in the review.
+- These can be combined, but improvements are **not always additive** (see worked results below).
+
+### Worked results (Task 1, IMDb dataset)
+
+| Classifier variant | Best parameter | Accuracy | Δ from baseline |
+|---|---|---|---|
+| Simple (baseline) | — | 63.56% | — |
+| + adjusted threshold | threshold = 8 | 68.11% | +4.5% |
+| + lexicon strength weighting | weight ≈ 10–12 | 67.00% | +3.4% |
+| + strength weighting + threshold | threshold = 27 | 69.00% | +5.4% |
+| + negation handling + threshold | threshold = 9 | 68.11% | +4.5% (negation alone: 66.56%, +3%) |
+| + frequency weighting + threshold | threshold = 6 | 69.44% | +5.9% (frequency alone: 64.50%, +0.94%) |
+| + strength + negation + frequency + threshold | threshold = 8 | 67.39% | +3.8% |
+| + frequency + strength weighting + threshold | threshold = 7 | **70.94%** | **+7.4% (best)** |
+
+Takeaway: combining *all* heuristics is not the best strategy — frequency + strength weighting + threshold beats the "everything" classifier. Possible further improvements: intensifiers, better token normalisation, multi-word sentiment expressions, ML.
+
+---
+
+## 2 · Naive Bayes classifier
+
+### From lexicon to ML
+
+**Machine learning** — a program that adapts its behaviour from data exposure without explicit programming. Instead of a fixed lexicon, learn which words signal sentiment directly from labelled data.
+
+### Terminology
+
+- **Features** — automatically observable properties (here: words in a review).
+- **Classes** — labels not directly observable; $C = \{\text{POS}, \text{NEG}\}$.
+- **Classification** — a function mapping features → classes.
+
+### Probabilistic classifiers and Bayes' theorem
+
+A probabilistic classifier returns $P(c_i \mid O)$ for observed features $O = \{w_1, \ldots, w_n\}$ and predicts:
+
+$$\hat c = \arg\max_{c \in C} P(c \mid O)$$
+
+**Bayes' theorem:**
+
+$$P(c \mid O) = \frac{P(c)\,P(O \mid c)}{P(O)}$$
+
+Since $P(O)$ is constant across classes for a given document, it can be dropped:
+
+$$c_{\text{NB}} = \arg\max_{c \in C} P(c\mid O) = \arg\max_{c \in C} P(c)\,P(O \mid c)$$
+
+**Worked example (brain tumour):** $P(T) = 0.00006$ (prior), $P(H\mid T) = 0.6$ (likelihood: tumour patients often have headaches), $P(H) = 0.5$ (marginal). Posterior:
+
+$$P(T \mid H) = \frac{0.6 \times 0.00006}{0.5} = 0.000072$$
+
+The strong prior dominates — a headache barely raises tumour probability.
+
+### Naive independence assumption
+
+All features (words) are assumed conditionally independent given the class:
+
+$$P(O \mid c) = P(w_1, \ldots, w_n \mid c) \approx \prod_{i=1}^{n} P(w_i \mid c)$$
+
+Full classifier:
+
+$$c_{\text{NB}} = \arg\max_{c \in C} P(c)\prod_{i=1}^{n} P(w_i \mid c)$$
+
+This independence assumption is **clearly false** (word order/context matters) but NB works well in practice regardless.
+
+### Training and testing
+
+- **Training** — estimate $P(w_i\mid c)$ and $P(c)$ from labelled data.
+- **Testing** — apply the learned model to unseen data. This is **supervised** learning (labels used in training). **Never test on training data.**
+- Example split: 1800 reviews → 1600 train / 200 test; a further 200 (total 2000) reserved for later formal evaluation.
+
+### Parameter estimation (MLE)
+
+**Prior:**
+
+$$\hat P(c) = \frac{N_c}{N_{\text{rev}}}$$
+
+**Word likelihood:**
+
+$$\hat P(w_i \mid c) = \frac{\text{count}(w_i, c)}{\sum_{w \in V}\text{count}(w,c)}$$
+
+### Log-space computation
+
+Products of many small probabilities underflow. Convert to sums:
+
+$$c_{\text{NB}} = \arg\max_{c \in C}\left[\log P(c) + \sum_{i=1}^n \log P(w_i\mid c)\right]$$
+
+### The zero-probability problem and smoothing
+
+If $\text{count}(w_i,c)=0$, then $P(w_i\mid c)=0$ → the whole product (or, in log-space, the sum) collapses to $-\infty$. A single unseen word can zero out an entire class regardless of all other evidence.
+
+**Add-one (Laplace) smoothing:**
+
+$$\hat P(w_i\mid c) = \frac{\text{count}(w_i,c)+1}{\left(\sum_{w\in V}\text{count}(w,c)\right) + |V|}$$
+
+$V$ must be the **full training vocabulary** (both classes). **Generalised smoothing** with tunable parameter $\omega$ (add-one is $\omega=1$):
+
+$$\hat P(w_i\mid c) = \frac{\text{count}(w_i,c)+\omega}{\left(\sum_{w\in V}\text{count}(w,c)\right) + \omega|V|}$$
+
+### Worked NB results (Task 2)
+
+- Unsmoothed accuracy: **49%**
+- Smoothed (add-one) accuracy: **79.5%**
+
+Massive jump — confirms smoothing is essential, not optional.
+
+---
+
+## 3 · Statistical properties of language: Zipf's and Heaps' laws
+
+### Motivation
+
+Why does smoothing help so much? Answer lies in the statistical distribution of words in natural language.
+
+### Zipf's Law
+
+Word frequency is inversely proportional to its frequency rank:
+
+$$f_w \approx \frac{k}{r_w^{\alpha}}$$
+
+($f_w$ = frequency, $r_w$ = rank, 1 = most frequent; $\alpha, k$ language-dependent). General form with rank-shift $\beta$: $f_w \approx \dfrac{k}{(r_w+\beta)^\alpha}$.
+
+- $\alpha \approx 1$ for English, $\alpha \approx 1.3$ for German.
+- Most frequent words are **function words** (the, of, and; der, die, und; que, de, no) — low semantic content, high frequency.
+- **Log-space:** $\log f_w = \log k - \alpha \log r_w$ — linear. A log-log plot of frequency vs rank is approximately a straight line; least-squares fit gives $\alpha = -m$ (negative gradient) and $k = e^c$ (intercept).
+- Near-Zipfian distributions occur widely: city sizes, web page access frequency, earthquake magnitudes, word senses per word, musical note frequencies, machine instruction frequencies.
+
+### Heaps' Law
+
+Relates vocabulary size to text length:
+
+$$u_n = k\,n^\beta$$
+
+($u_n$ = number of types/vocabulary size, $n$ = number of tokens; $\beta \approx \tfrac{1}{2}$, $30 \le k \le 100$).
+
+- **No saturation** — vocabulary never stops growing as text grows.
+- **Diminishing returns** — new types get rarer as text progresses, but growth rate never reaches zero.
+- **Log-space:** $\log u_n = \log k + \beta \log n$ — linear.
+- Example: Moby Dick has 206,052 tokens but only 16,000 types.
+
+### Connecting the laws to Naive Bayes
+
+- Zipf's law → a **long tail** of many rare word types, each individually rare but collectively holding significant probability mass.
+- Heaps' law → no matter how much training data, **new unseen types will always appear** in new text.
+- MLE assigns **all** probability mass to seen types (since probabilities sum to 1) → **overestimates** seen-type probability and gives unseen types probability 0 → zero-probability problem.
+- Smoothing **redistributes** probability mass from MLE's overestimate of seen types to the unseen types — better (though imperfect) estimate of the true distribution.
+
+### Worked Zipf/Heaps fit (Task 3)
+
+- Estimated Zipf parameters from IMDb corpus: $\hat\alpha = 0.9924$, $\hat k = 998964$.
+- Sample predicted vs actual frequencies: "bad" predicted 5901.95 vs actual 6558; "amazing" predicted 221.85 vs actual 2252 (large deviation — sentiment words deviate more from the Zipf fit than neutral words); "heartrending" predicted 24.68 vs actual 10.
+- Heaps' law table confirms approximately linear log-log growth of types vs tokens, from (1,1) up to (11,447,937 tokens, 439,318 types).
+
+---
+
+## 4 · Significance testing
+
+### Motivation and null hypothesis
+
+A higher observed accuracy doesn't prove System A is better — the difference might be chance (documents vary in style/length/vocabulary, favouring different systems).
+
+- **Null hypothesis $H_0$** — the two systems perform equally well (results come from the same distribution).
+- Choose significance level $\alpha$ (e.g. 0.05 or 0.01) **before** testing.
+- **Reject $H_0$** with confidence $1-\alpha$ if the observed result is sufficiently unlikely under $H_0$.
+
+### The sign test
+
+A **non-parametric, paired** test using binary per-document outcomes:
+
+- **Positive**: System 1 correct, System 2 wrong (A beats B on this document).
+- **Negative**: System 2 correct, System 1 wrong.
+- **Tie/null**: both agree (both correct or both wrong).
+
+Under $H_0$, $q = 0.5$ (either system equally likely to win). Number of negative events out of $N$ follows $B(N,q)$:
+
+$$P_q(X=k\mid N) = \binom{N}{k}q^k(1-q)^{N-k}$$
+
+Cumulative (at most $k$ negatives):
+
+$$P_q(X\le k\mid N) = \sum_{i=0}^{k}\binom{N}{i}q^i(1-q)^{N-i}$$
+
+If $P(X\le k)$ is small (below $\alpha$), reject $H_0$.
+
+### One-tailed vs two-tailed
+
+- **One-tailed** — tests a specific direction (prior belief about which system should win).
+- **Two-tailed** — tests either direction; more conservative. By symmetry of $B(N,0.5)$: if $2P(X\le k)\le \alpha$, the difference is significant. **Two-tailed is standard for comparing systems.**
+
+### Treatment of ties
+
+Ignoring ties (the standard textbook advice for continuous distributions) causes **unjustified rejection of $H_0$** (Type I error) when ties are common, as in classification. **Correct treatment:** add 0.5 to both the positive and negative counts for each tie, then round up:
+
+$$N = 2\left\lceil\frac{\text{null}}{2}\right\rceil + \text{plus} + \text{minus}, \qquad k = \left\lceil\frac{\text{null}}{2}\right\rceil + \min(\text{plus},\text{minus})$$
+
+The final p-value (two-sided):
+
+$$p = 2\sum_{i=0}^{k}\binom{N}{i}q^i(1-q)^{N-i}$$
+
+### Type I and Type II errors
+
+| | $H_0$ true | $H_0$ false |
 |---|---|---|
-| Likelihood $P(O \mid \lambda)$ | Forward | $O(N^2 T)$ |
-| Decoding $\arg\max P(Q \mid O)$ | Viterbi | $O(N^2 T)$ |
-| Learning $\arg\max P(O \mid \lambda)$ | Baum-Welch (EM) | iterative |
+| **Reject $H_0$** | Type I error (false positive), probability $\alpha$ | Correct |
+| **Fail to reject** | Correct, probability $1-\alpha$ (**specificity**) | Type II error, probability $\beta$ |
 
-### Viterbi
-$$ v_t(j) = \max_i \big[v_{t-1}(i) \, a_{ij}\big] \, b_j(o_t) $$
-backpointer $\psi_t(j) = \arg\max_i [v_{t-1}(i)\, a_{ij}]$.
+- **Power** = $1-\beta$ — probability of correctly detecting a real difference.
+- **Fix Type II (low power):** more powerful test (e.g. permutation test), more data, or strengthen the effect (improve the system).
+- **Type I errors should never happen** if methodology is correct — usually indicates wrong test or misapplication.
 
-### Forward
-$$ \alpha_t(j) = \Big[\sum_i \alpha_{t-1}(i) a_{ij}\Big] b_j(o_t) $$
+### What significance tests can/cannot show
 
-## Clustering
+- Can only show a **difference** — cannot prove two distributions are the same.
+- Reject $H_0$ → "significantly better."
+- Fail to reject → **inconclusive** (not proof of equality — could be insufficient data or no real effect).
 
-### k-means
-1. Pick $k$ initial centroids.
-2. Assign each point to nearest centroid.
-3. Recompute centroids as cluster means.
-4. Repeat until convergence.
+### Effect size vs significance
 
-- Minimises within-cluster sum of squares; locally optimal; depends on init (k-means++).
+- **Effect size** — the measured difference (continuous). **Significance** — binary flag.
+- Report **both**. A claim of "better" without significance testing is meaningless. Only a **delta** can be significant, never a single value.
 
-### Agglomerative hierarchical
-- Start with each point a cluster; merge closest pair iteratively.
-- Distance measures between clusters: single, complete, average, Ward.
+### Significant digits
 
-### Evaluation
-- **Silhouette score**, **rand index**, manual inspection.
+Report only as many decimal places as are **meaningful** — i.e. where adjacent values at that precision would plausibly be significant. Reporting 6 decimal places when significance fails even at the 1st/2nd decimal is a hallmark of inexperience (or fraud).
 
-## Social networks
+### The three deadly sins of significance reporting
 
-### Centralities
+1. **Methodological unsoundness** — no test performed, but "better"/"outperform" claimed from raw numbers.
+2. **Scientific illiteracy** — test performed, but "better" still claimed for insignificant differences too.
+3. **Scientific fraud** — no test, "better" claimed, and "significant" used to describe large effect sizes with no statistical backing.
 
-| Measure | Idea |
+### Confusion matrix
+
+| | Predicted POS | Predicted NEG |
+|---|---|---|
+| **Actual POS** | TP | FN |
+| **Actual NEG** | FP | TN |
+
+Useful for troubleshooting — shows whether errors skew toward one class. Generalises to $n$ classes.
+
+---
+
+## 5 · Overtraining and cross-validation
+
+### Generalisation and overtraining
+
+A good classifier **generalises** — performs well on new, unseen data, learning general (not training-specific) patterns. Never test on training data.
+
+**Overtraining (overfitting)** — measured performance improves but real generalisation worsens; the classifier has learned accidental training-data properties. Also called Type III errors / "testing hypotheses suggested by the data."
+
+- **The Wayne Rooney effect** — vocabulary associated with people/genres shifts over time; a classifier trained on 2004 reviews may degrade on 2015/16 reviews due to language drift.
+- **Overtraining via repeated test-set use** — repeatedly tuning against the same test set means the classifier indirectly learns that set's accidental properties; it's no longer truly "unseen." This is overtraining against the test set.
+
+**Detecting overtraining:** safe if you have large amounts of test data and use **new** test data each evaluation. Risky if making incremental improvements against the same small test set repeatedly. One diagnostic: inspect the most characteristic features per class — unlikely-to-generalise features signal overtraining.
+
+### N-fold cross-validation
+
+1. Split data randomly into $N$ equal folds.
+2. For each fold $X$: train on the other $N-1$ folds, test on fold $X$.
+3. Report the **average** of the $N$ fold performances.
+
+Every datapoint is tested exactly once and trained on $N-1$ times; never both train and test simultaneously.
+
+**Variance across folds:**
+
+$$\text{var} = \frac{1}{N}\sum_{i=1}^N (x_i - \mu)^2, \qquad \mu = \frac{1}{N}\sum_i x_i$$
+
+Low variance across folds = stable result.
+
+**Variants:**
+- **Stratified CV** — each fold mirrors the overall class distribution.
+- **Leave-one-out (jack-knifing)** — $N$ = number of datapoints.
+- **Dependency-sensitive CV** — folds isolate known characteristics (e.g. one fold per genre/source).
+
+**Significance under CV:** treat all $N$ test folds as **one combined experiment** — count positives/negatives/nulls across the full combined set, not $N$ separate tests. Gives more data and can reveal significance otherwise undetectable.
+
+### Validation corpus
+
+CV still uses data that has been "seen" in some sense. For incremental feature engineering or global hyperparameter tuning, use a separate **validation (development) corpus** — never used for training or testing.
+
+- Uses: setting hyperparameters (e.g. smoothing $\omega$) before train/test; **stopping criterion** for feature engineering (stop when validation performance starts to drop).
+- The **test corpus** is evaluated only once, after all development is complete.
+
+**Data splits in practice:** training set (fit model) / validation set (tune + stop) / test set (final, once). For CV: pool training+validation, fold over the pool; keep test entirely separate.
+
+### Confusion matrix (general form)
+
+| | System POS | System NEG | Total |
+|---|---|---|---|
+| **Truth POS** | $V$ | $W$ | 900 |
+| **Truth NEG** | $X$ | $Y$ | 900 |
+| **Total** | $V{+}X$ | $W{+}Y$ | 1800 |
+
+Diagonal ($V$, $Y$) = correct; off-diagonal ($W$, $X$) = errors. Generalises to $n$-class problems for diagnosing class confusions.
+
+---
+
+## 6 · Inter-annotator agreement (Fleiss' kappa)
+
+### Motivation: three-class problem
+
+Binary POS/NEG is an oversimplification — many reviews are **neutral**: **lukewarm** (mildly evaluative, "it was ok") or **pro-con** (lists both good and bad — balanced, not indifferent). Star-rating-derived ground truth can be misleading for these.
+
+### Human annotation as ground truth
+
+Original author intent is unrecoverable post-publication. **Claim:** human agreement is the only empirically available "truth" for subjective judgements — the more independent humans agree, the "truer" a label is. This motivates measuring inter-annotator agreement.
+
+### Observed agreement $\bar P_a$
+
+With $k$ raters, average ratio of observed to possible pairwise rater-rater agreements:
+
+$$\bar P_a = \frac{1}{N}\sum_{i=0}^{N-1} S_i, \qquad S_i = \frac{\sum_j \binom{n_{i,j}}{2}}{\binom{k}{2}}$$
+
+where $n_{i,j}$ = number of raters choosing label $j$ for item $i$, $\binom{k}{2} = \frac{k(k-1)}{2}$ = possible pairs.
+
+### Chance agreement $\bar P_e$
+
+High $\bar P_a$ alone is insufficient — could just reflect a dominant class. For categories $j=1\ldots n$ with observed proportion $p_j$:
+
+$$\bar P_e = \sum_{j=1}^{n} p_j^2$$
+
+$\bar P_e$ increases with skew (one class dominates), decreases with balance or more categories.
+
+| Distribution | $\bar P_e$ |
 |---|---|
-| **Degree** | $\deg(v)$ — popular |
-| **Closeness** | $\frac{n-1}{\sum_u d(v, u)}$ |
-| **Betweenness** | fraction of shortest paths through $v$ |
-| **Eigenvector / PageRank** | recursively important neighbours |
+| Two classes, $(0.5, 0.5)$ | $0.50$ |
+| Two classes, $(0.95, 0.05)$ | $\approx 0.905$ |
+| Four classes, $(0.25,0.25,0.25,0.25)$ | $0.25$ |
 
-### Properties
-- **Diameter** — longest shortest path.
-- **Average path length** — small in small-world networks.
-- **Clustering coefficient** $C_v = \frac{2 e(N_v)}{\deg(v)(\deg(v)-1)}$, fraction of neighbour pairs that are connected.
-- **Power-law degree distribution** $P(k) \propto k^{-\gamma}$ — scale-free.
+### Fleiss' kappa
 
-### Models
-- **Erdős–Rényi $G(n, p)$** — each pair edge independently with prob $p$. Poisson degree.
-- **Barabási–Albert** — preferential attachment → scale-free.
-- **Watts–Strogatz** — high clustering + low diameter (small-world).
+$$\kappa = \frac{\bar P_a - \bar P_e}{1 - \bar P_e}$$
 
-### Community detection
-- **Girvan–Newman** — iteratively remove highest-betweenness edges; track modularity.
-- **Modularity** $Q$ — fraction of intra-community edges minus expected at random.
+Numerator = agreement above chance; denominator = maximum possible above-chance agreement. From the annotation table ($N$ items, $k$ raters, $n$ categories, $C_j = \sum_i n_{i,j}$):
+
+$$\bar P_a = \frac{1}{N}\sum_{i=1}^N S_i, \qquad \bar P_e = \sum_{j=1}^n \left(\frac{C_j}{Nk}\right)^2$$
+
+| $\kappa$ | Interpretation |
+|---|---|
+| 1 | Perfect agreement |
+| 0 | No agreement beyond chance |
+| < 0 | Worse than chance |
+| ≥ 0.8 | Very good (Krippendorff 1980) |
+
+No universally accepted full scale — only extremes have standard meaning. $\kappa$ is affected by number of categories (more categories → lower $\bar P_e$ → can inflate $\kappa$), and can mislead with small samples.
+
+### Worked example
+
+$N=29$ items, $k=4$ raters, $n=5$ categories. Column totals $C_j$: 42, 3, 37, 8, 26 → $p_j$: 0.362, 0.026, 0.319, 0.069, 0.224.
+
+$$\bar P_a = 0.5804, \qquad \bar P_e = 0.362^2+0.026^2+0.319^2+0.069^2+0.224^2 = 0.288$$
+
+$$\kappa = \frac{0.5804-0.288}{1-0.288} = \frac{0.2924}{0.712} \approx 0.41 \quad \text{(moderate agreement)}$$
+
+### Worked NB/significance results (Tasks 2–6)
+
+- **NB with three outcomes (POS/NEG/NEUTRAL):** 10-fold CV accuracy = **0.590**.
+- **Cross-validation (binary NB):** random folds mean = 0.82, variance = 0.000396; stratified folds mean = 0.8167, variance = 0.000364.
+- **Held-out vs 2016 data (smoothed NB):** 0.83 (tp=90,fp=24,fn=10,tn=76) vs 0.8333 (tp=8,fp=0,fn=4,tn=12) — differences small relative to CV variance, so no clear drift; held-out set over-predicts positive (more FP than FN), 2016 set is conservative (0 FP but some FN) though sample is tiny.
+- **Simple lexicon classifier, held-out vs 2016:** 0.615 vs 0.792 — much worse on held-out; but NB vs simple on 2016 gives $p=1.0$ (only one disagreeing example — not meaningful with so little data).
+- **Sign test p-values:** Simple vs Magnitude classifier $p=0.832$ (fail to reject — no significant difference); Magnitude vs Naive Bayes $p=0.048$ (reject at $\alpha=0.05$ — NB significantly better). p-values stabilise by ~200 samples; weighting choice (2–10) shifts p-values somewhat but conclusions are stable.
+- **Kappa across cohorts:** all-four-reviews $\kappa=0.608$; reviews 1&2 $\kappa=0.347$ (little agreement — both near 50/50 splits on reviews with neutral ground truth); reviews 3&4 $\kappa=0.835$ (very good — clear-cut sentiment). Historical cohort values range 0.645–0.762.
+
+---
+
+## 7 · Hidden Markov Models
+
+### Markov chains
+
+A **Markov chain** is a stochastic process over finite, fully-observable discrete states where the next state depends only on the current state (**Markov / Limited Horizon Assumption**):
+
+$$P(w_t\mid w_{t-1},\ldots,w_1) \approx P(w_t\mid w_{t-1})$$
+
+Joint sequence probability factorises:
+
+$$P(w_1,\ldots,w_T) \approx \prod_{t=1}^{T}P(w_t\mid w_{t-1})$$
+
+Viewable as a probabilistic finite-state automaton. **Transition matrix** $A$: $a_{ij}=P(w_t{=}j\mid w_{t-1}{=}i)$, rows sum to 1. Example (Rainy/Cloudy weather): $a_{RR}=0.7,\ a_{RC}=0.3,\ a_{CR}=0.3,\ a_{CC}=0.7$.
+
+Applications: speech recognition (phone sequences), dialogue systems (speech-act sequences), predictive texting. Limitation: requires states to be **unambiguously observable**.
+
+### HMMs: hidden states + observations
+
+In many real tasks, underlying states aren't directly observable — only noisy **observations** are. An **HMM** adds an observation layer on top of a Markov chain: hidden states $X_1,\ldots,X_T$ evolve as a Markov chain; at each $t$ an observation $O_t$ depends only on $X_t$.
+
+**First-order HMM assumptions:**
+1. **Markov assumption**: $P(X_t\mid X_1\ldots X_{t-1}) \approx P(X_t\mid X_{t-1})$
+2. **Output independence assumption**: $P(O_t\mid X_1\ldots X_T,O_1\ldots O_T) \approx P(O_t\mid X_t)$
+
+### Formal definition
+
+- $S_e=\{s_1,\ldots,s_N\}$ — emitting hidden states; $s_0$ start, $s_f$ end (no real observations).
+- $K=\{k_1,\ldots,k_M\}$ — output alphabet; $k_0,k_f$ start/end symbols.
+- $O = O_1\ldots O_T$ — observation sequence; $X=X_1\ldots X_T$ — hidden state sequence.
+- **Transition** $a_{ij}=P(X_t{=}s_j\mid X_{t-1}{=}s_i)$; $A$ is $(N{+}2)\times(N{+}2)$, $\forall i:\sum_{j=0}^{N+1}a_{ij}=1$. Transitions into $s_0$ and out of $s_f$ are undefined.
+- **Emission** $b_i(k_j)=P(O_t{=}k_j\mid X_t{=}s_i)$; $B$ is $(M{+}2)\times(N{+}2)$.
+- HMM fully defined by $\mu=(A,B)$.
+
+| Task | Observations | Hidden states |
+|---|---|---|
+| Speech recognition | Audio signal | Phonemes |
+| POS tagging | Words | POS tags |
+| Machine translation | Target words | Source words |
+
+### The Dice HMM (worked case study)
+
+A fraudulent croupier alternates fair die ($P(O)=\tfrac16$ each face) and loaded die. States: loaded $s_1$, fair $s_2$, plus $s_0, s_f$. $a_{11}, a_{22}$ self-loops; $a_{12},a_{21}$ switches. Emission distributions differ (fair ≈ uniform, loaded biased).
+
+### The four fundamental HMM problems
+
+| # | Problem | Given | Find | Algorithm |
+|---|---|---|---|---|
+| 1 | Labelled learning | parallel $O$, $X$ | $A,B$ | relative frequency (+ smoothing) |
+| 2 | Unlabelled learning | $O$, state set $S_e$ | $A,B$ | Baum-Welch (EM) |
+| 3 | Likelihood | $\mu=(A,B)$, $O$ | $P(O\mid\mu)$ | Forward, $O(N^2T)$ |
+| 4 | Decoding | $\mu=(A,B)$, $O$ | best $X$ | Viterbi, $O(N^2T)$ |
+
+### Parameter estimation (Problem 1)
+
+$$a_{ij} = P(X_{t+1}{=}s_j\mid X_t{=}s_i) \approx \frac{\text{count}_{\text{trans}}(s_i\to s_j)}{\text{count}_{\text{trans}}(s_i\to\cdot)}$$
+
+$$b_i(k_j) = P(O_t{=}k_j\mid X_t{=}s_i) \approx \frac{\text{count}_{\text{emit}}(s_i,k_j)}{\text{count}_{\text{emit}}(s_i,\cdot)}$$
+
+Add-one smoothing applies for unseen transitions/emissions.
+
+### Decoding: Viterbi algorithm
+
+**Goal:** $\hat X = \arg\max_X P(X,O\mid\mu) = \arg\max_{X_{1\ldots T}}\prod_{t=1}^T P(O_t\mid X_t,B)\,P(X_t\mid X_{t-1},A)$. Brute force is $O(N^T)$ — infeasible.
+
+**DP applies** because: **optimal substructure** (the optimal full sequence contains the optimal prefix sequence for every $j$) and **overlapping subsolutions** (probabilities for earlier $t$ are reused).
+
+**Trellis**: $(N{+}2)\times(T{+}2)$ DP table, rows = states, columns = time.
+
+- **Viterbi probability** $\delta_j(t)$ — probability of the best path ending in $s_j$ at time $t$:
+$$\delta_j(t) = \max_{1\le i\le N}\left[\delta_i(t-1)\,a_{ij}\,b_j(O_t)\right]$$
+- **Backpointer**:
+$$\psi_j(t) = \underset{1\le i\le N}{\arg\max}\left[\delta_i(t-1)\,a_{ij}\,b_j(O_t)\right]$$
+
+Reduces $O(N^T) \to O(N^2T)$.
+
+**Algorithm steps:**
+
+1. **Initialisation** ($t=0$): $\delta_j(0)=b_j(O_0)$, $\psi_j(0)=s_0$ (no transition history).
+2. **Main step** ($t=1\ldots T$): for each $s_j$, $\delta_j(t)=\max_i[\delta_i(t-1)a_{ij}b_j(O_t)]$, $\psi_j(t)=\arg\max_i[\cdots]$.
+3. **Termination**: connect to end state via $a_{j,f}$: $\delta_f(T{+}1)=\max_j[\delta_j(T)\,a_{j,f}\,b_f(k_f)]$, $\psi_f(T{+}1)=\arg\max_j[\cdots]$.
+4. **Backtrace**: follow $\psi$ from $\psi_f(T{+}1)$ backwards, then reverse to get $\hat X_1,\ldots,\hat X_T$.
+
+**Why keep all $N$ states per timestep:** a greedy "keep only the best state" approach fails — a later observation may have near-zero probability from the chosen state, while a state that looked suboptimal at $t$ may become optimal at $t' > t$. Since the future is unknown, all $N$ (but no more) per-step probabilities must be retained.
+
+### Evaluation: precision, recall, F-measure
+
+Used when evaluating detection of one class of interest (e.g. the "loaded die" state):
+
+| Metric | Formula | Interpretation |
+|---|---|---|
+| Precision $P$ | $\frac{TP}{TP+FP}$ | of predicted positives, fraction correct |
+| Recall $R$ | $\frac{TP}{TP+FN}$ | of true positives, fraction detected |
+| F-measure $F$ | $\frac{2PR}{P+R}$ | harmonic mean |
+| Accuracy | $\frac{TP+TN}{TP+FP+FN+TN}$ | overall fraction correct |
+
+Preferred over accuracy when classes are **unbalanced** (accuracy dominated by majority class).
+
+### Worked dice HMM results
+
+**Implementation pipeline:** `get_transition_probs`/`get_emission_probs` estimate $A,B$ from labelled sequences by relative frequency (0.0 for unseen, since smoothing not applied here); `viterbi` runs the DP in log-space (`delta`/`psi` tables); `precision_score`/`recall_score`/`f1_score` compute TP/FP/FN by iterating all positions; `cross_validation_sequence_labeling` runs 10-fold CV.
+
+Estimated transition matrix (B=loaded begin marker, F=fair, W=loaded/weighted, Z=end):
+
+|  | B | F | W | Z |
+|---|---|---|---|---|
+| **B** | 0.000 | 0.482 | 0.517 | 0.000 |
+| **F** | 0.000 | 0.948 | 0.050 | 0.002 |
+| **W** | 0.000 | 0.050 | 0.948 | 0.002 |
+| **Z** | 0.000 | 0.000 | 0.000 | 0.000 |
+
+Observations: F and W have very high self-transitions (0.948) → expected run length $\approx \frac{1}{1-0.948} \approx 19$ rolls before switching; F↔W switches are rare (0.05 each way); B behaves as a start marker (emits only B, transitions to F/W); Z is a terminal marker (emits only Z, no outgoing transitions). F emits faces 1–6 roughly uniformly (0.165–0.169, consistent with fair die); W is strongly biased toward face 1 (0.502, consistent with a loaded die).
+
+**Decoding performance:**
+
+| | Precision | Recall | F1 |
+|---|---|---|---|
+| Single (seed 2) split | 0.851 | 0.882 | 0.866 |
+| 10-fold CV average | 0.853 | 0.863 | 0.858 |
+
+F1 ≈ 0.86 in both → the model reliably identifies the loaded-die state. Recall slightly exceeds precision → model slightly over-predicts the weighted state. Single-split and CV scores are close → results are stable, not split-dependent.
+
+---
+
+## 8 · K-means clustering
+
+### Clustering vs classification
+
+**Clustering** — unsupervised grouping of datapoints by feature similarity; no labels or graph structure given. Output: cluster assignment $z_n \in \{1,\ldots,K\}$ per datapoint $x_n$. Contrast with classification: no gold labels during training.
+
+### Distance function
+
+Most common: **Euclidean distance (L2 norm)** for $D$-dimensional $a,b \in \mathbb{R}^D$:
+
+$$\text{distance}(a,b) = \sqrt{\sum_{d=1}^D (a_d-b_d)^2} = \|a-b\|$$
+
+### Pre-processing: normalisation
+
+Features on very different scales distort Euclidean distance — **normalisation is essential**.
+
+- **Min-max scaling** → $[0,1]$: $x'_d = \dfrac{x_d-\min(X_d)}{\max(X_d)-\min(X_d)}$.
+- **Standardisation (Z-score)** → zero mean, unit variance.
+
+### K-means algorithm
+
+**Input:** $X=\{x_1,\ldots,x_N\}$, number of clusters $K$. **Output:** assignments $z_n$.
+
+1. **Initialise** — pick $\mu_k$ for $k=1\ldots K$ at random.
+2. **Repeat until convergence:**
+   - **Assignment:** $z_n \leftarrow \arg\min_k \|\mu_k - x_n\|$
+   - **Update:** $\mu_k \leftarrow \text{MEAN}(\{x_n : z_n=k\})$
+
+### Objective: WCSS
+
+$$L(X,Z) = \sum_{n=1}^N \text{distance}(x_n,\mu_{z_n})^2$$
+
+(Within-Cluster Sum of Squares.)
+
+### Convergence
+
+Two equivalent stopping criteria: assignments unchanged, or means unchanged. K-means is **guaranteed to converge** (WCSS non-increasing every step) but **not** guaranteed to find the global minimum — depends on initialisation. Best practice: run multiple random initialisations, keep the lowest WCSS.
+
+### K-means++ initialisation
+
+1. Draw $\mu_1$ uniformly at random from $X$.
+2. For $k=2:K$: compute each point's squared distance to its nearest existing mean,
+$$D_{k-1}(x) = \min_{k'=1}^{k-1}\|x-\mu_{k'}\|^2$$
+   define probability proportional to this distance,
+$$p(\mu_k=x_n) = \frac{D_{k-1}(x_n)}{\sum_{n'} D_{k-1}(x_{n'})}$$
+   and sample $\mu_k \sim p$.
+
+Points far from existing means are more likely chosen → better spread, reduces (but doesn't eliminate) initialisation sensitivity.
+
+### Limitations
+
+- $K$ must be specified in advance.
+- Assumes **spherical, equal-variance** clusters — poor on elongated/ring-shaped/non-convex structure.
+- Sensitive to initialisation (K-means++ helps, doesn't fix).
+
+### Worked implementation notes (song dataset)
+
+- `select_features`: drops `track_genre`, `instrumentalness`, and any non-numeric columns (detected via `float()` failing); aligns feature vectors via a fixed `feature_names` ordering.
+- `scale_features`: per-feature min-max in one pass; zero-range features map to 0.0 (avoids division by zero) — prevents wide-range features (e.g. tempo 60–200, loudness −60–0 dB) dominating distance.
+- `euclidean_distance_sq`: returns **squared** distance (monotone-equivalent for assignment/WCSS, avoids `sqrt` calls).
+- `kmeans`: labels initialised to $-1$ so the first iteration always runs; convergence checked via `new_labels == labels`; empty clusters retain previous centroid (avoids undefined mean); `MAX_ITERS = 100` safety cap.
+
+### WCSS results (N_RUNS=5, seed=0)
+
+| $K$ | Run1 | Run2 | Run3 | Run4 | Run5 | Min | Max | Spread |
+|---|---|---|---|---|---|---|---|---|
+| 2 | 1815.73 | 1815.73 | 1815.73 | 1815.73 | 1815.73 | 1815.73 | 1815.73 | 0.00 |
+| 5 | 1322.79 | 1372.24 | 1372.29 | 1322.78 | 1322.79 | 1322.78 | 1372.29 | 49.51 |
+| 10 | 1147.11 | 1103.60 | 1101.80 | 1104.47 | 1122.38 | 1101.80 | 1147.11 | 45.31 |
+
+- $K=2$: spread 0.00 — only two clusters, almost any initialisation gives the same partition.
+- $K=5$: spread 49.51 — two distinct local minima (runs 1/4/5 ≈ 1322.78; runs 2/3 ≈ 1372.2).
+- $K=10$: spread 45.31, comparable to $K=5$ — suggests natural structure already captured at $K=5$.
+- WCSS decreases monotonically with $K$ (1815 → 1322 → 1101) — expected, but doesn't imply more meaningful clustering. Confirms convergence ≠ global optimum; multiple runs + lowest WCSS is the standard mitigation.
+
+---
+
+## 9 · Clustering evaluation
+
+### Intrinsic vs extrinsic
+
+- **Intrinsic** — quality from data + cluster structure only, no external labels.
+- **Extrinsic** — compare against gold-standard class labels.
+
+Cluster IDs carry no semantic meaning and different runs may renumber clusters — harder than classification evaluation.
+
+### Intrinsic: WCSS
+
+$$L(X,Z) = \sum_n \text{distance}(x_n,\mu_{z_n})^2$$
+
+Rewards cohesion but is **trivially minimised** by one cluster per point (WCSS=0) and **monotonically decreasing in $K$** — cannot select $K$ alone.
+
+### Intrinsic: Silhouette score
+
+For datapoint $x_n$:
+
+- **Cohesion** (centroid-based): $\text{coh}(x_n) = \text{distance}(x_n,\mu_{z_n})$
+- **Separation**: $\text{sep}(x_n) = \min_{k\neq z_n}\text{distance}(x_n,\mu_k)$
+- **Silhouette**: $\text{silhouette}(x_n) = \dfrac{\text{sep}(x_n)-\text{coh}(x_n)}{\max(\text{coh}(x_n),\text{sep}(x_n))}$
+
+Average over all points; range $[-1,1]$.
+
+| Score | Interpretation |
+|---|---|
+| > 0.7 | Good — well-separated, cohesive |
+| 0.5–0.7 | Reasonable |
+| 0.25–0.5 | Weak structure |
+| ≈ 0 | Overlapping clusters |
+| < 0 | Wrong assignments |
+
+Unlike WCSS, silhouette has a meaningful peak vs $K$ — usable to **choose $K$** (maximise average silhouette).
+
+**Datapoint-based variant** (used when no explicit centroids, or required by spec):
+
+$$\text{coh}(x_n) = \frac{1}{|K_{z_n}|-1}\sum_{x'\in K_{z_n}}\text{distance}(x_n,x'), \qquad \text{sep}(x_n) = \min_{k\neq z_n}\frac{1}{|K_k|}\sum_{x'\in K_k}\text{distance}(x_n,x')$$
+
+Note: silhouette is **not invariant to squaring** — must use true Euclidean distance (with `sqrt`), unlike K-means assignment.
+
+### Extrinsic: Rand Index
+
+Pairwise accuracy: for every pair of points, were they correctly placed together or separately? Given datapoints $X$, clustering $\mathcal{K}=\{K_1,\ldots,K_k\}$, gold classes $\mathcal{C}=\{C_1,\ldots,C_c\}$:
+
+$$\mathcal{T} = \{(x_i,x_j) : x_i,x_j \in K_m \text{ and } x_i,x_j \in C_n\} \quad\text{(correctly together)}$$
+$$\mathcal{S} = \{(x_i,x_j) : x_i\in K_{m_1}, x_j\in K_{m_2}, x_i\in C_{n_1}, x_j\in C_{n_2}\} \quad\text{(correctly separated)}$$
+
+$$\text{RandIndex} = \frac{|\mathcal{T}|+|\mathcal{S}|}{\binom{d}{2}}$$
+
+**Problem:** most pairs are correctly separated by chance (TN dominates) → RI values crowd near 1 regardless of clustering quality.
+
+### Adjusted Rand Index
+
+Corrects for chance (analogous to Cohen's Kappa):
+
+$$\text{AdjustedRI} = \frac{RI - \text{expected\_RI}}{1-\text{expected\_RI}}$$
+
+Near 0 = chance level; near 1 = near-perfect agreement.
+
+### Mutual information / NMI
+
+Model cluster assignments $Z$ and class labels $Y$ as distributions $P(z_n{=}k)$, $P(y_n{=}c)$.
+
+**Mutual information:**
+
+$$\mathcal{I}(Z;Y) = H(Z)-H(Z\mid Y) = H(Y)-H(Y\mid Z)$$
+
+**Normalised Mutual Information:**
+
+$$\text{NMI}(Z,Y) = \frac{2\,\mathcal{I}(Z;Y)}{H(Z)+H(Y)}$$
+
+Symmetric, $[0,1]$ — 0 = no correlation, 1 = perfect. Also needs chance-adjustment — larger $K$ artificially inflates MI.
+
+### Soft clustering
+
+- **Hard clustering** — each point assigned to exactly one cluster (K-means).
+- **Soft clustering** — graded membership, a probability distribution over clusters per point. Applications: document tagging, image labelling, word sense disambiguation, social network analysis.
+
+### Take-home messages
+
+- Clustering is powerful for **exploratory analysis** but evaluation is inherently hard.
+- A "good" clustering is application-dependent — define the downstream task first.
+- Avoid evaluating against labels the model never saw — that defeats the purpose of unsupervised discovery.
+- If labels exist and matter, prefer a **supervised** model.
+
+### Worked evaluation results (303 songs, 8 genres, $K\in[2,30]$)
+
+| Metric | Best $K$ | Score |
+|---|---|---|
+| Silhouette | 3 | 0.2802 |
+| WCSS (elbow) | 30 | 72.53 |
+| Rand Index (genre) | 30 | 0.8774 |
+| NMI (genre) | 30 | 0.4963 |
+
+- Silhouette best at $K=3$ (0.28, "weak" range 0.25–0.5) — clusters exist but aren't sharp.
+- WCSS "best" at $K=30$ is meaningless by definition (monotonically decreasing) — need the elbow plot.
+- Silhouette peaking at $K=3$ rather than $K=8$ (genre count) suggests audio features group songs into ~3 broad acoustic categories more cleanly than into 8 genres — genre is partly a human construct not fully aligned with feature space.
+- **Disagreement is informative:** Silhouette (intrinsic) prefers $K=3$; RI and NMI (extrinsic) prefer $K=30$ — more clusters allow finer matching to 8 genre categories. RI's 0.877 at $K=30$ is inflated by TN dominance (most song pairs are different-genre and different-cluster regardless). NMI's 0.496 represents genuine moderate alignment; it keeps growing past $K=8$, suggesting genres don't cleanly partition the feature space — even at $K=30$ only about half the genre entropy is explained.
+
+---
+
+## 10 · Social networks: properties and small-world phenomenon
+
+### Network types and applications
+
+Networks model entities + relationships as graphs: Facebook (people/"friend"), Twitter (entities/"follows","retweets"), citation networks (papers/"cites"). Analysis types: **node role** (gatekeeper, connector) and **substructure** (dense regions/cliques). Applications: sociology/economics, identifying influencers and subcommunities, information-flow modelling (fake news, ads), epidemic modelling, sentiment + network analysis combined.
+
+### Basic graph properties
+
+This course models networks as **undirected, unweighted** graphs.
+
+- **Distance** $d(u,v)$ — shortest path length between $u,v$.
+- **Diameter** — $\max_{u,v} d(u,v)$, the longest shortest path.
+- **Degree** $\deg(v)$ — number of neighbours. Degree distributions can be highly skewed (e.g. Erdős had 509 co-authors).
+
+### Small-world phenomenon
+
+Many natural networks exhibit:
+
+- **Sparse connectivity** — relatively few edges (not complete).
+- **Closely clustered regions** — dense local neighbourhoods.
+- **Short average path length** — grows only logarithmically with network size.
+- **High clustering coefficient** — neighbours of a node tend to be neighbours of each other.
+
+**Six degrees of separation:** Karinthy (1929) conjectured ≤5 intermediaries connect any two people; Milgram (1967) partially verified via letter-passing. Non-obvious: such short paths exist **and** are findable by humans using local information alone (**decentralised search**). Watts & Strogatz showed random graphs with high local triadic closure + a few long-range links reproduce the small-world property.
+
+### Key structural concepts
+
+- **Giant component** — connected component containing most nodes.
+- **Weak ties** — socially distant, infrequent links (acquaintances); often hold giant components together.
+- **Strong ties** — close friends/family.
+- **Bridge** — edge connecting two otherwise-disconnected components.
+- **Local bridge** — edge $A$–$B$ sharing no common neighbours; cutting it increases $d(A,B)$.
+
+### Triadic closure and clustering coefficient
+
+- **Triadic closure** — if $A$–$B$ and $A$–$C$, then $B$–$C$ likely forms.
+- **Global clustering coefficient** — ratio of closed triads to all triads (open + closed).
+- **Local clustering coefficient** of $A$ — probability two randomly chosen neighbours of $A$ are themselves neighbours.
+
+### Computing network diameter
+
+Use **BFS from every node** to get all-pairs shortest paths (APSP); diameter = max distance found. Complexity $O(V(V+E))$ for unweighted undirected graphs — valid because there are no weights/negative edges.
+
+### Worked implementation (Tasks 7)
+
+- `load_graph`: builds an adjacency dictionary from an edge list; each edge adds both directions (undirected).
+- `get_node_degree`: maps each node to $|\text{neighbours}|$.
+- `get_diameter`/`bfs`: for each node, BFS gives shortest distances to all reachable nodes; diameter = max over all sources of the max distance. Example network: diameter = 8.
+
+---
+
+## 11 · Betweenness centrality and the Brandes algorithm
+
+### Definition
+
+**Betweenness centrality** of $v$ — proportion of all-pairs shortest paths passing through $v$:
+
+$$C_B(v) = \sum_{s,t\in V} \frac{\sigma(s,t\mid v)}{\sigma(s,t)}$$
+
+where $\sigma(s,t)$ = total shortest paths $s\to t$ (1 if $s=t$), $\sigma(s,t\mid v)$ = those passing through $v$ (0 if $v\in\{s,t\}$).
+
+High-betweenness nodes/edges are **gatekeepers** linking dense clusters — removing them isolates clusters (basis of hierarchical edge-removal clustering).
+
+### Brandes algorithm — DP formulation
+
+Naive computation is space-expensive; Brandes (2001/2008) uses DP to aggregate dependencies. Total complexity $O(V(V+E))$.
+
+**DP prerequisites:**
+- **Optimal substructure** — problem decomposes recursively into independent subproblems combining to the full solution.
+- **Overlapping subproblems** — same subproblem revisited; caching saves work.
+
+**Recursive shortest-path count:**
+
+$$\sigma(s,t) = \sum_{u\in\text{Pred}(t)}\sigma(s,u), \qquad \text{Pred}(t)=\{u:(u,t)\in E,\ d(s,t)=d(s,u)+1\}$$
+
+**Pairwise dependency:** $\delta(s,t\mid v) = \dfrac{\sigma(s,t\mid v)}{\sigma(s,t)}$. **One-sided dependency:** $\delta(s\mid v) = \sum_t \delta(s,t\mid v)$. Brandes' recurrence:
+
+$$\delta(s\mid v) = \sum_{\substack{(v,w)\in E\\ d(s,w)=d(s,v)+1}} \frac{\sigma(s,v)}{\sigma(s,w)}\bigl(1+\delta(s\mid w)\bigr)$$
+
+Final betweenness:
+
+$$C_B(v) = \sum_{s\in V}\delta(s\mid v)$$
+
+### Two-phase algorithm per source $s$
+
+**Phase 1 — BFS forward pass (path counting):**
+
+1. Initialise $\text{Pred}[w]=\varnothing$, $\text{dist}[t]=\infty$, $\sigma[t]=0$ $\forall t$; $\text{dist}[s]=0$, $\sigma[s]=1$; enqueue $s$.
+2. While queue non-empty: dequeue $v$, push onto stack $S$; for each neighbour $w$ of $v$:
+   - **Path discovery:** if $\text{dist}[w]=\infty$, set $\text{dist}[w]\leftarrow\text{dist}[v]+1$, enqueue $w$.
+   - **Path counting:** if $\text{dist}[w]=\text{dist}[v]+1$, set $\sigma[w]\leftarrow\sigma[w]+\sigma[v]$ and append $v$ to $\text{Pred}[w]$.
+
+**Phase 2 — back-propagation (dependency accumulation):**
+
+1. Initialise $\delta[v]\leftarrow 0$ $\forall v$.
+2. While $S$ non-empty: pop $w$; for each $v\in\text{Pred}[w]$, $\delta[v]\leftarrow\delta[v]+\frac{\sigma[v]}{\sigma[w]}(1+\delta[w])$; if $w\neq s$, $C_B[w]\leftarrow C_B[w]+\delta[w]$.
+
+### Undirected graphs
+
+The algorithm above is for **directed** graphs. For undirected graphs each pair $(s,t)$ is counted twice (once per direction) — **halve all betweenness scores** at the end.
+
+### Worked implementation (Task 8)
+
+`get_node_betweenness`: initialises `betweenness[v]=0.0` for all $v$; for each source node runs the BFS forward pass building `stack`, `predecessors`, `shortest_paths` (source=1, others=0), `distances` (source=0, others=−1); then the back-propagation pass using Brandes' dependency formula; finally divides all scores by 2 (undirected graph, each path counted twice).
+
+---
+
+## 12 · Network models and community detection
+
+### Generative models
+
+| Model | Mechanism | Property |
+|---|---|---|
+| **Erdős–Rényi $G(n,p)$** | each pair connected independently with probability $p$ | Poisson degree distribution |
+| **Barabási–Albert** | preferential attachment (new nodes link to high-degree nodes) | scale-free, power-law degree |
+| **Watts–Strogatz** | start regular lattice, randomly rewire a few edges | high clustering + low diameter (small-world) |
+
+### Power-law degree distributions
+
+$$P(k) \propto k^{-\gamma}$$
+
+— **scale-free** networks; a small number of hub nodes have very high degree.
+
+### Community detection: Girvan–Newman
+
+Iteratively remove the **highest-betweenness edge**; track **modularity** $Q$ as the graph splits into components. $Q$ measures the fraction of intra-community edges minus the expected fraction at random — used to decide where to stop removing edges (peak $Q$ = best split into communities).
+
+---
 
 ## Common pitfalls
 
-- Naïve Bayes assumes word independence — false but useful.
-- Without smoothing, an unseen word makes $P(d \mid c) = 0$.
-- HMM Viterbi underflow with long sequences — use log-probabilities.
-- $k$-means assumes spherical, equal-variance clusters — fails on elongated/varied densities.
-- High accuracy on imbalanced classes is misleading — report precision/recall/F1.
-- Significance ≠ effect size; small differences can be statistically significant in large samples.
+- **Naive Bayes independence assumption is false** but the classifier works well anyway — state this explicitly in answers ("naive" assumption, conditional independence given class).
+- **Without smoothing, a single unseen word zeroes an entire class** — the unsmoothed NB accuracy (49%) vs smoothed (79.5%) is the canonical illustration; always quote both Zipf's and Heaps' laws as the *why*.
+- **Vocabulary $V$ for smoothing must include words from both classes** (the full training vocabulary), not just the class being scored.
+- **Ignoring ties in the sign test causes spurious significance (Type I errors)** — always use the 0.5-split tie correction and round up.
+- **A failed significance test is not proof of equality** — report "inconclusive," never "no difference."
+- **Effect size and significance are separate axes** — never say "better" without both; only deltas can be significant.
+- **Cross-validation under significance testing: combine all folds into one test**, don't run $N$ separate tests.
+- **WCSS always decreases with $K$** — never use it alone to pick $K$; use the elbow or silhouette instead.
+- **K-means converges to a local, not global, minimum** — always run multiple initialisations (or K-means++) and report the spread/variance.
+- **Rand Index is inflated by TN dominance** — prefer Adjusted RI or NMI for extrinsic clustering evaluation, and note RI's near-1 values are not necessarily meaningful.
+- **Viterbi needs log-space** for numerical stability over long sequences (sums replace products, as in NB).
+- **Betweenness centrality must be halved for undirected graphs** — each shortest path between $s,t$ is counted from both directions.
+- **Silhouette is not invariant to squaring distances** — unlike K-means assignment (which can use squared distance for efficiency), silhouette requires true Euclidean distance.
+
+---
 
 ## Exam strategy
 
-- For sentiment: state the **independence assumption** + smoothing in answers.
-- For HMM: write down $\lambda = (A, B, \pi)$ explicitly; quote DP recurrences.
-- For networks: identify the **graph type** (directed/undirected/weighted) before computing.
-- For k-means: state objective function and emphasise convergence is to a local minimum.
+- For **sentiment classification**: always state the independence assumption, write the smoothed probability formula explicitly with $\omega$ or $+1$, and connect zero-probability → Zipf/Heaps → smoothing in a single coherent narrative.
+- For **significance testing**: define $H_0$, state $\alpha$ before computing, write the two-sided binomial sum formula, and explicitly handle ties with the $\lceil \text{null}/2\rceil$ correction.
+- For **cross-validation**: state the $N$-fold procedure, the variance formula, and (if asked about significance) emphasise pooling folds into one test.
+- For **HMMs**: write $\mu=(A,B)$ explicitly, state both first-order assumptions, and give the Viterbi recurrence with both $\delta$ and $\psi$ — note the $O(N^2T)$ complexity and why all $N$ states must be retained per step.
+- For **k-means**: state the WCSS objective formula, note convergence is guaranteed but only to a local minimum, and mention K-means++ when discussing initialisation.
+- For **clustering evaluation**: distinguish intrinsic (silhouette, WCSS) vs extrinsic (RI, ARI, NMI); note WCSS's monotonicity and RI's chance-inflation as the two standard "gotchas."
+- For **social networks**: identify whether the graph is directed/weighted before applying any formula (this course defaults to undirected/unweighted); for betweenness, remember the halving step for undirected graphs.
+- For **Brandes/DP algorithms**: explicitly name the two DP prerequisites (optimal substructure, overlapping subproblems) — examiners reward this framing for both Viterbi and Brandes.

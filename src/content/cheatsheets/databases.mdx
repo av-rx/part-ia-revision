@@ -2,43 +2,392 @@
 module: databases
 title: "Databases — Cheat Sheet"
 paper: paper-3
-updated: "2026-05-10"
+updated: "2026-06-12"
 ---
 
-## DBMS roles
+## 1 · What is a DBMS
 
-- **Data abstraction** (3-level architecture): external (views) → conceptual (schema) → internal (storage).
-- **Data independence:** change physical layout without breaking queries.
-- **Concurrency, recovery, integrity, security.**
+### Terminology
 
-## ER diagrams
+| Term | Meaning |
+|---|---|
+| **Value** | character string / number / date / polygon etc. |
+| **Field** | place to hold a value (attribute / column in relational DB) |
+| **Record** | sequence of fields (row / tuple) |
+| **Schema** | specification of table/field names, types, consistency rules |
+| **Key** | field(s) used to locate a record |
+| **Index** | derived structure for fast lookup |
+| **Query** | retrieve/lookup function |
+| **Update** | modification of data, preserving consistency |
+| **Transaction** | atomic change of a set of fields |
 
-- **Entity:** rectangle. **Weak entity:** double rectangle (no own key).
-- **Attribute:** ellipse; **key** underlined; **multi-valued** double; **derived** dashed.
-- **Relationship:** diamond.
-- **Cardinality:** 1:1, 1:N, M:N. **Participation:** total (double line) vs partial.
+### Abstractions, interfaces, implementations
 
-## Relational model
+A DBMS provides a **narrow, standardised interface** over secondary storage, shared by concurrent applications. The interface liberates application writers from low-level storage details: implementations can (in principle) change without breaking applications. In practice, performance concerns and changing specifications challenge this ideal — but **data independence** (the ability to change physical layout without breaking queries) remains a central design goal.
 
-- **Relation = set of tuples.** Schema: $R(A_1, A_2, \ldots)$ with domains.
-- **Keys:** super-key, candidate key (minimal), primary key.
-- **Foreign key** references another relation's primary key.
+### Variations of set-ups
 
-### Relational algebra (closed under R)
+Databases vary along several independent axes:
 
-| Op | Symbol | Notes |
+- **Data storage location:** primary (in-core), secondary, distributed.
+- **In-core persistence:** ephemeral (lost on exit) vs persistent (serialised to/from filesystem, or DBMS directly accesses secondary storage).
+- **Data size:** Big Data (too big for primary store) vs in-core (fits entirely in memory).
+- **Write pattern:**
+  - **Read-optimised** — data rarely changes.
+  - **Transaction-optimised** — many concurrent queries and updates.
+  - **Append-only journal** — new data always appended (ledger-style).
+- **Consistency model:** ACID (atomic updates) vs BASE (eventual consistency).
+- **Data arrangement:** relational (tables), semi-structured documents, or graphs.
+
+### Consistency concerns
+
+- **Value range checks** — e.g. reject a weight of −15 kg.
+- **Foreign key referential integrity** — e.g. reject a reference to a non-existent record.
+- **Value atomicity** — e.g. don't store "two addresses" in one field.
+- **Entity integrity** — every field must have a value (no missing required data).
+
+### CRUD and management operations
+
+**CRUD:** Create (insert new items), Read (query), Update (modify), Delete (remove).
+
+**Management operations:** create/change schema (e.g. add a table or attribute), create a view (e.g. for access control), physically reorganise data layout or re-index, backups, statistics generation.
+
+### Data models
+
+| Model | Characteristics |
+|---|---|
+| **Relational** | Data in tables; SQL is the main query language; optimised for high-throughput concurrent updates |
+| **Document-oriented (aggregate-oriented)** | Semi-structured data; optimised for read-heavy workloads with few updates |
+| **Graph-oriented** | Data mostly nodes and edges; strong support for path-oriented queries and standard graph algorithms |
+
+In a **relational database**, each table has one row per record (tuple), and each record has a number of fields (attributes). A table may have a schema specifying field names, allowable formats/ranges, and which column(s) form the key. Column ordering is unimportant, and often row ordering is too.
+
+### Distributed databases
+
+A database held across multiple machines/datacentres. Reasons to distribute:
+
+- **Scalability** — dataset/workload too large for one machine.
+- **Fault tolerance** — service survives the failure of some machines.
+- **Lower latency** — data located closer to widely distributed users.
+
+The downside is **consistency**: there's overhead in providing a consistent view after an update, and there's a spectrum of successively relaxed consistency models (e.g. do all viewers see updates in the same order?). The same problem arises within multi-core processors, not just distributed systems.
+
+### CAP theorem
+
+- **Consistency** — all reads return up-to-date data.
+- **Availability** — all clients can find *some* replica of the data.
+- **Partition tolerance** — the system continues operating despite arbitrary message loss / partial failure.
+
+It is **impossible** to guarantee all three simultaneously under a network partition. Distributed systems instead typically offer **BASE** (Basically Available, Soft state, Eventual consistency): once update activity ceases, the system eventually reaches a consistent state.
+
+---
+
+## 2 · Conceptual modelling with ER diagrams
+
+ER modelling is **abstract and independent of implementation** — it forces clarity in database design before worrying about tables, and communicates the design visually.
+
+### Core notation
+
+- **Entities** — the nouns of the model (drawn as rectangles/squares).
+- **Attributes** — properties of entities (ovals/ellipses); the **key** attribute is underlined.
+- **Relationships** — the verbs connecting entities (diamonds), with a defined **scope** (only relevant attributes are modelled).
+
+### Cardinality
+
+- **Many-to-many (M:N):** any instance of entity S can relate to zero or more instances of T, and vice versa.
+- **Many-to-one / one-to-many:** e.g. each `Employee` belongs to exactly one `Department` (many-to-one from Employee's perspective); one `Department` has many `Employees` (one-to-many from Department's perspective). Same relationship, viewed from each side.
+- **One-to-one (1:1):** both entities relate to at most one instance of the other. Rare in practice — usually suggests the two entities could just be merged. Note: 1:1 *cardinality* doesn't necessarily imply a true 1-to-1 *correspondence* (some instances may have zero matches).
+
+Different notations exist for expressing these cardinalities on diagrams (crow's foot, (min,max) pairs, etc.) — be consistent and label both ends of every relationship.
+
+### Relationships with attributes
+
+A relationship itself can carry an attribute — e.g. a `PLAYS` relationship between `Person` and `Movie` might have a `role` attribute recording which character the person played. Each attribute occurs **once per relationship instance**, which causes problems if, say, an actor plays multiple roles in one movie (the relationship instance can't hold two values for `role`).
+
+### Multi-valued attributes
+
+Avoid comma-separated lists or attributes that hold multiple values — this violates **1NF** (values must be atomic). Better to remodel: pull the repeating values out into a separate entity/relation (e.g. turn a list of "roles" into a separate `Role` entity linked by a relationship).
+
+### Ternary relationships
+
+A relationship can involve **three** entities at once. Key design question: is the third "entity" actually meaningful in the real world? A ternary relationship can sometimes be replaced by binary relationships, but this risks either losing information or creating an artificial entity purely to hold the connection (e.g. introducing a `Casting` entity to capture a three-way Person–Movie–Role relationship as two binary relationships).
+
+### Attribute vs entity with new relationship
+
+Whether something should be an attribute or its own entity (with a relationship) **depends on scope**:
+
+- If all movies have exactly one release date → `release_date` works fine as a simple attribute of `Movie`.
+- If a movie can have multiple release dates (different countries/formats) → model `MovieRelease` as a separate entity with its own relationship to `Movie`.
+
+### Weak entities
+
+A **weak entity** is one whose existence depends on the existence of another (owner) entity — e.g. `AlternativeTitle` only exists in relation to an existing `Movie`. Drawn as a **double rectangle**.
+
+- A **discriminator** distinguishes between multiple weak-entity instances belonging to the same owner (e.g. `alt_id` distinguishes different alternative titles for the same movie) — but the discriminator is **not unique on its own** and is **not a key**.
+- To uniquely identify a weak entity instance you need **both** the owner's key (`movie_id`) **and** the discriminator (`alt_id`).
+
+### Entity hierarchy
+
+Entities may have sub-entities ("is-a" hierarchies). Sub-entities **inherit** the attributes (including keys) and relationships of the parent entity.
+
+---
+
+## 3 · The relational model and relational algebra
+
+### Mathematical foundations
+
+For sets $S$ and $T$:
+
+- **Cartesian product:** $S \times T = \{(s,t) \mid s \in S, t \in T\}$. E.g. $\{A,B\} \times \{3,4,5\} = \{(A,3),(A,4),(A,5),(B,3),(B,4),(B,5)\}$.
+- A **(binary) relation** is any set $R \subseteq S \times T$.
+- An **n-ary relation** $R$ is a set $R \subseteq S_1 \times S_2 \times \dots \times S_n = \{(s_1,\dots,s_n) \mid s_i \in S_i\}$.
+
+A **database relation** associates a name $A_i$ (attribute) with each domain $S_i$, and uses *records* — sets of (attribute name, value) pairs. The **schema** of a relation $R$ is written $R(A_1{:}S_1, A_2{:}S_2, \dots, A_n{:}S_n)$.
+
+A **query language** takes a finite set of relation instances $R_1,\dots,R_k$ and produces a single relation instance $Q(R_1,\dots,R_k)$. It must be:
+
+- **High-level** — no need to manage storage directly.
+- **Declarative** — specify *what* to retrieve, not *how*.
+
+### Relational algebra operators
+
+Relational algebra is **closed**: every operator takes relation(s) and produces a relation, so operators compose.
+
+| Operator | Symbol | Meaning |
 |---|---|---|
-| Selection | $\sigma_\theta(R)$ | tuples where $\theta$ holds |
-| Projection | $\pi_{A,B}(R)$ | retain attributes |
-| Union | $R \cup S$ | same schema |
-| Difference | $R - S$ | |
-| Cartesian product | $R \times S$ | |
+| Selection | $\sigma_p(R)$ | tuples of $R$ for which predicate $p$ holds |
+| Projection | $\pi_X(R)$ | restrict each tuple to attribute set $X = \{A_1,\dots,A_k\}$ |
+| Renaming | $\rho_M(R)$ | rename attributes via map $M = \{A_1 \mapsto B_1, \dots\}$ |
+| Union | $R \cup S$ | tuples in $R$ or $S$ (same schema) |
+| Intersection | $R \cap S$ | tuples in both $R$ and $S$ |
+| Difference | $R - S$ | tuples in $R$ but not $S$ |
+| Cartesian product | $R \times S$ | all pairings of tuples |
 | Join | $R \bowtie_\theta S$ | $\sigma_\theta(R \times S)$ |
-| Natural join | $R \bowtie S$ | equi-join on common attrs |
-| Rename | $\rho_{S(...)} (R)$ | |
+| Natural join | $R \bowtie S$ | equi-join on all shared attributes (see below) |
 | Division | $R \div S$ | "for all" queries |
 
-## SQL essentials
+### Natural join in detail
+
+Often we write a relational schema abstractly as $R(\boldsymbol{A})$ where $\boldsymbol{A} = \{A_1,\dots,A_n\}$ is just a set of attribute names (ignoring domains). Write $R(\boldsymbol{A}, \boldsymbol{B})$ to mean $R(\boldsymbol{A} \cup \boldsymbol{B})$, assuming $\boldsymbol{A} \cap \boldsymbol{B} = \emptyset$.
+
+Notation $u.[\boldsymbol{A}] = v.[\boldsymbol{A}]$ abbreviates $u.A_1 = v.A_1 \land \dots \land u.A_n = v.A_n$.
+
+Given $R(\boldsymbol{A}, \boldsymbol{B})$ and $S(\boldsymbol{B}, \boldsymbol{C})$, the **natural join** $R \bowtie S$ is a relation over $\boldsymbol{A}, \boldsymbol{B}, \boldsymbol{C}$:
+
+$$R \bowtie S \equiv \{t \mid \exists u \in R, v \in S,\ u.[\boldsymbol{B}] = v.[\boldsymbol{B}] \land t = u.[\boldsymbol{A}] \cup u.[\boldsymbol{B}] \cup v.[\boldsymbol{C}]\}$$
+
+Expressed in core relational algebra:
+
+$$R \bowtie S = \pi_{\boldsymbol{A},\boldsymbol{B},\boldsymbol{C}}\left(\sigma_{\boldsymbol{B}=\boldsymbol{B}'}\left(R \times \rho_{\boldsymbol{B} \mapsto \boldsymbol{B}'}(S)\right)\right)$$
+
+In SQL, a natural join is `NATURAL JOIN` instead of `CROSS JOIN` (or, more commonly, an explicit `JOIN ... ON` with the matching condition spelled out).
+
+### Joins and complexity
+
+Given $R(A,B)$ and $S(B,C)$, computing $R \bowtie S$ naively (**nested-loop join**):
+
+```
+// Brute force approach:
+// scan R
+for each (a, b) in R {
+    // scan S
+    for each (b', c) in S {
+        if b = b' then create (a, b, c) ...
+    }
+}
+```
+
+Worst case is $O(|R| \times |S|)$ — quadratic. But on each iteration over $R$ there may only be a small number of matching $S$ records — possibly just one, if $R$'s $B$ column is a foreign key into $S$.
+
+An **index** reduces lookup cost:
+
+```
+// scan R
+for each (a, b) in R {
+    // don't scan S, use an index
+    for each s in S-INDEX-ON-B(b) {
+        create (a, b, s.c) ...
+    }
+}
+```
+
+With an index, a foreign-key lookup costs $O(\log |S|)$ instead of $O(|S|)$. Trade-off: **indexes speed up reads but slow down writes** (the index must be maintained on every update).
+
+### Multisets and NULL
+
+- SQL queries naturally produce **multisets**, not sets — this is why `DISTINCT` exists. Duplicates matter for aggregates (`MIN`, `MAX`, `AVG`, `COUNT`, etc.), typically combined with `GROUP BY`.
+- **`NULL` is a placeholder, not a value.** It is not the empty string `""`, and it is not a member of any domain/type. This forces **three-valued logic** (true / false / unknown), which complicates predicate evaluation.
+- **Interpretations of `NULL`** are ambiguous: "there's a value but we don't know it", "no value applies", "value known but hidden", etc. `NULL` is not equal to anything — **not even to another `NULL`**.
+- **Selecting on `NULL`:** use `IS NULL` (or `IS NOT NULL`), e.g. `SELECT note FROM credits WHERE note IS NULL;`. The predicate `foo IS NULL` is always true or false (never unknown).
+- **`NULL` inconsistency in `GROUP BY`:** despite `NULL = NULL` being unknown/false, `GROUP BY` puts all `NULL`s into a single group:
+
+```sql
+SELECT note, count(*) AS total
+FROM credits
+WHERE note IS NULL GROUP BY note;
+
+-- Returns
+note total
+---- -----
+NULL 4892
+```
+
+This *looks* like `NULL` is being treated as equal to `NULL` for grouping purposes, which seems to violate the definition above — a known SQL wart.
+
+---
+
+## 4 · From ER model to relational schema
+
+### Why not use one big table?
+
+A single denormalised table suffers **data redundancy anomalies**:
+
+- **Insertion anomaly:** hard to tell if a newly inserted record is consistent with existing ones; may want to insert a person without knowing whether they're a director, or insert a movie without knowing its director.
+- **Deletion anomaly:** deleting all of a director's films from the table loses all information about that director.
+- **Update anomaly:** if a director's name is misspelled, fixing it for one film but not others leaves the data inconsistent.
+- **Performance issue:** a conceptually simple update may need to touch many rows, potentially locking the entire table.
+
+**Breaking a large table into smaller tables** (one per ER entity, one per ER relationship) avoids many of these anomalies — at the cost of needing **joins** to recombine information.
+
+### Keys — formal definition
+
+For relational schema $R(\boldsymbol{X})$ with $\boldsymbol{Z} \subseteq \boldsymbol{X}$:
+
+- $\boldsymbol{Z}$ is a **superkey** for $R$ if, for any two records $u, v$ in any instance of $R$: $u.[\boldsymbol{Z}] = v.[\boldsymbol{Z}] \implies u.[\boldsymbol{X}] = v.[\boldsymbol{X}]$ (matching on $\boldsymbol{Z}$ implies matching everywhere).
+- $\boldsymbol{Z}$ is a **key** for $R$ if it is a superkey and **no proper subset** of $\boldsymbol{Z}$ is also a superkey (i.e. it's minimal).
+- Notation $R(\underline{\boldsymbol{Z}}, \boldsymbol{Y})$ indicates $\boldsymbol{Z}$ is a key for $R(\boldsymbol{Z} \cup \boldsymbol{Y})$.
+
+### Foreign keys and referential integrity
+
+Given $R(\underline{\boldsymbol{Z}}, \boldsymbol{Y})$ and another schema $S(\boldsymbol{W})$ with $\boldsymbol{Z} \subseteq \boldsymbol{W}$: $\boldsymbol{Z}$ is a **foreign key in $S$ for $R$** if, in any instance, $\pi_{\boldsymbol{Z}}(S) \subseteq \pi_{\boldsymbol{Z}}(R)$ — i.e. every $\boldsymbol{Z}$-value appearing in $S$ also appears as a key in $R$.
+
+A database has **referential integrity** when all such foreign-key constraints hold.
+
+### SQL schema/key examples
+
+A simple key:
+
+```sql
+CREATE TABLE genres (
+    genre_id integer NOT NULL,
+    genre TEXT NOT NULL,
+    PRIMARY KEY (genre_id));
+```
+
+An all-key table with two foreign keys (implements an M:N relationship):
+
+```sql
+CREATE TABLE has_genre (
+    movie_id varchar(16) NOT NULL  -- up to 16 chars
+        REFERENCES movies (movie_id),
+    genre_id integer NOT NULL REFERENCES genres (genre_id),
+    PRIMARY KEY (movie_id, genre_id));
+```
+
+### Mapping ER constructs to tables
+
+| ER construct | Relational implementation |
+|---|---|
+| Strong entity | one table; PK = entity's key |
+| Weak entity | one table; PK = (owner's PK, discriminator) |
+| 1:1 relationship | merge into one of the participating tables; FK on either side |
+| 1:N relationship | FK placed on the "N" side, referencing the "1" side's PK |
+| M:N relationship | new table containing both PKs (all-key table), each a FK |
+| Multi-valued attribute | new table: (owner PK, value) |
+
+### Squashing multiple relationships into one table
+
+Rather than two separate relation schemas
+
+$$R(\underline{X,Z}, U) \qquad Q(\underline{X,Z}, V)$$
+
+(both keyed on $(X,Z)$), they can be combined into a single table
+
+$$RQ(\underline{X,Z,\text{type}}, U, V)$$
+
+using a tag column `type` with domain $\{\boldsymbol{r}, \boldsymbol{q}\}$:
+
+- An $R$-record $(x,z,u)$ becomes the $RQ$-record $(x,z,\boldsymbol{r},u,\text{NULL})$.
+- A $Q$-record $(x,z,v)$ becomes the $RQ$-record $(x,z,\boldsymbol{q},\text{NULL},v)$.
+
+Given the `type` value, you always know whether the $U$ column or the $V$ column is meaningful (the other is `NULL`).
+
+### Implementing weak entities
+
+For a weak entity owned by $S(\underline{Z}, W)$ with discriminator $\text{DISC}$:
+
+- **Two-table approach:** $R(\underline{Z,\text{DISC}}, U)$ and $T(\underline{Z,\text{DISC}}, Y)$, both with $\pi_Z(R) \subseteq \pi_Z(S)$ and $\pi_Z(T) \subseteq \pi_Z(S)$.
+- **Concise approach:** a single $R(\underline{Z,\text{DISC}}, U, Y)$ with $\pi_Z(R) \subseteq \pi_Z(S)$ — this is how `Has_Alternative` (alternative movie titles) would typically be implemented.
+
+### Implementing entity hierarchies (3-table approach)
+
+For a parent $S(\underline{Z}, W)$ with two sub-entity types:
+
+- $T(\underline{Z}, Y)$ with $\pi_Z(T) \subseteq \pi_Z(S)$ — one sub-entity's extra attributes.
+- $U(\underline{Z}, V)$ with $\pi_Z(U) \subseteq \pi_Z(S)$ — the other sub-entity's extra attributes.
+
+Each sub-entity table shares the parent's key $Z$ and references it. (These could be combined into one table with a type tag, as above, but this is "less clean".)
+
+---
+
+## 5 · Normalisation, functional dependencies, and redundancy
+
+### What redundancy means and why it matters
+
+Data is **redundant** if it could be deleted and then *reconstructed* from the data remaining in the database. Redundancy is:
+
+- **Problematic** because data held in more than one place can come to disagree (inconsistency), and in a database with high update rates, redundancy means a correct transaction must acquire locks on, and update, many copies.
+- **Sometimes good** because if updates are rare, multiple copies can increase read bandwidth and speed up lookups.
+
+A **normal form schema** is essentially one with little or no redundant data: a good rule is that every piece of data in a table is either part of the key, or **semantically depends on** the key. If some data doesn't directly depend on the key, split it off into a separate table — repeating this process until you reach **closure** (no further splits possible/needed). "Splitting off" is essentially a division-like transform; it can be reversed with a **join** (which behaves like multiplication).
+
+This closure-based process generalises the idea of **iterating a transform to a fixed point** — the same idea as computing a least fixed point (e.g. repeated division-by-subtraction until termination), or as repeatedly rewriting an expression (e.g. reordering a commutative operator's arguments) until no further rewrite applies.
+
+### Functional dependencies and normal forms
+
+A **functional dependency (FD)** $X \to Y$ means: for any two tuples agreeing on all attributes in $X$, they must also agree on all attributes in $Y$. Keys are the special case where $X$ functionally determines *every* attribute of the relation.
+
+**Armstrong's axioms** let you derive all FDs implied by a given set:
+
+- **Reflexivity:** if $Y \subseteq X$, then $X \to Y$.
+- **Augmentation:** if $X \to Y$, then $XZ \to YZ$ for any $Z$.
+- **Transitivity:** if $X \to Y$ and $Y \to Z$, then $X \to Z$.
+
+The **closure** $X^+$ of an attribute set $X$ (under a set of FDs) is the set of all attributes functionally determined by $X$ — computed by repeatedly applying Armstrong's axioms until no more attributes can be added (another fixed-point/closure computation). $X$ is a (super)key iff $X^+$ is the full attribute set.
+
+**Normal forms** (each level fixes a specific kind of redundancy/anomaly):
+
+| Form | Requirement |
+|---|---|
+| **1NF** | All attribute values are atomic; no repeating groups / multi-valued attributes |
+| **2NF** | 1NF, and every non-prime attribute is **fully** functionally dependent on the *whole* primary key (no partial dependencies on part of a composite key) |
+| **3NF** | 2NF, and no non-prime attribute is **transitively** dependent on the key (no non-prime attribute depends on another non-prime attribute) |
+| **BCNF** | Every non-trivial FD $X \to Y$ has $X$ as a superkey |
+
+BCNF is stricter than 3NF: decomposing into BCNF can sometimes require splitting a relation in a way that 3NF wouldn't require — and this split can cause some FDs to no longer be checkable without a join (the decomposition is not **dependency-preserving**), even though it remains **lossless** (information-preserving).
+
+### Redundancy / consistency / throughput trade-off
+
+- **Low redundancy** → good update throughput (a transaction need only lock a few data items).
+- **High redundancy** → good query times (fewer files/blocks need to be accessed — data needed together is stored together).
+- Data redundancy can cause **stored inconsistency** if updates aren't applied to every copy.
+- **Unlocked reads** can give the appearance of inconsistent data (you might read some copies pre-update and others post-update).
+- **Precomputing common queries** speeds up response time but introduces redundancy — useful for read-intensive applications.
+
+### OLAP vs OLTP
+
+| | OLAP (Online Analytical Processing) | OLTP (Online Transaction Processing) |
+|---|---|---|
+| Pattern | Write-once / journal / ledger-style updates | Rich mix of queries and updates to live data |
+| Optimised for | Read-heavy analytics, often denormalised | Many concurrent small read/write transactions |
+
+A read-oriented (OLAP-style) database makes sense when data is rarely updated but read often, and where reads can tolerate being mildly out-of-sync — periodically extracting a read-optimised snapshot from the live OLTP system is a common pattern. Introducing redundancy speeds up reads at the cost of slowing (and complicating) writes.
+
+---
+
+## 6 · SQL essentials and further SQL
+
+### Anatomy of a query
 
 ```sql
 SELECT a.name, AVG(b.score) AS avg_score
@@ -51,71 +400,565 @@ ORDER BY avg_score DESC
 LIMIT 10;
 ```
 
-- `WHERE` filters rows; `HAVING` filters groups.
-- `JOIN` defaults to INNER. `LEFT/RIGHT/FULL OUTER JOIN` keep unmatched rows.
-- **Aggregates:** `COUNT, SUM, AVG, MIN, MAX`. Watch `NULL`s — aggregates ignore.
-- **Set operations:** `UNION, INTERSECT, EXCEPT`.
-- **Subqueries:** scalar, IN, EXISTS, correlated.
-- **CTE:** `WITH t AS (...) SELECT ...`. Recursive CTEs allowed in standard SQL.
+- `WHERE` filters individual **rows** before grouping; `HAVING` filters **groups** after `GROUP BY`.
+- `JOIN` defaults to `INNER JOIN`. `LEFT`/`RIGHT`/`FULL OUTER JOIN` retain unmatched rows from one or both sides (padding with `NULL`).
+- **Aggregate functions** `COUNT, SUM, AVG, MIN, MAX` — all except `COUNT(*)` ignore `NULL`s. `COUNT(*)` counts every row including those with `NULL`s; `COUNT(col)` counts only non-`NULL` values of `col`.
+- **Set operations:** `UNION`, `INTERSECT`, `EXCEPT` (operate on the row-sets of two compatible queries; `UNION` removes duplicates, `UNION ALL` keeps them).
+- **Subqueries:** scalar (returns one value), `IN` (membership), `EXISTS` (correlated existence check), and general correlated subqueries.
+- **CTEs:** `WITH t AS (...) SELECT ... FROM t`. Standard SQL also allows **recursive** CTEs (`WITH RECURSIVE`).
 
-## Implementing ER ⇒ relational
+### Function composition and relation composition
 
-| ER | Relational |
-|---|---|
-| Strong entity | one table; PK = entity key |
-| Weak entity | one table; PK = (owner PK, partial key) |
-| 1:1 relationship | merge into one of the tables; FK on either side |
-| 1:N | FK on the N side |
-| M:N | new table with both PKs |
-| Multi-valued attr | new table |
+Function composition: $f(g(x)) = y \implies (f \circ g)(x) = y$, e.g. in OCaml `let compose (f, g) = fun x -> f (g x)`.
 
-## Normalisation
+**Relation composition** generalises this: given $R \subseteq S \times T$ and $Q \subseteq T \times U$, the composition $Q \circ R \subseteq S \times U$ is defined as
 
-- **1NF:** atomic values; no repeating groups.
-- **2NF:** 1NF + every non-prime attr fully dependent on whole PK (no partial dependencies).
-- **3NF:** 2NF + no transitive dependencies of non-prime on PK.
-- **BCNF:** every non-trivial FD's left-hand side is a super-key.
+$$Q \circ R \equiv \{(s,u) \mid \exists t \in T.\ (s,t) \in R \land (t,u) \in Q\}$$
 
-**Functional dependencies:** $X \to Y$. **Armstrong's axioms:** reflexivity, augmentation, transitivity.
-Closure $X^+$ via these axioms determines whether $X$ is a key.
+A function is a special case of a relation (where each input maps to a unique output), so function composition is a special case of relation composition — and **joins generalise function composition** to cope with relations rather than just functions. Concretely, $Q \circ R$ can be written as a join $R \bowtie_{2=1} Q$ (joining $R$'s second column to $Q$'s first column).
 
-## Transactions & ACID
+### Directed graphs, paths, and transitive closure
 
-- **A**tomicity, **C**onsistency, **I**solation, **D**urability.
-- **Anomalies:** dirty read, non-repeatable read, phantom read.
-- **Isolation levels:** read uncommitted, read committed, repeatable read, serializable.
-- **2PL** (two-phase locking): growing phase (acquire), shrinking (release). Strict 2PL holds locks until commit — recoverability + serializability.
-- **Deadlock:** wait-for graph with cycle. Detect (graph) or prevent (timeouts, ordering).
-- **Recovery:** WAL (write-ahead log); undo/redo; checkpoints.
+A **directed graph** $G = (V, A)$ has vertices $V$ and arcs $A \subseteq V \times V$; $(u,v) \in A$ means an edge from $u$ to $v$.
 
-## Throughput & concurrency
+For a binary relation $R \subseteq S \times S$, define **iterated composition**: $R^1 \triangleq R$, $R^{n+1} \triangleq R \circ R^n$. If $(u,v) \in A^k$, there is at least one path of length $k$ from $u$ to $v$ in $G$.
 
-- Hot rows ⇒ contention. Sharding partitions data; replication serves reads.
-- **CAP theorem:** under partition, choose Consistency or Availability.
+**Shortest path:** the distance from $s_0$ to itself is 0; if $(s_0,s_1) \in R$ the distance is 1; in general the distance from $s_0$ to $s'$ is the least $n$ such that $(s_0,s') \in R^n$.
 
-## Semi-structured / document DB
+**Transitive closure** $R^+$ of $R \subseteq S \times S$ is the smallest relation with $R \subseteq R^+$ that is itself transitive: $(x,y) \in R^+ \land (y,z) \in R^+ \implies (x,z) \in R^+$. Built as
 
-- JSON / BSON / XML.
-- **MongoDB** — collections of documents; flexible schema.
-- Trade-off: schema-on-read vs schema-on-write; integrity vs flexibility.
+$$R^+ = \bigcup_{n \in \{1,2,\dots\}} R^n = R \cup R^2 \cup \dots \cup R^k$$
 
-## Graph databases
+for some finite $k$ (since $R$ is finite) — but $k$ depends on the data, so it isn't known ahead of time. **Plain relational algebra and non-recursive SQL cannot compute transitive closure** — recursion is required.
 
-- Nodes + relationships, both with properties.
-- **Neo4j / Cypher:** `MATCH (a:Person)-[:KNOWS]->(b) RETURN b`.
-- Index-free adjacency: traversals are constant-time per hop.
+### Recursive SQL
+
+`WITH RECURSIVE` allows recursive CTEs:
+
+```sql
+WITH countUp AS (
+    SELECT 1 AS n
+    UNION ALL
+    SELECT n + 1 FROM countUp WHERE n < 3
+)
+SELECT * FROM countUp;
+```
+
+### Worked example: Bacon numbers
+
+A classic transitive-closure problem: find, for every actor, the length of the shortest chain of co-appearances connecting them to Kevin Bacon (`person_id = 'nm0000102'`).
+
+First, a view of all co-actor pairs (people who appeared in the same movie):
+
+```sql
+DROP VIEW IF EXISTS coactors;
+
+CREATE VIEW coactors AS
+    SELECT DISTINCT p1.person_id AS pid1,
+                    p2.person_id AS pid2
+    FROM plays_role AS p1
+    JOIN plays_role AS p2 ON p2.movie_id = p1.movie_id;
+```
+
+Bacon number 1 — everyone who directly co-starred with Bacon:
+
+```sql
+DROP VIEW IF EXISTS bacon_number_1;
+
+CREATE VIEW bacon_number_1 AS
+    SELECT DISTINCT pid2 AS pid,
+                    1 AS bacon_number
+    FROM coactors
+    WHERE pid1 = 'nm0000102' AND pid1 <> pid2;
+```
+
+Bacon number 2 — co-actors of bacon-number-1 people, excluding Bacon and anyone already at distance 1:
+
+```sql
+DROP VIEW IF EXISTS bacon_number_2;
+
+CREATE VIEW bacon_number_2 AS
+    SELECT DISTINCT ca.pid2 AS pid,
+                    2 AS bacon_number
+    FROM bacon_number_1 AS bn1
+    JOIN coactors AS ca ON ca.pid1 = bn1.pid
+    WHERE ca.pid2 <> 'nm0000102' AND
+    NOT (ca.pid2 IN (SELECT pid FROM bacon_number_1));
+```
+
+Bacon number 3 follows the same pattern, additionally excluding anyone in bacon_number_1 or bacon_number_2:
+
+```sql
+DROP VIEW IF EXISTS bacon_number_3;
+
+CREATE VIEW bacon_number_3 AS
+    SELECT DISTINCT ca.pid2 AS pid,
+                    3 AS bacon_number
+    FROM bacon_number_2 AS bn2
+    JOIN coactors AS ca ON ca.pid1 = bn2.pid
+    WHERE ca.pid2 <> 'nm0000102' AND
+        NOT (ca.pid2 IN (SELECT pid FROM bacon_number_1))
+    AND
+        NOT (ca.pid2 IN (SELECT pid FROM bacon_number_2));
+```
+
+...and so on up to bacon_number_9, each one excluding all people already assigned a smaller bacon number:
+
+```sql
+DROP VIEW IF EXISTS bacon_number_9;
+
+CREATE VIEW bacon_number_9 AS
+    SELECT DISTINCT ca.pid2 AS pid,
+                    9 AS bacon_number
+    FROM bacon_number_8 AS bn8
+    JOIN coactors AS ca ON ca.pid1 = bn8.pid
+    WHERE ca.pid2 <> 'nm0000102'
+    AND NOT (ca.pid2 in (SELECT pid FROM bacon_number_1))
+    AND NOT (ca.pid2 in (SELECT pid FROM bacon_number_2))
+    AND NOT (ca.pid2 in (SELECT pid FROM bacon_number_3))
+    AND NOT (ca.pid2 in (SELECT pid FROM bacon_number_4))
+    AND NOT (ca.pid2 in (SELECT pid FROM bacon_number_5))
+    AND NOT (ca.pid2 in (SELECT pid FROM bacon_number_6))
+    AND NOT (ca.pid2 in (SELECT pid FROM bacon_number_7))
+    AND NOT (ca.pid2 in (SELECT pid FROM bacon_number_8));
+```
+
+Union them all together:
+
+```sql
+DROP VIEW IF EXISTS bacon_numbers;
+
+CREATE VIEW bacon_numbers AS
+    SELECT * FROM bacon_number_1
+    UNION
+    SELECT * FROM bacon_number_2
+    UNION
+    SELECT * FROM bacon_number_3
+    UNION
+    SELECT * FROM bacon_number_4
+    UNION
+    SELECT * FROM bacon_number_5
+    UNION
+    SELECT * FROM bacon_number_6
+    UNION
+    SELECT * FROM bacon_number_7
+    UNION
+    SELECT * FROM bacon_number_8
+    UNION
+    SELECT * from bacon_number_9;
+```
+
+Counting actors at each distance:
+
+```sql
+SELECT bacon_number, count(*) AS total
+FROM bacon_numbers
+GROUP BY bacon_number
+ORDER BY bacon_number;
+
+-- Results
+BACON_NUMBER TOTAL
+------------ -----
+           1    12
+           2   110
+           3   614
+           4   922
+           5   381
+           6   123
+           7    86
+           8    16
+        -- bacon_number_9 is empty
+```
+
+**The recursive version** of this whole chain, using `WITH RECURSIVE`:
+
+```sql
+WITH RECURSIVE bacon(n,pid) AS
+    (SELECT 0 AS n, pid2 AS pid
+        FROM coactors
+        WHERE pid1="nm0000102"
+        AND pid1=pid2
+    UNION
+    SELECT n+1 AS n, c.pid2 AS pid
+        FROM bacon
+        JOIN coactors AS c ON c.pid1 = pid
+        WHERE NOT (c.pid2 IN (SELECT pid
+                              FROM bacon)
+                  )
+        AND n < 20
+    )
+    SELECT n, COUNT(*)
+        FROM (SELECT min(n) AS n, pid
+              FROM bacon
+              GROUP BY pid)
+        GROUP BY n;
+```
+
+The repeated, hand-unrolled `bacon_number_N` views are exactly what the recursive CTE computes automatically — the recursion terminates when no new `pid`s are added (a fixed point / closure), bounded here by `n < 20` as a safety limit.
+
+---
+
+## 7 · Transactions, ACID, throughput, and consistency
+
+### Transaction processing
+
+A **transaction** is a series of queries and updates that *externally appear* to be a single atomic operation.
+
+- **Internal transactions:** some values are read, possibly more are conditionally read, and various values are changed based on what was read — all reads/writes are inside the same database.
+- **External "transactions" don't really exist:** side effects outside the DBMS (e.g. sending an SMS acknowledgement) cannot be made atomic by the DBMS. System designers must think carefully about how to "undo" such effects if the surrounding transaction aborts. Some systems let the application abort a transaction before commit.
+
+### Transaction client flow
+
+A transaction's body is bracketed by `START`/`BEGIN` and `COMMIT` calls, and consists of any number of queries/updates in any order:
+
+- The client may **abort** at any time — the DBMS then undoes all of that transaction's updates.
+- In some (**optimistic**) systems, an update or the commit itself may be rejected/aborted, forcing the client to restart the transaction.
+- DBMSs support many transactions running **concurrently**.
+
+### ACID properties
+
+- **Atomicity** — all changes happen as if a single operation: either all happen, or none do. *Example:* a funds transfer either both debits one account and credits the other, or does neither.
+- **Consistency** — a transaction applied to a consistent database leaves it in a consistent state. *Example:* total money across all accounts is conserved by the transfer.
+- **Isolation** — intermediate states of a transaction are invisible to other transactions; concurrently running transactions appear serialised. *Example:* a concurrent transaction sees the funds in one account or the other, never in both or in neither.
+- **Durability** — once a transaction completes successfully, its changes persist even across system failure. *Example:* the account changes are never silently reversed.
+
+### ACID vs BASE
+
+Many NoSQL systems weaken ACID guarantees — the result is called **BASE**:
+
+- **B**asically **A**vailable
+- **S**oft state
+- **E**ventual consistency
+
+### Locking
+
+Implementing ACID requires **locks** — software/hardware primitives providing **mutual exclusion**. A resource locked for exclusive access by one transaction must be unlocked again after use; other transactions wanting it must wait, delaying their completion.
+
+- Locks are **acquired and released by transactions**; the precise locking protocol is vendor-specific.
+- Locks range from **coarse-grained** (lock the whole database) to **fine-grained** (lock a single value).
+- If transactions lock large amounts of data, or lock frequently-used data, fewer concurrent updates can proceed → **throughput degrades**.
+
+### Two-phase locking (2PL) and recovery (standard extensions)
+
+Building on the locking discussion above, the standard concurrency-control protocol taught alongside ACID is **two-phase locking**:
+
+- **Growing phase:** a transaction may acquire locks but not release any.
+- **Shrinking phase:** a transaction may release locks but not acquire any.
+- **Strict 2PL** holds all locks until commit/abort — this guarantees both **recoverability** and **serializability**, and is what most real systems implement.
+
+**Deadlock** arises when transactions wait on each other's locks in a cycle. Detected via a **wait-for graph** (cycle = deadlock) or prevented via timeouts / lock ordering.
+
+**Crash recovery** typically uses a **write-ahead log (WAL)**: log every change before applying it, supporting **undo** (roll back uncommitted changes) and **redo** (replay committed changes lost from memory), with periodic **checkpoints** to bound recovery time.
+
+> Note: **two-phase locking (2PL)** is a *concurrency control* protocol — do not confuse it with **two-phase commit**, which is a *distributed atomicity* protocol for committing a transaction across multiple nodes.
+
+### Throughput, redundancy, and read-oriented databases
+
+Introducing data redundancy can **speed up read-heavy transactions at the expense of write throughput**. A read-oriented database makes sense when:
+
+- Data is rarely updated and read often.
+- Reads can tolerate being mildly out-of-sync with a write-oriented "source of truth" — periodically extracting read-oriented snapshots into a separate, read-optimised store is a common architecture.
+
+---
+
+## 8 · Semi-structured / document databases
+
+### What "semi-structured" means
+
+Consider a textbook: it has chapters with names and (sub)sections, figures with their own numbering, and cross-references between sections. This **doesn't conform to a rigid relational schema**, yet clearly contains organisational structure. Manually indexing every word would be too much work and not useful (poorly defined).
+
+### Approaches to handling semi-structured data
+
+- **Store in two parts:** keep the document in its native form, and separately store *indexable features* in relational tables.
+- **Store just once** (possibly **shredded**): keep the document largely in its native form (especially XML/JSON), and build database tools that navigate the semi-structured data directly — using something other than SQL. Such systems must return **best-effort** answers since "schema" violations may be frequent.
+
+Documents can also be **"unshredded"** back to their original form when necessary. Human curators or automatic tools (simple keyword analysis, or LLM/advanced NLP) can remove noise, index, and classify content when adding structure to originally unstructured documents.
+
+### BASE revisited — three orthogonal axes
+
+Three independent design axes recur:
+
+1. Tables vs documents.
+2. Distributed vs centralised (monolithic).
+3. ACID vs BASE.
+
+Document databases are typically designed to be **easy to distribute** and **don't support full ACID** — hence BASE:
+
+- **B**asically **A**vailable — availability is promoted over consistency; a change made at one node is propagated to all others (eventually).
+- **S**oft **S**tate — stored values may change without application intervention, due to eventual-consistency updates or network partitions resolving.
+- **E**ventual **C**onsistency — all readers throughout the system eventually see the same state.
+
+### Key/value stores
+
+Values can be arbitrary blobs (byte sequences) — any internal structure is **opaque** to the store. Many implementations are distributed, spreading data as **shards** randomly across participating machines (e.g. by hash of key), giving redundancy and load balancing. Because the DBMS doesn't interpret the value, it doesn't mind if values are encrypted and it never sees the keys. Implementations range across the ACID–BASE spectrum.
+
+### Serialisation: JSON and XML
+
+**Serialising** (marshalling/pickling) converts a data structure into bytes for transfer or storage.
+
+- **JSON** was originally designed for serialising data.
+- **XML** was designed for serialising *and* marking up human-readable documents, so different parts can be located/processed differently.
+- Both (and CSV) are widely used for transferring data between databases/apps; NoSQL systems often use JSON/XML as the primary on-disk document form.
+
+Example — the same data in XML and JSON:
+
+```xml
+<PERSON name="Greaves"><DOB month="May" year="1902"/></PERSON>
+```
+
+```json
+"person": {"name": "Greaves", "dob": {"month": "May", "year": "1902"}}
+```
+
+Simplified abstract syntaxes (note both are fundamentally **tree-structured text with named nodes** — broadly similar):
+
+```ocaml
+type xml_t = (* XML stands for eXtensible Markup Language *)
+    | ELEMENT of string * (string * string) ulist * xml_t list
+    | LEAF of string
+
+type json_t = (* JSON stands for JavaScript Object Notation *)
+    | LEAF_S of string
+    | LEAF_N of integer
+    | ARRAY of json_t list
+    | OBJECT of (string * json_t) ulist
+    | NULL
+```
+
+### XML structure and schema spectra
+
+**Structure spectrum** (how much of the data is "structured"):
+
+1. All data in one large element (effectively unstructured).
+2. **Semi-structured:** some elements hold a lot of free text, others hold a single atomic value (as in a relational DB).
+3. Every atomic value in its own element (unrealistic in practice).
+
+**Schema rigorousness spectrum:**
+
+1. A named schema (with a URL) exists, dictating element names, nesting/occurrence rules, and allowable attributes.
+2. Schema relaxed — e.g. element ordering inside a parent is unimportant.
+3. Elements/attributes beyond the schema are also permitted (application-specific extensions).
+4. No schema at all.
+
+### Document-oriented (aggregate-oriented) databases
+
+Store data as semi-structured **objects** (aggregates). Distinguish from raw key/value stores:
+
+- A key/value store *could* hold unstructured documents, but any application-level structure inside the blobs **cannot be exploited by the DBMS**.
+- Querying a remote database incurs **round-trip time**.
+- Document databases typically store **denormalised** data — fields not directly semantically related to the key are stored together under that key — so that **one or two fetches** retrieve everything an application-specific operation needs, enabling fast local processing without further round trips.
+
+### Document query languages
+
+Multiple kinds of query are possible:
+
+- Query the **unstructured text** itself (e.g. "how many words?").
+- Query **tags/structure** (e.g. "find the `eye-colour` attribute of each `Vizier` element under the second `Chapter` element").
+- Application-specific compositions of the above.
+
+A typical path-expression abstract syntax (cf. XPath) for navigating a semi-structured tree:
+
+```ocaml
+type pathexp_t = (* Typical query abstract syntax *)
+    | SelectRoot                                (* Whole thing *)
+    | SelectAttribute of pathexp_t * string     (* v in string="v" *)
+    | SelectElement of pathexp_t * predicate    (* <EL> ... </EL> *)
+    | NextElement of pathexp_t * int            (* Fwd or back by n *)
+    | SelectData of pathexp_t * ranges          (* Chunks of raw text *)
+    | Concatenate of pathexp_t * pathexp_t      (* Aggregation *)
+    | ...
+```
+
+If a query spans more than one tree, something equivalent to a **join** is also needed.
+
+### NoSQL and denormalisation strategy
+
+"NoSQL" databases are typically **horizontally scalable** — you expand by adding more machines rather than upgrading existing ones.
+
+A common pattern is to **precompute and store the same data under several different keys/nestings**, so that any of several likely access patterns can be served by a single fetch. The **replication factor multiplies**: replication for fault tolerance compounds with the replication arising from storing denormalised copies under multiple keys.
+
+### Branded types
+
+Many database fields are strings or numbers that actually represent something more specific — units of measure, or a foreign key into another table (which is itself "a sort of type"). Making such types **explicit (branded)** rather than leaving everything as raw strings/ints can prevent nonsensical operations on the data (e.g. adding a `person_id` to a `movie_id`).
+
+### The "schema-free" ideal — a caution
+
+"No schema" really means "not stored as part of the database, and not checked during updates" — it does **not** mean there is no schema at all. There is *always* some implicit schema (on a whiteboard, in a document, or in someone's head). The DBMS simply doesn't help enforce it, and new developers must learn the implicit schema by other means.
+
+---
+
+## 9 · Graph-oriented databases
+
+### Basic model
+
+A graph database typically stores **one graph**:
+
+- **Nodes** have a type, a unique label, and properties.
+- **Edges** are directed between two nodes, and have a type plus optional label and properties.
+
+Nodes/edges of the same type can be **collated** to produce equivalent rDBMS tables if needed.
+
+### Why not just use relational tables for graphs?
+
+A naive relational encoding uses one table for nodes and one for edges (each edge row needing an artificial `EID`). This is **inefficient**:
+
+- Finding the neighbours of a node requires scanning **all edges**.
+- For undirected searches, an edge's endpoints are interchangeable, so **both** endpoint columns must be checked.
+- Multi-hop queries are painful to express in SQL (require many self-joins).
+- Typically you need **two inverted indexes** on the edges relation (one per endpoint column) just to make lookups tractable.
+
+A slightly better relational layout uses one table per node type and an all-key edges table (avoiding the `EID`) — but rDBMS representations remain poor for enormous many-to-many relations. For OLAP-style analysis a **denormalised** representation would be used instead. (A binary relation where all edges go from one node type to another is called **bipartite**.)
+
+### Neo4j / Cypher basics
+
+Nodes and edges are written `<name>:<type>` with key/value properties. **All edges have a direction as stored**, but queries can treat them as undirected.
+
+**Graph data normalisation — a worked caution:** suppose you're tempted to use a role name as the *arc name* itself:
+
+```cypher
+(nm0000084)-["Su Li-zhen":PLAYS_ROLE]->(tt0212712)
+(nm0000090)-["Semyon":PLAYS_ROLE]->(tt0765443)
+(nm0000093)-["Mickey O'Neil":PLAYS_ROLE]->(tt0208092)
+```
+
+Arc *names* must be unique, so this is a **modelling mistake** — the same role name (e.g. a remake using the same character name) would clash across different actors/movies. The better approach stores the role as a **property** of a generically-named edge:
+
+```cypher
+(nm0000084)-[:PLAYS_ROLE {role: 'Su Li-zhen'}]->(tt0212712)
+```
+
+### General observations on graph DBs vs rDBMS
+
+- An arc **type** essentially models an ER **binary (or unary) relation**.
+- **Pattern matching on paths** is natively supported.
+- **Transitive closure is free and built in** (no recursive CTE gymnastics needed).
+- Many other graph algorithms are supported out of the box.
+
+Neo4j-specific notes:
+
+- Edges created without identifiers are **not idempotent** — re-running a creation query can create duplicate edges.
+- Edges are directed as stored, but queries can traverse them as **undirected**.
+- Queries can be packaged as **reusable functions with formal parameters** (in principle also possible for rDBMS, but less common).
+- Neo4j has had **serious security vulnerabilities** historically (as can rDBMS).
+- Regular-expression matching on property values **violates value atomicity** — but predicate-based matching is allowed.
+
+### Pattern-matching query examples
+
+**Friends-of-friends:**
+
+```cypher
+MATCH
+    (john {name: "John"})-[:FRIEND]->()-[:FRIEND]->(fof)
+RETURN
+```
+
+```
++----------------------+
+| john.name | fof.name |
++----------------------+
+|  "John"   | "Maria"  |
+|  "John"   | "Steve"  |
++----------------------+
+2 rows
+```
+
+**Co-actors** — three equivalent ways to express "people who acted in the same movie":
+
+```cypher
+MATCH (p1:Person)-[:ACTED_IN]-> (m:Movie),
+      (p2:Person)-[:ACTED_IN]-> (m:Movie)
+WHERE p1.person_id <> p2.person_id
+RETURN p1.name AS name1, p2.name AS name2, count(*) AS TOTAL
+ORDER BY total desc, name1, name2
+LIMIT 10;
+```
+
+```cypher
+MATCH (p1:Person)-[:ACTED_IN]-> (m:Movie) <-[:ACTED_IN]- (p2:Person)
+WHERE ...
+```
+
+```cypher
+MATCH (p1:Person)-[:ACTED_IN*2]- (p2:Person)
+WHERE ...
+```
+
+The third form uses Cypher's variable-length path syntax (`*2` = exactly 2 hops) — this is the "transitive closure is free" feature in action.
+
+### Graph algorithms and metrics
+
+Graph DBMSs need efficient support for standard algorithms/metrics:
+
+- **Community:** edge/node ratio, diameter, clustering, tree count.
+- **Centrality:** how important is each node/link to overall structure.
+- **Similarity:** how alike are two or more nodes?
+- **Prediction:** how likely is a new arc to form between two nodes?
+- **Path finding:** what is the "best" path between two nodes?
+
+### Uses and optimisations
+
+Graph DBMSs are optimised for **Big Data** (graphs too large for primary memory) data-science queries — e.g. social network visualisation and friend-recommendation.
+
+- **In-core databases** can use raw pointers to implement referential links between nodes.
+- **Big-data implementations** stream edges past processing elements rather than holding the whole graph in memory.
+
+### Worked example: Bacon numbers in Cypher
+
+The transitive-closure-heavy Bacon number computation that required ~9 hand-unrolled views (or a recursive CTE) in SQL becomes a single query using `allshortestpaths`:
+
+```cypher
+MATCH paths=allshortestpaths(
+    (m:Person {name : "Kevin Bacon"} )
+        -[:ACTED_IN*]
+    (n:Person))
+WHERE n.person_id <> m.person_id
+RETURN length(paths)/2 AS bacon_number,
+       COUNT(distinct n.person_id) AS total
+ORDER BY bacon_number;
+```
+
+```
+bacon_number total
+------------ -----
+1            15
+2            314
+3            977
+4            685
+5            145
+6            60
+7            20
+8            28
+9            6
+```
+
+(Note the path length is divided by 2 because each "hop" between two actors via a shared movie corresponds to two edges in the `ACTED_IN` graph — actor→movie→actor.)
+
+---
 
 ## Common pitfalls
 
-- `NULL` is *not* a value — `x = NULL` always unknown; use `IS NULL`.
-- `COUNT(*)` counts all rows (incl. nulls); `COUNT(col)` ignores nulls.
-- `HAVING` evaluated after `GROUP BY`; cannot reference unaggregated raw cols.
-- BCNF can require splitting a relation that 3NF wouldn't — at the cost of losing some FDs.
-- Two-phase locking ≠ two-phase commit (different concept, distributed atomicity).
+- **`NULL` is not a value** — `x = NULL` is always *unknown*, never true; always use `IS NULL` / `IS NOT NULL`.
+- **`NULL` is not equal to another `NULL`** — yet `GROUP BY` puts all `NULL`s into a single group, which can look inconsistent with that definition.
+- **`COUNT(*)` vs `COUNT(col)`** — `COUNT(*)` counts all rows including `NULL`s; `COUNT(col)` ignores rows where `col IS NULL`.
+- **`HAVING` vs `WHERE`** — `HAVING` is evaluated after `GROUP BY` and operates on aggregated groups; you cannot reference an unaggregated raw column in `HAVING` unless it's in the `GROUP BY` list.
+- **Weak entity keys** — a discriminator alone is *not* a key; you need (owner key, discriminator) together.
+- **BCNF vs 3NF** — BCNF can force a decomposition that 3NF wouldn't require, and that decomposition may not be dependency-preserving (some FDs become only checkable via a join), even though it remains lossless.
+- **Two-phase locking ≠ two-phase commit** — 2PL is concurrency control (lock acquisition/release phases within one transaction); two-phase commit is a distributed-atomicity protocol across nodes.
+- **Indexes are a trade-off** — they speed up reads (turn $O(S)$ lookups into $O(\log S)$) but slow down every write that must maintain them.
+- **Redundancy is a dial, not a binary** — low redundancy favours write/update throughput (fewer locks); high redundancy favours read/query throughput (fewer joins/files touched).
+- **Transitive closure needs recursion** — plain relational algebra and non-recursive SQL provably cannot compute it; use `WITH RECURSIVE` (or rely on a graph DB's native path operators).
+- **CAP is about partitions specifically** — you only have to choose between C and A *when a partition occurs*; in normal operation a system can be both.
+- **Document DB denormalisation multiplies replication** — storing the same aggregate under multiple keys for different access patterns compounds with any fault-tolerance replication factor.
+
+---
 
 ## Exam strategy
 
-- For ER: draw it; show keys; label cardinalities both sides.
-- For SQL: indent and align — readability wins partial credit.
-- For normalisation: state every FD; compute closure; identify violations.
-- Quote ACID by name and give a one-line example each.
+- **ER diagrams:** draw them; underline keys; label cardinalities on *both* ends of every relationship; mark weak entities with double rectangles and identify the discriminator explicitly.
+- **Relational algebra:** know the closure property (every operator's output is a relation) and be ready to express a natural join as $\pi(\sigma(R \times \rho(S)))$ if asked to justify it from first principles.
+- **SQL:** indent and align — readability wins partial credit. For recursive queries, structure your CTE as (base case) `UNION` (recursive step with termination condition).
+- **Normalisation:** write out *every* FD explicitly, compute the relevant attribute closures using Armstrong's axioms, and check each normal form's condition systematically (1NF → 2NF → 3NF → BCNF) rather than guessing.
+- **ACID:** name all four properties and give a one-line concrete example for each (the funds-transfer example is the canonical one — reuse it).
+- **Transactions/locking:** if asked about concurrency control, mention 2PL's growing/shrinking phases explicitly and distinguish it from two-phase commit; mention WAL for recovery.
+- **Document vs graph vs relational:** be ready to argue *trade-offs* (denormalisation, ACID vs BASE, join cost vs index-free adjacency) rather than just stating "graph DBs are good for graphs".
+- **Transitive closure / Bacon numbers:** this is a favourite — practice writing both the iterative (`UNION` of numbered views) and recursive CTE forms, and the Cypher `allshortestpaths` equivalent.
