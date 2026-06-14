@@ -10,14 +10,21 @@ import type { ModuleSlug } from './syllabus';
 
 export type CSPaper = 1 | 2 | 3;
 
+// Which exam series a question belongs to. The Computer Science Tripos
+// (Papers 1–3, hosted by the Computer Lab) and the NST Mathematics written
+// papers (Papers 1–2, hosted by the Faculty of Mathematics) are separate
+// exams with different paper PDFs; this tag keeps them distinguishable.
+export type ExamSeries = 'cs' | 'maths';
+
 export interface PastQuestion {
   year: number;
   paper: CSPaper;
-  number: number;            // 1..10 typically
+  number: number;            // 1..10 for CS; 11..20 for NST Maths long questions
   module: ModuleSlug;
   topics: string[];          // topic slugs within the module
   summary: string;           // one-line description for browsing
-  url: string;               // direct link to question PDF
+  url: string;               // direct link to the paper/question PDF
+  series: ExamSeries;        // 'cs' (default) or 'maths'
 }
 
 const Q = (
@@ -35,6 +42,27 @@ const Q = (
   topics,
   summary,
   url: `https://www.cl.cam.ac.uk/teaching/exams/pastpapers/y${year}p${paper}q${number}.pdf`,
+  series: 'cs',
+});
+
+// NST Mathematics question constructor. These are always tagged to the
+// `nst-mathematics-a` module. The Faculty of Mathematics publishes whole
+// papers (not per-question PDFs), so the URL points at the full paper.
+const M = (
+  year: number,
+  paper: CSPaper,
+  number: number,
+  topics: string[],
+  summary: string,
+): PastQuestion => ({
+  year,
+  paper,
+  number,
+  module: 'nst-mathematics-a',
+  topics,
+  summary,
+  url: mathsYearPaperUrl(year, paper),
+  series: 'maths',
 });
 
 export const PAST_QUESTIONS: PastQuestion[] = [
@@ -285,6 +313,143 @@ export const PAST_QUESTIONS: PastQuestion[] = [
   Q(2019, 3, 7, 'machine-learning-real-world-data', ['sentiment-classification'], 'Two-classifier accuracy + sign test; permutation test from row-swapping; behaviour under ties'),
   Q(2019, 3, 8, 'machine-learning-real-world-data', ['hidden-markov-models-clustering'], 'Mediaeval crops HMM with smoothing; one Viterbi step (δ at t=3); HMM assumptions; smoothing tradeoffs'),
   Q(2019, 3, 9, 'machine-learning-real-world-data', ['sentiment-classification'], 'Types vs tokens; Zipf-style frequency distribution; Heaps\' law; Naive Bayes authorship classifier'),
+
+  // ═══════════════════════════════════════════════════════════════════
+  // NST Mathematics (Part IA) — separate written papers, 2019 onwards.
+  // Topic tags derived from the Faculty's markscheme compilations
+  // (IA NST Mathematics, by topic). Question numbers are the long
+  // "Section B" questions (11–20). The URL links the whole paper PDF.
+  // Note: 2020 had Paper 1 only; gaps are questions not in the
+  // compilations (no reliable per-question tag available).
+  // ═══════════════════════════════════════════════════════════════════
+
+  // ───── 2019 — NST Maths Paper 1 ─────
+  M(2019, 1, 11, ['mm-i-complex-numbers'], 'Complex numbers'),
+  M(2019, 1, 12, ['mm-ii-multiple-integration'], 'Multiple integration'),
+  M(2019, 1, 13, ['mm-ii-odes'], 'Ordinary differential equations'),
+  M(2019, 1, 14, ['mm-ii-multivariable-calculus'], 'Partial differentiation'),
+  M(2019, 1, 15, ['mm-ii-odes', 'mm-i-taylor-series'], 'Ordinary differential equations; Series, limits & Taylor expansions'),
+  M(2019, 1, 16, ['mm-i-elementary-probability'], 'Probability'),
+  M(2019, 1, 17, ['mm-i-differentiation', 'mm-i-integration'], 'Differentiation & integration'),
+  M(2019, 1, 18, ['mm-iii-matrices', 'mm-iii-eigenvalues-and-eigenvectors'], 'Matrices, linear algebra & eigenvalues'),
+  M(2019, 1, 19, ['mm-i-taylor-series'], 'Series, limits & Taylor expansions'),
+  M(2019, 1, 20, ['mm-i-differentiation', 'mm-i-integration'], 'Differentiation & integration'),
+
+  // ───── 2019 — NST Maths Paper 2 ─────
+  M(2019, 2, 11, ['mm-i-vectors'], 'Vectors'),
+  M(2019, 2, 13, ['mm-ii-multivariable-calculus'], 'Vector calculus (grad, div, curl)'),
+  M(2019, 2, 14, ['mm-i-elementary-probability'], 'Probability'),
+  M(2019, 2, 16, ['mm-ii-multivariable-calculus'], 'Vector calculus (grad, div, curl)'),
+  M(2019, 2, 17, ['mm-iii-matrices', 'mm-iii-eigenvalues-and-eigenvectors'], 'Matrices, linear algebra & eigenvalues'),
+  M(2019, 2, 18, ['mm-iii-fourier-series'], 'Fourier series'),
+  M(2019, 2, 19, ['mm-ii-multivariable-calculus'], 'Partial differentiation'),
+  M(2019, 2, 20, ['mm-iii-fourier-series'], 'Partial differential equations'),
+
+  // ───── 2020 — NST Maths Paper 1 (Paper 2 not sat) ─────
+  M(2020, 1, 11, ['mm-i-complex-numbers'], 'Complex numbers'),
+  M(2020, 1, 12, ['mm-ii-multiple-integration'], 'Multiple integration'),
+  M(2020, 1, 13, ['mm-ii-odes'], 'Ordinary differential equations'),
+  M(2020, 1, 14, ['mm-ii-multivariable-calculus'], 'Partial differentiation'),
+  M(2020, 1, 15, ['mm-i-taylor-series'], 'Series, limits & Taylor expansions'),
+  M(2020, 1, 16, ['mm-i-elementary-probability'], 'Probability'),
+  M(2020, 1, 18, ['mm-iii-matrices', 'mm-iii-eigenvalues-and-eigenvectors'], 'Matrices, linear algebra & eigenvalues'),
+  M(2020, 1, 19, ['mm-ii-multivariable-calculus'], 'Vector calculus (grad, div, curl)'),
+  M(2020, 1, 20, ['mm-ii-multivariable-calculus'], 'Vector calculus (grad, div, curl)'),
+
+  // ───── 2021 — NST Maths Paper 1 ─────
+  M(2021, 1, 11, ['mm-i-complex-numbers'], 'Complex numbers'),
+  M(2021, 1, 12, ['mm-ii-multiple-integration'], 'Multiple integration'),
+  M(2021, 1, 13, ['mm-ii-odes'], 'Ordinary differential equations'),
+  M(2021, 1, 14, ['mm-ii-multivariable-calculus'], 'Partial differentiation'),
+  M(2021, 1, 15, ['mm-i-taylor-series'], 'Series, limits & Taylor expansions'),
+  M(2021, 1, 16, ['mm-i-elementary-probability'], 'Probability'),
+  M(2021, 1, 17, ['mm-i-differentiation', 'mm-i-integration'], 'Differentiation & integration'),
+  M(2021, 1, 18, ['mm-iii-matrices', 'mm-iii-eigenvalues-and-eigenvectors'], 'Matrices, linear algebra & eigenvalues'),
+  M(2021, 1, 19, ['mm-i-taylor-series'], 'Series, limits & Taylor expansions'),
+  M(2021, 1, 20, ['mm-i-differentiation', 'mm-i-integration'], 'Differentiation & integration'),
+
+  // ───── 2021 — NST Maths Paper 2 ─────
+  M(2021, 2, 11, ['mm-i-vectors'], 'Vectors'),
+  M(2021, 2, 13, ['mm-ii-multivariable-calculus'], 'Vector calculus (grad, div, curl)'),
+  M(2021, 2, 16, ['mm-ii-multivariable-calculus'], 'Vector calculus (grad, div, curl)'),
+  M(2021, 2, 17, ['mm-iii-matrices', 'mm-iii-eigenvalues-and-eigenvectors'], 'Matrices, linear algebra & eigenvalues'),
+  M(2021, 2, 18, ['mm-iii-fourier-series'], 'Fourier series'),
+  M(2021, 2, 19, ['mm-ii-multivariable-calculus'], 'Partial differentiation'),
+  M(2021, 2, 20, ['mm-iii-fourier-series'], 'Partial differential equations'),
+
+  // ───── 2022 — NST Maths Paper 1 ─────
+  M(2022, 1, 11, ['mm-i-complex-numbers'], 'Complex numbers'),
+  M(2022, 1, 12, ['mm-ii-multiple-integration'], 'Multiple integration'),
+  M(2022, 1, 13, ['mm-ii-odes'], 'Ordinary differential equations'),
+  M(2022, 1, 14, ['mm-ii-odes'], 'Ordinary differential equations'),
+  M(2022, 1, 15, ['mm-i-taylor-series'], 'Series, limits & Taylor expansions'),
+  M(2022, 1, 16, ['mm-i-elementary-probability'], 'Probability'),
+  M(2022, 1, 17, ['mm-i-differentiation', 'mm-i-integration'], 'Differentiation & integration'),
+  M(2022, 1, 18, ['mm-iii-matrices', 'mm-iii-eigenvalues-and-eigenvectors'], 'Matrices, linear algebra & eigenvalues'),
+  M(2022, 1, 19, ['mm-i-taylor-series'], 'Series, limits & Taylor expansions'),
+
+  // ───── 2022 — NST Maths Paper 2 ─────
+  M(2022, 2, 13, ['mm-ii-multivariable-calculus'], 'Vector calculus (grad, div, curl)'),
+  M(2022, 2, 14, ['mm-i-elementary-probability'], 'Probability'),
+  M(2022, 2, 16, ['mm-ii-multivariable-calculus'], 'Vector calculus (grad, div, curl)'),
+  M(2022, 2, 18, ['mm-iii-fourier-series'], 'Fourier series'),
+  M(2022, 2, 19, ['mm-ii-multivariable-calculus'], 'Partial differentiation'),
+  M(2022, 2, 20, ['mm-iii-fourier-series'], 'Partial differential equations'),
+
+  // ───── 2023 — NST Maths Paper 1 ─────
+  M(2023, 1, 13, ['mm-ii-odes'], 'Ordinary differential equations'),
+  M(2023, 1, 14, ['mm-ii-odes'], 'Ordinary differential equations'),
+  M(2023, 1, 15, ['mm-i-taylor-series'], 'Series, limits & Taylor expansions'),
+  M(2023, 1, 16, ['mm-i-elementary-probability'], 'Probability'),
+  M(2023, 1, 17, ['mm-iii-fourier-series'], 'Fourier series'),
+  M(2023, 1, 18, ['mm-iii-matrices', 'mm-iii-eigenvalues-and-eigenvectors'], 'Matrices, linear algebra & eigenvalues'),
+  M(2023, 1, 19, ['mm-i-taylor-series'], 'Series, limits & Taylor expansions'),
+  M(2023, 1, 20, ['mm-ii-multivariable-calculus'], 'Partial differentiation'),
+
+  // ───── 2023 — NST Maths Paper 2 ─────
+  M(2023, 2, 11, ['mm-i-vectors'], 'Vectors'),
+  M(2023, 2, 13, ['mm-ii-multivariable-calculus'], 'Vector calculus (grad, div, curl)'),
+  M(2023, 2, 15, ['mm-ii-odes'], 'Ordinary differential equations'),
+  M(2023, 2, 16, ['mm-ii-multivariable-calculus'], 'Vector calculus (grad, div, curl)'),
+  M(2023, 2, 17, ['mm-iii-matrices', 'mm-iii-eigenvalues-and-eigenvectors'], 'Matrices, linear algebra & eigenvalues'),
+  M(2023, 2, 18, ['mm-i-differentiation', 'mm-i-integration'], 'Differentiation & integration'),
+  M(2023, 2, 20, ['mm-iii-fourier-series'], 'Partial differential equations'),
+
+  // ───── 2024 — NST Maths Paper 1 ─────
+  M(2024, 1, 11, ['mm-i-complex-numbers'], 'Complex numbers'),
+  M(2024, 1, 12, ['mm-ii-multiple-integration'], 'Multiple integration'),
+  M(2024, 1, 13, ['mm-ii-odes', 'mm-ii-multivariable-calculus'], 'Ordinary differential equations; Vector calculus (grad, div, curl)'),
+  M(2024, 1, 15, ['mm-i-taylor-series'], 'Series, limits & Taylor expansions'),
+  M(2024, 1, 16, ['mm-i-elementary-probability'], 'Probability'),
+  M(2024, 1, 17, ['mm-i-differentiation', 'mm-i-integration'], 'Differentiation & integration'),
+  M(2024, 1, 18, ['mm-iii-matrices', 'mm-iii-eigenvalues-and-eigenvectors'], 'Matrices, linear algebra & eigenvalues'),
+  M(2024, 1, 19, ['mm-i-taylor-series'], 'Series, limits & Taylor expansions'),
+  M(2024, 1, 20, ['mm-i-differentiation', 'mm-i-integration'], 'Differentiation & integration'),
+
+  // ───── 2024 — NST Maths Paper 2 ─────
+  M(2024, 2, 11, ['mm-i-vectors'], 'Vectors'),
+  M(2024, 2, 12, ['mm-ii-multivariable-calculus'], 'Partial differentiation'),
+  M(2024, 2, 14, ['mm-i-elementary-probability'], 'Probability'),
+  M(2024, 2, 15, ['mm-ii-odes'], 'Ordinary differential equations'),
+  M(2024, 2, 16, ['mm-ii-multivariable-calculus'], 'Vector calculus (grad, div, curl)'),
+  M(2024, 2, 17, ['mm-iii-matrices', 'mm-iii-eigenvalues-and-eigenvectors'], 'Matrices, linear algebra & eigenvalues'),
+  M(2024, 2, 18, ['mm-iii-fourier-series'], 'Fourier series'),
+  M(2024, 2, 19, ['mm-ii-multivariable-calculus'], 'Partial differentiation'),
+  M(2024, 2, 20, ['mm-iii-fourier-series'], 'Partial differential equations'),
+
+  // ───── 2025 — NST Maths Paper 1 ─────
+  M(2025, 1, 11, ['mm-i-vectors'], 'Vectors'),
+  M(2025, 1, 12, ['mm-ii-multivariable-calculus', 'mm-i-taylor-series'], 'Partial differentiation; Series, limits & Taylor expansions'),
+  M(2025, 1, 18, ['mm-iii-fourier-series'], 'Fourier series'),
+  M(2025, 1, 19, ['mm-i-taylor-series'], 'Series, limits & Taylor expansions'),
+  M(2025, 1, 20, ['mm-ii-multivariable-calculus'], 'Partial differentiation'),
+
+  // ───── 2025 — NST Maths Paper 2 ─────
+  M(2025, 2, 14, ['mm-ii-multivariable-calculus'], 'Partial differentiation'),
+  M(2025, 2, 15, ['mm-ii-multiple-integration'], 'Multiple integration'),
+  M(2025, 2, 16, ['mm-ii-multivariable-calculus'], 'Vector calculus (grad, div, curl)'),
+  M(2025, 2, 17, ['mm-ii-multivariable-calculus'], 'Vector calculus (grad, div, curl)'),
+  M(2025, 2, 20, ['mm-iii-fourier-series'], 'Partial differential equations'),
 ];
 
 // Indexes for fast lookup.
@@ -323,4 +488,10 @@ export function allYears(): number[] {
 
 export function yearPaperUrl(year: number, paper: CSPaper): string {
   return `https://www.cl.cam.ac.uk/teaching/exams/pastpapers/y${year}PAPER${paper}.pdf`;
+}
+
+// NST Mathematics Part IA whole-paper PDFs are hosted by the Faculty of
+// Mathematics. Pattern verified for 2019–2025 (note: 2020 had Paper 1 only).
+export function mathsYearPaperUrl(year: number, paper: CSPaper): string {
+  return `https://www.maths.cam.ac.uk/undergradnst/files/${year}/papernst_ia_${paper}_${year}.pdf`;
 }
